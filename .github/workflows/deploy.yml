@@ -1,0 +1,54 @@
+name: Deploy Application
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        push: true
+        tags: ${{ secrets.DOCKER_USERNAME }}/backend_skilly_nginx:latest
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    steps:
+      - name: SSH into server and deploy
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # Create a temporary docker-compose file with proper environment variable substitution
+            echo "version: '3.8'
+            services:
+              app:
+                image: ${DOCKER_USERNAME}/backend_skilly_nginx:latest
+                ports:
+                  - \"3000:3000\"
+                environment:
+                  - NODE_ENV=production" > docker-compose.yml
+
+            # Pull the latest image and restart
+            export DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}
+            docker pull ${DOCKER_USERNAME}/backend_skilly_nginx:latest
+            docker-compose down
+            docker-compose up -d
