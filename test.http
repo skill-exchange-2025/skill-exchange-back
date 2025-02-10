@@ -1,0 +1,26 @@
+### GET request to example server
+GET https://examples.http-client.intellij.net/get
+    ?generated-in=WebStorm
+
+###
+POST http://localhost:3000/auth/register
+Content-Type: application/json
+
+{
+  "email": "jiheed@gmail.com",
+  "password": "jihed123",
+  "roles": ["admin"]
+}
+
+###
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "email": "jiheed@gmail.com",
+  "password": "jihed123"
+}
+
+###
+GET http://localhost:3000/auth/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2E3YmQ2YWU3MDFlZDVjMTBjMmM5MzIiLCJlbWFpbCI6Inh4QGdtYWlsLmNvbSIsImlhdCI6MTczOTA0NjYwMCwiZXhwIjoxNzM5MDUwMjAwfQ.HNbpbZped8RCeD9LiR-0HbgAcBiHuN2nObARyUX0UQI
