@@ -7,13 +7,20 @@ import {
   PermissionGroup,
   PermissionGroupSchema,
 } from '../auth/schemas/permission-group.schema';
-import { AuthModule } from '../auth/auth.module'; // Import AuthModule
+import {
+  UserDesiredSkill,
+  UserDesiredSkillSchema
+} from './schemas/user.desired.skill';
+import { AuthModule } from '../auth/auth.module';
+import { UserSkill, UserSkillSchema } from './schemas/user.skill.schema'; // Import AuthModule
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema }, // Register User schema
       { name: PermissionGroup.name, schema: PermissionGroupSchema },
+      { name: UserSkill.name, schema: UserSkillSchema },
+      { name: UserDesiredSkill.name, schema: UserDesiredSkillSchema },
     ]),
     forwardRef(() => AuthModule), // Use forwardRef to handle circular dependency
   ],

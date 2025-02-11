@@ -7,9 +7,39 @@ POST http://localhost:3000/auth/register
 Content-Type: application/json
 
 {
-  "email": "jiheed@gmail.com",
+  "email": "jihsed1@gmail.com",
   "password": "jihed123",
   "roles": ["admin"]
+}
+
+###
+### Register a new user with skills
+POST http://localhost:3000/auth/register
+Content-Type: application/json
+
+{
+  "email": "farouk@gmail.com",
+  "password": "Password123",
+  "roles": ["user"],
+  "skills": [
+    {
+      "name": "react",
+      "description": "Modern JavaScript development",
+      "proficiencyLevel": "intermediate"
+    },
+    {
+      "name": "Python",
+      "description": "Python programming",
+      "proficiencyLevel": "beginner"
+    }
+  ],
+  "desiredSkills": [
+    {
+      "name": "React",
+      "description": "React.js framework",
+      "desiredProficiencyLevel": "advanced"
+    }
+  ]
 }
 
 ###
@@ -17,7 +47,7 @@ POST http://localhost:3000/auth/login
 Content-Type: application/json
 
 {
-  "email": "jiheed@gmail.com",
+  "email": "jihed1@gmail.com",
   "password": "jihed123"
 }
 

@@ -19,13 +19,19 @@ import {
   PermissionGroupDocument,
 } from '../auth/schemas/permission-group.schema';
 import { UserWithPermissions } from './interfaces/user-with-permissions.interface';
+import { UserSkill, UserSkillDocument } from './schemas/user.skill.schema';
+import {
+  UserDesiredSkill,
+  UserDesiredSkillDocument,
+} from './schemas/user.desired.skill';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
-    @InjectModel(PermissionGroup.name)
-    private permissionGroupModel: Model<PermissionGroupDocument>
+    @InjectModel(PermissionGroup.name) private permissionGroupModel: Model<PermissionGroupDocument>,
+    @InjectModel(UserSkill.name) private userSkillModel: Model<UserSkillDocument>,
+    @InjectModel(UserDesiredSkill.name) private userDesiredSkillModel: Model<UserDesiredSkillDocument>
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<UserDocument> {
@@ -75,23 +81,6 @@ export class UsersService {
       users: users.map((user) => this.mapUserToDto(user)),
       total,
     };
-  }
-
-  async findById(id: string): Promise<UserWithPermissions> {
-    if (!Types.ObjectId.isValid(id)) {
-      throw new BadRequestException('Invalid user ID');
-    }
-
-    const user = await this.userModel
-      .findById(id)
-      .populate('permissionGroups')
-      .exec();
-
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    return this.mapUserToDto(user);
   }
 
   async findByEmail(email: string): Promise<UserDocument | null> {
@@ -279,6 +268,7 @@ export class UsersService {
     }
   }
 
+  // src/users/users.service.ts
   private mapUserToDto(user: UserDocument): UserWithPermissions {
     return {
       id: user.id.toString(),
@@ -286,6 +276,8 @@ export class UsersService {
       roles: user.roles,
       permissions: user.permissions,
       permissionGroups: user.permissionGroups,
+      skills: user.skills || [],
+      desiredSkills: user.desiredSkills || [],
     };
   }
 }

@@ -1,9 +1,10 @@
-// src/users/schemas/user.schema.ts
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 import { Role } from '../../auth/enums/role.enum';
 import { Permission } from '../../auth/enums/permission.enum';
 import { PermissionGroup } from '../../auth/schemas/permission-group.schema';
+import { UserSkill, UserSkillSchema } from './user.skill.schema';
+import { UserDesiredSkill, UserDesiredSkillSchema } from './user.desired.skill';
 
 export type UserDocument = User & Document;
 
@@ -17,13 +18,12 @@ export type UserDocument = User & Document;
   },
 })
 export class User {
-  // add the id field
-
   @Prop({ required: true, unique: true })
   email: string;
 
   @Prop({ type: String, required: true, select: false })
   password: string;
+
   @Prop({ type: [String], enum: Role, default: [Role.USER] })
   roles: Role[];
 
@@ -34,6 +34,12 @@ export class User {
     type: [{ type: MongooseSchema.Types.ObjectId, ref: 'PermissionGroup' }],
   })
   permissionGroups: PermissionGroup[];
+
+  @Prop({ type: [UserSkillSchema] })
+  skills: UserSkill[];
+
+  @Prop({ type: [UserDesiredSkillSchema] })
+  desiredSkills: UserDesiredSkill[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

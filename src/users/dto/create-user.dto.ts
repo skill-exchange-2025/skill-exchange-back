@@ -1,3 +1,5 @@
+// src/users/dto/create-user.dto.ts
+import { Type } from 'class-transformer';
 import {
   IsEmail,
   IsString,
@@ -6,10 +8,43 @@ import {
   IsOptional,
   MinLength,
   Matches,
+  ValidateNested,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Role } from '../../auth/enums/role.enum';
 import { Permission } from '../../auth/enums/permission.enum';
+import { UserDesiredSkill } from '../schemas/user.desired.skill';
+import { UserSkill } from '../schemas/user.skill.schema';
+
+export class SkillDto {
+  @ApiProperty()
+  @IsString()
+  name: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  description?: string;
+
+  @ApiProperty()
+  @IsString()
+  proficiencyLevel: string;
+}
+
+export class DesiredSkillDto {
+  @ApiProperty()
+  @IsString()
+  name: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  description?: string;
+
+  @ApiProperty()
+  @IsString()
+  desiredProficiencyLevel: string;
+}
 
 export class CreateUserDto {
   @ApiProperty({ example: 'user@example.com' })
@@ -25,6 +60,20 @@ export class CreateUserDto {
   })
   password: string;
 
+  @ApiProperty({ type: [UserSkill], required: false })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => UserSkill)
+  skills?: UserSkill[];
+
+  @ApiProperty({ type: [UserDesiredSkill], required: false })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => UserDesiredSkill)
+  desiredSkills?: UserDesiredSkill[];
+
   @ApiProperty({ enum: Role, isArray: true, required: false })
   @IsOptional()
   @IsArray()
@@ -36,4 +85,10 @@ export class CreateUserDto {
   @IsArray()
   @IsEnum(Permission, { each: true })
   permissions?: Permission[];
+
+  @ApiProperty({ type: [String], required: false })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  permissionGroups?: string[];
 }
