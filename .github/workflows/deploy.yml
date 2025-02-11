@@ -43,7 +43,7 @@ jobs:
               app:
                 image: ${DOCKER_USERNAME}/backend_skilly_nginx:latest
                 ports:
-                  - \"3000:3000\"
+                  - \"5000:5000\"
                 environment:
                   - NODE_ENV=production" > docker-compose.yml
 

@@ -3,7 +3,7 @@ GET https://examples.http-client.intellij.net/get
     ?generated-in=WebStorm
 
 ###
-POST http://localhost:3000/auth/register
+POST http://localhost:5000/auth/register
 Content-Type: application/json
 
 {
@@ -14,11 +14,11 @@ Content-Type: application/json
 
 ###
 ### Register a new user with skills
-POST http://localhost:3000/auth/register
+POST http://localhost:5000/auth/register
 Content-Type: application/json
 
 {
-  "email": "farouk@gmail.com",
+  "email": "faroukk@gmail.com",
   "password": "Password123",
   "roles": ["user"],
   "skills": [
@@ -43,7 +43,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:3000/auth/login
+POST http://localhost:5000/auth/login
 Content-Type: application/json
 
 {
@@ -52,5 +52,5 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:3000/auth/profile
+GET http://localhost:5000/auth/profile
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2FhNjYxODU4MDE4NjFiNWM1MjA3NDciLCJlbWFpbCI6ImppaGVkMUBnbWFpbC5jb20iLCJpYXQiOjE3MzkyNzE5ODIsImV4cCI6MTczOTI3Mjg4Mn0.yHW5k1yOk9a4EO6sOVM8hDpuR89Ckq63DuFN7lEp4TI
