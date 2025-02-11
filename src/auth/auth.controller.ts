@@ -21,6 +21,11 @@ import { AuthResponseDto } from './dto/auth-response.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { CurrentUser } from './decorators/user.decorator';
 import { User } from '../users/schemas/user.schema';
+import { Roles } from './decorators/roles.decorator';
+import { Role } from './enums/role.enum';
+import { Permission } from './enums/permission.enum';
+import { RolesGuard } from './guards/roles.guard';
+import { PermissionsGuard } from './guards/permissions.guard';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -52,6 +57,8 @@ export class AuthController {
   @ApiOperation({ summary: 'Get user profile' })
   @ApiResponse({ status: 200, type: User })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @Roles(Role.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   getProfile(@CurrentUser() user: User) {
     if (!user) {
       throw new UnauthorizedException('User not found');
