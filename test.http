@@ -46,6 +46,8 @@ Content-Type: application/json
   ]
 }
 
+
+
 ###
 POST http://localhost:5000/api/auth/login
 Content-Type: application/json
@@ -56,7 +58,6 @@ Content-Type: application/json
 }
 
 
-"access_token": "
 
 ###
 GET http://localhost:5000/api/profile
@@ -85,3 +86,33 @@ Content-Type: application/json
   ],
   "birthDate": "1990-01-01"
 }
+
+
+### Update Profile
+PUT http://localhost:5000/api/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2IzOTRmZWMxY2M1NWQ5NGQ0YThlNjUiLCJlbWFpbCI6ImppaWlAZ21haWwuY29tIiwiaWF0IjoxNzM5ODI2ODczLCJleHAiOjE3Mzk4Mjc3NzN9.I-d0paPU8PIEkEvcmzHYcdMsCgo45q4OEh2JdXVUHl8
+Content-Type: application/json
+
+{
+  "bio": "Updated bio - Senior Software Developer",
+  "description": "Updated description - Specialized in Node.js and React",
+  "location": "San Francisco, USA",
+  "profession": "Senior Full Stack Developer",
+  "interests": ["Programming", "AI", "Blockchain"],
+  "socialLinks": [
+    "https://linkedin.com/in/updated-username",
+    "https://github.com/updated-username"
+  ]
+}
+
+
+### Upload Profile Avatar
+POST http://localhost:5000/api/profile/avatar
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2IzOTRmZWMxY2M1NWQ5NGQ0YThlNjUiLCJlbWFpbCI6ImppaWlAZ21haWwuY29tIiwiaWF0IjoxNzM5ODI2ODczLCJleHAiOjE3Mzk4Mjc3NzN9.I-d0paPU8PIEkEvcmzHYcdMsCgo45q4OEh2JdXVUHl8
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="avatar"; filename="profile-picture.jpg"
+Content-Type: image/jpeg
+
+</ Users/jihed/Downloads/473021116_1124461089188286_3074189769567510121_n (2).jpg
