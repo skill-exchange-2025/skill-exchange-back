@@ -29,7 +29,8 @@ import {
 export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
-    @InjectModel(PermissionGroup.name) private permissionGroupModel: Model<PermissionGroupDocument>,
+    @InjectModel(PermissionGroup.name)
+    private permissionGroupModel: Model<PermissionGroupDocument>,
     @InjectModel(UserSkill.name) private userSkillModel: Model<UserSkillDocument>,
     @InjectModel(UserDesiredSkill.name) private userDesiredSkillModel: Model<UserDesiredSkillDocument>
   ) {}
@@ -279,6 +280,24 @@ export class UsersService {
       default:
         return [];
     }
+  }
+
+  async findById(id: string): Promise<UserDocument> {
+    if (!Types.ObjectId.isValid(id)) {
+      throw new BadRequestException('Invalid user ID');
+    }
+
+    const user = await this.userModel.findById(id)
+      .select('+password') // Include password field if needed
+      .populate('skills')
+      .populate('desiredSkills')
+      .exec();
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    return user;
   }
 
   // src/users/users.service.ts

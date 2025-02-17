@@ -7,11 +7,13 @@ import { UsersModule } from './users/users.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
+import { ProfileModule } from './profile/profile.module';
 
 @Module({
   imports: [
     AuthModule,
     UsersModule,
+    ProfileModule,
     ConfigModule.forRoot({ isGlobal: true }), // Load environment variables globally
     MongooseModule.forRoot(process.env.MONGO_URI || 'mongodb://localhost/nest'),
   ],

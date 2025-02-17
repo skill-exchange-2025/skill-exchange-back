@@ -7,7 +7,9 @@ POST http://localhost:5000/auth/register
 Content-Type: application/json
 
 {
-  "email": "jihsed1@gmail.com",
+  "email": "jihed@gmail.com",
+  "phone": "12345678",
+  "name": "Jihed",
   "password": "jihed123",
   "roles": ["admin"]
 }
@@ -18,8 +20,10 @@ POST http://localhost:5000/auth/register
 Content-Type: application/json
 
 {
-  "email": "faroukk@gmail.com",
+  "email": "jiii@gmail.com",
   "password": "Password123",
+  "phone": "12345678",
+  "name": "Jihed",
   "roles": ["user"],
   "skills": [
     {
@@ -43,14 +47,41 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:5000/auth/login
+POST http://localhost:5000/api/auth/login
 Content-Type: application/json
 
 {
-  "email": "jihed1@gmail.com",
-  "password": "jihed123"
+  "email": "jiii@gmail.com",
+  "password": "Password123"
 }
 
+
+"access_token": "
+
 ###
-GET http://localhost:5000/auth/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2FhNjYxODU4MDE4NjFiNWM1MjA3NDciLCJlbWFpbCI6ImppaGVkMUBnbWFpbC5jb20iLCJpYXQiOjE3MzkyNzE5ODIsImV4cCI6MTczOTI3Mjg4Mn0.yHW5k1yOk9a4EO6sOVM8hDpuR89Ckq63DuFN7lEp4TI
+GET http://localhost:5000/api/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2IzOTRmZWMxY2M1NWQ5NGQ0YThlNjUiLCJlbWFpbCI6ImppaWlAZ21haWwuY29tIiwiaWF0IjoxNzM5ODIzODMwLCJleHAiOjE3Mzk4MjQ3MzB9.PkWwES9JNSdI0kcQfVD9YvGytzGj-8nMmaDwg6dZO98
+
+
+
+### Create Profile
+POST http://localhost:5000/api/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2IzOTRmZWMxY2M1NWQ5NGQ0YThlNjUiLCJlbWFpbCI6ImppaWlAZ21haWwuY29tIiwiaWF0IjoxNzM5ODIyNDE1LCJleHAiOjE3Mzk4MjMzMTV9.1JG-wKRrpHDG19diRV1-JegmfCo2wNeoJc26tcRQzj8
+Content-Type: application/json
+
+{
+  "bio": "Software Developer with 5 years of experience",
+  "description": "Passionate about web development and new technologies",
+  "location": "New York, USA",
+  "socialLinks": [
+    "https://linkedin.com/in/username",
+    "https://github.com/username"
+  ],
+  "profession": "Full Stack Developer",
+  "interests": [
+    "Web Development",
+    "Machine Learning",
+    "Cloud Computing"
+  ],
+  "birthDate": "1990-01-01"
+}
