@@ -26,6 +26,8 @@ export class AuthService {
     const normalizedEmail = registerDto.email.toLowerCase().trim();
     console.log('Generated hash:', hashedPassword);
 
+    const name = registerDto.name;
+    const phone = registerDto.phone;
     const roles = (registerDto.roles || [Role.USER]).map((role: string) =>
       role.toLowerCase()
     ) as Role[];
@@ -33,6 +35,8 @@ export class AuthService {
 
     const user = await this.usersService.create({
       ...registerDto,
+      name,
+      phone,
       email: normalizedEmail,
       password: hashedPassword,
       roles,
@@ -46,6 +50,8 @@ export class AuthService {
       refresh_token: refreshToken,
       user: {
         _id: (user._id as any).toString(),
+        name: user.name,
+        phone: user.phone,
         email: user.email,
         roles: user.roles || [],
         permissions: user.permissions || [],
@@ -67,6 +73,8 @@ export class AuthService {
       refresh_token: refreshToken,
       user: {
         _id: (user._id as ObjectId).toString(),
+        name: user.name,
+        phone: user.phone,
         email: user.email,
         roles: user.roles || [],
         permissions: user.permissions || [],
@@ -92,6 +100,8 @@ export class AuthService {
         refresh_token: tokens.refreshToken,
         user: {
           _id: (user._id as ObjectId).toString(),
+          name: user.name,
+          phone: user.phone,
           email: user.email,
           roles: user.roles || [],
           permissions: user.permissions || [],

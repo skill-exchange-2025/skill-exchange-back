@@ -51,6 +51,18 @@ export class AuthController {
     return this.authService.login(loginDto);
   }
 
+
+  @UseGuards(JwtAuthGuard) // Protect the route with the JWT guard
+  @Get('me')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get current authenticated user' })
+  @ApiResponse({ status: 200, type: User })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  getMe(@CurrentUser() user: User): User {
+    return user; // Return the current authenticated user
+  }   
+
+  
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   @ApiBearerAuth()

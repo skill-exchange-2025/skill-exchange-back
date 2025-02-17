@@ -16,6 +16,14 @@ export class RegisterDto {
   @IsEmail({}, { message: 'Please provide a valid email' })
   email: string;
 
+  @ApiProperty({ example: 'Jhon doe' })
+  @IsString()
+  name: string;
+
+  @ApiProperty({ example: '12345678' })
+  @IsString()
+  phone: string;
+
   @ApiProperty({ example: 'StrongP@ss123' })
   @IsString()
   @MinLength(8)

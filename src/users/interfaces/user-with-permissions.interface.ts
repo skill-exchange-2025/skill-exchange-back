@@ -8,6 +8,8 @@ import { UserDesiredSkill } from '../schemas/user.desired.skill';
 export interface UserWithPermissions {
   id: string;
   email: string;
+  name: string;
+  phone: number;
   roles: Role[];
   permissions: Permission[];
   permissionGroups: PermissionGroup[];

@@ -89,6 +89,19 @@ export class UsersService {
       .select('+password')
       .exec();
   }
+  async findByNames(name: string): Promise<UserDocument | null> {
+    return this.userModel
+      .findOne({ name: name.toLowerCase().trim() })
+      .select('+password')
+      .exec();
+  }
+  async findByPhone(phone: string): Promise<UserDocument | null> {
+    return this.userModel
+      .findOne({ phone: phone.toLowerCase().trim() })
+      .select('+password')
+      .exec();
+  }
+
 
   async update(
     id: string,
@@ -273,6 +286,8 @@ export class UsersService {
     return {
       id: user.id.toString(),
       email: user.email,
+      name: user.name,
+      phone: user.phone,
       roles: user.roles,
       permissions: user.permissions,
       permissionGroups: user.permissionGroups,

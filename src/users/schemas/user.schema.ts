@@ -18,8 +18,17 @@ export type UserDocument = User & Document;
   },
 })
 export class User {
+
+  @Prop({ required: true })
+  name: string;
+
+  @Prop ({ required: true , unique: true })
+  phone: number; 
+
+
   @Prop({ required: true, unique: true })
   email: string;
+  
 
   @Prop({ type: String, required: true, select: false })
   password: string;
