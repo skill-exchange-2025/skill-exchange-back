@@ -20,10 +20,10 @@ POST http://localhost:5000/auth/register
 Content-Type: application/json
 
 {
-  "email": "jiii@gmail.com",
+  "email": "aymenghazouani@gmail.com",
   "password": "Password123",
   "phone": "12345678",
-  "name": "Jihed",
+  "name": "ssss",
   "roles": ["user"],
   "skills": [
     {
@@ -61,13 +61,13 @@ Content-Type: application/json
 
 ###
 GET http://localhost:5000/api/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2IzOTRmZWMxY2M1NWQ5NGQ0YThlNjUiLCJlbWFpbCI6ImppaWlAZ21haWwuY29tIiwiaWF0IjoxNzM5ODIzODMwLCJleHAiOjE3Mzk4MjQ3MzB9.PkWwES9JNSdI0kcQfVD9YvGytzGj-8nMmaDwg6dZO98
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2IzOTRmZWMxY2M1NWQ5NGQ0YThlNjUiLCJlbWFpbCI6ImppaWlAZ21haWwuY29tIiwiaWF0IjoxNzM5ODg2MTM5LCJleHAiOjE3Mzk4ODcwMzl9._axljpffyp_1rmY-mwtm9C2OokSm26aYE6x40SXbUwI
 
 
 
 ### Create Profile
 POST http://localhost:5000/api/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2IzOTRmZWMxY2M1NWQ5NGQ0YThlNjUiLCJlbWFpbCI6ImppaWlAZ21haWwuY29tIiwiaWF0IjoxNzM5ODIyNDE1LCJleHAiOjE3Mzk4MjMzMTV9.1JG-wKRrpHDG19diRV1-JegmfCo2wNeoJc26tcRQzj8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2IzOTRmZWMxY2M1NWQ5NGQ0YThlNjUiLCJlbWFpbCI6ImppaWlAZ21haWwuY29tIiwiaWF0IjoxNzM5ODkwMzk4LCJleHAiOjE3Mzk4OTEyOTh9.MC-GnsKV0mCh4vehAhsaW-66bKr-DLMmMt29WkRkgWg
 Content-Type: application/json
 
 {
@@ -105,6 +105,10 @@ Content-Type: application/json
   ]
 }
 
+### Delete Profile
+DELETE http://localhost:5000/api/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2IzOTRmZWMxY2M1NWQ5NGQ0YThlNjUiLCJlbWFpbCI6ImppaWlAZ21haWwuY29tIiwiaWF0IjoxNzM5ODkwMzk4LCJleHAiOjE3Mzk4OTEyOTh9.MC-GnsKV0mCh4vehAhsaW-66bKr-DLMmMt29WkRkgWg
+Content-Type: application/json
 
 ### Upload Profile Avatar
 POST http://localhost:5000/api/profile/avatar

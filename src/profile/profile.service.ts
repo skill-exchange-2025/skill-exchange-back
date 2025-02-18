@@ -29,7 +29,9 @@ export class ProfileService {
     });
     return await profile.save();
   }
-
+  async deleteByUserId(userId: number): Promise<void> {
+    await this.profileModel.deleteOne({ userId });
+  }
   async findByUserId(userId: string): Promise<any> {
     try {
       const [profile, user] = await Promise.all([
