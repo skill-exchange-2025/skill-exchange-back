@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Profile, ProfileDocument } from './schemas/profile.schema';
@@ -34,14 +38,13 @@ export class ProfileService {
     try {
       const [profile, user] = await Promise.all([
         this.profileModel.findOne({ userId }).exec(),
-        this.usersService.findById(userId)
+        this.usersService.findById(userId),
       ]);
 
       if (!profile || !user) {
         throw new NotFoundException('Profile or User not found');
       }
 
-      // Combine profile and user data
       return {
         ...profile.toJSON(),
         user: {
@@ -60,10 +63,7 @@ export class ProfileService {
     }
   }
 
-  async update(
-    userId: string,
-    updateData: UpdateProfileDto
-  ): Promise<any> {
+  async update(userId: string, updateData: UpdateProfileDto): Promise<any> {
     try {
       const { userUpdate, profileUpdate } = this.separateUpdateData(updateData);
 
@@ -73,7 +73,7 @@ export class ProfileService {
           .exec(),
         Object.keys(userUpdate).length > 0
           ? this.usersService.update(userId, userUpdate)
-          : this.usersService.findById(userId)
+          : this.usersService.findById(userId),
       ]);
 
       if (!updatedProfile) {
@@ -87,8 +87,8 @@ export class ProfileService {
           email: updatedUser.email,
           phone: updatedUser.phone,
           skills: updatedUser.skills || [],
-          desiredSkills: updatedUser.desiredSkills || []
-        }
+          desiredSkills: updatedUser.desiredSkills || [],
+        },
       };
     } catch (error) {
       if (error instanceof NotFoundException) {
@@ -135,18 +135,12 @@ export class ProfileService {
       'birthDate'
     ];
 
-    const userFields = [
-      'name',
-      'email',
-      'phone',
-      'skills',
-      'desiredSkills'
-    ];
+    const userFields = ['name', 'email', 'phone', 'skills', 'desiredSkills'];
 
     const profileUpdate = {};
     const userUpdate = {};
 
-    Object.keys(updateData).forEach(key => {
+    Object.keys(updateData).forEach((key) => {
       if (profileFields.includes(key)) {
         profileUpdate[key] = updateData[key];
       } else if (userFields.includes(key)) {

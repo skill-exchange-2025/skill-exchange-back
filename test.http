@@ -3,11 +3,11 @@ GET https://examples.http-client.intellij.net/get
     ?generated-in=WebStorm
 
 ###
-POST http://localhost:5000/auth/register
+POST http://localhost:5000/api/auth/register
 Content-Type: application/json
 
 {
-  "email": "jihed@gmail.com",
+  "email": "jied@gmail.com",
   "phone": "12345678",
   "name": "Jihed",
   "password": "jihed123",
@@ -16,11 +16,11 @@ Content-Type: application/json
 
 ###
 ### Register a new user with skills
-POST http://localhost:5000/auth/register
+POST http://localhost:5000/api/auth/register
 Content-Type: application/json
 
 {
-  "email": "jiii@gmail.com",
+  "email": "teast@gmail.com",
   "password": "Password123",
   "phone": "12345678",
   "name": "Jihed",
@@ -58,16 +58,14 @@ Content-Type: application/json
 }
 
 
-
 ###
 GET http://localhost:5000/api/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2IzOTRmZWMxY2M1NWQ5NGQ0YThlNjUiLCJlbWFpbCI6ImppaWlAZ21haWwuY29tIiwiaWF0IjoxNzM5ODIzODMwLCJleHAiOjE3Mzk4MjQ3MzB9.PkWwES9JNSdI0kcQfVD9YvGytzGj-8nMmaDwg6dZO98
-
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2IzOTRmZWMxY2M1NWQ5NGQ0YThlNjUiLCJlbWFpbCI6ImppaWlAZ21haWwuY29tIiwiaWF0IjoxNzM5ODk3NjU4LCJleHAiOjE3Mzk4OTg1NTh9.V6RIEKj-HRJbxvfFwOl7aXB82vmfF64alE3TeqzxrAQ
 
 
 ### Create Profile
 POST http://localhost:5000/api/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2IzOTRmZWMxY2M1NWQ5NGQ0YThlNjUiLCJlbWFpbCI6ImppaWlAZ21haWwuY29tIiwiaWF0IjoxNzM5ODIyNDE1LCJleHAiOjE3Mzk4MjMzMTV9.1JG-wKRrpHDG19diRV1-JegmfCo2wNeoJc26tcRQzj8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2IzOTRmZWMxY2M1NWQ5NGQ0YThlNjUiLCJlbWFpbCI6ImppaWlAZ21haWwuY29tIiwiaWF0IjoxNzM5ODk3NTEyLCJleHAiOjE3Mzk4OTg0MTJ9.J6urQ7bKuMYvzpmC_RlafqJwm5BnH_GSXEnLSNkXh8A
 Content-Type: application/json
 
 {
