@@ -34,11 +34,13 @@ export class ProfileService {
     return await profile.save();
   }
 
+  // profile.service.ts
   async findByUserId(userId: string): Promise<any> {
     try {
-      const [profile, user] = await Promise.all([
+      const [profile, user, completionStatus] = await Promise.all([
         this.profileModel.findOne({ userId }).exec(),
         this.usersService.findById(userId),
+        this.calculateProfileCompletion(userId),
       ]);
 
       if (!profile || !user) {
@@ -54,6 +56,7 @@ export class ProfileService {
           skills: user.skills || [],
           desiredSkills: user.desiredSkills || []
         },
+        completionStatus
       };
     } catch (error) {
       if (error instanceof NotFoundException) {
@@ -67,13 +70,14 @@ export class ProfileService {
     try {
       const { userUpdate, profileUpdate } = this.separateUpdateData(updateData);
 
-      const [updatedProfile, updatedUser] = await Promise.all([
+      const [updatedProfile, updatedUser, completionStatus] = await Promise.all([
         this.profileModel
           .findOneAndUpdate({ userId }, profileUpdate, { new: true })
           .exec(),
         Object.keys(userUpdate).length > 0
           ? this.usersService.update(userId, userUpdate)
           : this.usersService.findById(userId),
+        this.calculateProfileCompletion(userId),
       ]);
 
       if (!updatedProfile) {
@@ -89,6 +93,7 @@ export class ProfileService {
           skills: updatedUser.skills || [],
           desiredSkills: updatedUser.desiredSkills || [],
         },
+        completionStatus
       };
     } catch (error) {
       if (error instanceof NotFoundException) {
@@ -97,7 +102,6 @@ export class ProfileService {
       throw new BadRequestException('Error updating profile');
     }
   }
-
   async uploadAvatar(
     userId: string,
     avatarUrl: string
@@ -149,5 +153,50 @@ export class ProfileService {
     });
 
     return { profileUpdate, userUpdate };
+  }
+
+  async calculateProfileCompletion(userId: string): Promise<{
+    percentage: number;
+    missingFields: string[];
+  }> {
+    try {
+      const [profile, user] = await Promise.all([
+        this.profileModel.findOne({ userId }).exec(),
+        this.usersService.findById(userId),
+      ]);
+
+      const requiredFields = {
+        // User fields
+        name: user?.name,
+        email: user?.email,
+        phone: user?.phone,
+        skills: user?.skills?.length > 0,
+
+        // Profile fields
+        bio: profile?.bio,
+        location: profile?.location,
+        profession: profile?.profession,
+        avatarUrl: profile?.avatarUrl,
+        birthDate: profile?.birthDate,
+      };
+
+      const totalFields = Object.keys(requiredFields).length;
+      const completedFields = Object.values(requiredFields).filter(
+        (value) => value
+      ).length;
+
+      const missingFields = Object.entries(requiredFields)
+        .filter(([_, value]) => !value)
+        .map(([key]) => key);
+
+      const percentage = Math.round((completedFields / totalFields) * 100);
+
+      return {
+        percentage,
+        missingFields,
+      };
+    } catch (error) {
+      throw new BadRequestException('Error calculating profile completion');
+    }
   }
 }

@@ -42,7 +42,10 @@ export class ProfileController {
   ) {
     return await this.profileService.update(user.id, updateProfileDto);
   }
-
+  @Get('completion-status')
+  async getCompletionStatus(@CurrentUser() user: any) {
+    return await this.profileService.calculateProfileCompletion(user.id);
+  }
   @Post('avatar')
   @UseInterceptors(FileInterceptor('avatar'))
   async uploadAvatar(@CurrentUser() user: any) {

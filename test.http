@@ -19,7 +19,7 @@ POST http://localhost:5000/auth/login
 Content-Type: application/json
 
 {
-  "email": "test123456@gmail.com",
+  "email": "xxxxxx@gmail.com",
     "password": "Password123"
 }
 
@@ -28,9 +28,9 @@ POST http://localhost:5000/auth/register
 Content-Type: application/json
 
 {
-  "email": "test123456@gmail.com",
+  "email": "xxxxxx@gmail.com",
   "password": "Password123",
-  "phone": "123455678",
+  "phone": "1252678",
   "name": "Jihed",
   "roles": ["user"],
   "skills": [
@@ -53,17 +53,17 @@ Content-Type: application/json
     }
   ]
 }
-
-
+### Get Profile Completion Status
+GET http://localhost:5000/profile/completion
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2I3NjY1MTY4Mzk0ZTEzNjc1ZjgxNjMiLCJlbWFpbCI6Inh4eHh4eEBnbWFpbC5jb20iLCJpYXQiOjE3NDAwNzM1OTgsImV4cCI6MTc0MDA3NDQ5OH0.6IN70PzU5ekQlyzSnodAs5kgpVN_GtlWfu9lzKXKTes
 ###
 GET http://localhost:5000/profile
-Authorization: Bearer  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2I3Mzc4MjE5YmVhZDJjNTZjYTA5ZDgiLCJlbWFpbCI6InRlc3QxMjM0NTZAZ21haWwuY29tIiwiaWF0IjoxNzQwMDYwNzExLCJleHAiOjE3NDAwNjE2MTF9.NpOO7tt7Hak5cNYHEbVL3xqZ5vDW3X5R9WuD3wVYQvs
-
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2I3NjY1MTY4Mzk0ZTEzNjc1ZjgxNjMiLCJlbWFpbCI6Inh4eHh4eEBnbWFpbC5jb20iLCJpYXQiOjE3NDAwNzM1OTgsImV4cCI6MTc0MDA3NDQ5OH0.6IN70PzU5ekQlyzSnodAs5kgpVN_GtlWfu9lzKXKTes
 
 
 ### Create Profile
 POST http://localhost:5000/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2IzOTRmZWMxY2M1NWQ5NGQ0YThlNjUiLCJlbWFpbCI6ImppaWlAZ21haWwuY29tIiwiaWF0IjoxNzM5ODk3NTEyLCJleHAiOjE3Mzk4OTg0MTJ9.J6urQ7bKuMYvzpmC_RlafqJwm5BnH_GSXEnLSNkXh8A
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2I3NjY1MTY4Mzk0ZTEzNjc1ZjgxNjMiLCJlbWFpbCI6Inh4eHh4eEBnbWFpbC5jb20iLCJpYXQiOjE3NDAwNzM1OTgsImV4cCI6MTc0MDA3NDQ5OH0.6IN70PzU5ekQlyzSnodAs5kgpVN_GtlWfu9lzKXKTes
 Content-Type: application/json
 
 {
@@ -104,9 +104,7 @@ Content-Type: application/json
 
 ### Upload Profile Avatar
 POST http://localhost:5000/profile/avatar
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2IzOTRmZWMxY2M1NWQ5NGQ0YThlNjUiLCJlbWFpbCI6ImppaWlAZ21haWwuY29tIiwiaWF0IjoxNzM5ODI2ODczLCJleHAiOjE3Mzk4Mjc3NzN9.I-d0paPU8PIEkEvcmzHYcdMsCgo45q4OEh2JdXVUHl8
-Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
-
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2I3NjY1MTY4Mzk0ZTEzNjc1ZjgxNjMiLCJlbWFpbCI6Inh4eHh4eEBnbWFpbC5jb20iLCJpYXQiOjE3NDAwNzM1OTgsImV4cCI6MTc0MDA3NDQ5OH0.6IN70PzU5ekQlyzSnodAs5kgpVN_GtlWfu9lzKXKTes
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
 Content-Disposition: form-data; name="avatar"; filename="profile-picture.jpg"
 Content-Type: image/jpeg
