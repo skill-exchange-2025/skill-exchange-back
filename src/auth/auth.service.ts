@@ -54,16 +54,35 @@ export class AuthService {
       });
 
       // Send email with OTP
-      await this.mailerService.sendMail({
+    await this.mailerService.sendMail({
         to: email,
         subject: 'Password Reset OTP',
         html: `
-          <h1>Password Reset Request</h1>
-          <p>Your OTP for password reset is: 
-          
-          <strong>${otp}</strong></p>
-          <p>This OTP will expire in 10 minutes.</p>
-          <p>If you didn't request this, please ignore this email.</p>
+          <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+            <h1 style="text-align: center; color: #4CAF50;">Password Reset Request</h1>
+            <p style="text-align: center; font-size: 16px;">
+              You have requested to reset your password. Please use the OTP below to proceed.
+            </p>
+            <div style="text-align: center; margin: 20px 0;">
+              <span style="
+                display: inline-block;
+                padding: 10px 20px;
+                font-size: 24px;
+                font-weight: bold;
+                color: #ffffff;
+                background-color: #4CAF50;
+                border-radius: 8px;
+              ">
+                ${otp}
+              </span>
+            </div>
+            <p style="text-align: center; font-size: 16px;">
+              This OTP will expire in <strong>10 minutes</strong>.
+            </p>
+            <p style="text-align: center; font-size: 16px;">
+              If you did not request this password reset, please ignore this email.
+            </p>
+          </div>
         `,
       });
 
