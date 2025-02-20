@@ -29,9 +29,12 @@ import {
 export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
-    @InjectModel(PermissionGroup.name) private permissionGroupModel: Model<PermissionGroupDocument>,
-    @InjectModel(UserSkill.name) private userSkillModel: Model<UserSkillDocument>,
-    @InjectModel(UserDesiredSkill.name) private userDesiredSkillModel: Model<UserDesiredSkillDocument>
+    @InjectModel(PermissionGroup.name)
+    private permissionGroupModel: Model<PermissionGroupDocument>,
+    @InjectModel(UserSkill.name)
+    private userSkillModel: Model<UserSkillDocument>,
+    @InjectModel(UserDesiredSkill.name)
+    private userDesiredSkillModel: Model<UserDesiredSkillDocument>
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<UserDocument> {
@@ -101,7 +104,6 @@ export class UsersService {
       .select('+password')
       .exec();
   }
-
 
   async update(
     id: string,
@@ -294,5 +296,24 @@ export class UsersService {
       skills: user.skills || [],
       desiredSkills: user.desiredSkills || [],
     };
+  }
+
+  async findOne(email: string): Promise<UserDocument | null> {
+    return this.userModel.findOne({ email }).exec();
+  }
+
+  async updatePassword(
+    userId: string,
+    hashedPassword: string
+  ): Promise<UserDocument> {
+    const user = await this.userModel
+      .findByIdAndUpdate(userId, { password: hashedPassword }, { new: true })
+      .exec();
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return user;
   }
 }

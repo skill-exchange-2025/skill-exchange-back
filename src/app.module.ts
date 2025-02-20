@@ -5,8 +5,9 @@ import { AuthController } from './auth/auth.controller';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
   imports: [
@@ -14,6 +15,24 @@ import { JwtModule } from '@nestjs/jwt';
     UsersModule,
     ConfigModule.forRoot({ isGlobal: true }), // Load environment variables globally
     MongooseModule.forRoot(process.env.MONGO_URI || 'mongodb://localhost/nest'),
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        transport: {
+          host: configService.get('MAIL_HOST') || 'smtp.gmail.com',
+          port: configService.get('MAIL_PORT') || 587,
+          secure: false,
+          auth: {
+            user: configService.get('MAIL_USER'),
+            pass: configService.get('MAIL_PASSWORD'),
+          },
+        },
+        defaults: {
+          from: `"${configService.get('APP_NAME', 'SKILLY')}" <${configService.get('MAIL_USER')}>`,
+        },
+      }),
+    }),
   ],
   controllers: [AppController, AuthController],
   providers: [AppService, JwtModule],
