@@ -133,6 +133,8 @@ export class AuthService {
         email: user.email,
         roles: user.roles || [],
         permissions: user.permissions || [],
+        skills: user.skills,
+        desiredSkills: user.desiredSkills,
       },
     };
   }

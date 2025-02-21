@@ -36,20 +36,54 @@ export class UsersService {
     @InjectModel(UserDesiredSkill.name)
     private userDesiredSkillModel: Model<UserDesiredSkillDocument>
   ) {}
-
   async create(createUserDto: CreateUserDto): Promise<UserDocument> {
     try {
-      // Password should be pre-hashed by AuthService - remove local hashing
       const roles = createUserDto.roles || [Role.USER];
       const permissions = await this.calculateUserPermissions(roles, []);
 
-      const user = new this.userModel({
-        ...createUserDto,
+      // Create a properly typed user data object
+      const userData: Partial<User> = {
+        email: createUserDto.email,
+        password: createUserDto.password,
+        name: createUserDto.name,
+        phone: Number(createUserDto.phone),
         roles,
         permissions,
-      });
+        skills: [] as UserSkill[],
+        desiredSkills: [] as UserDesiredSkill[]
+      };
 
-      return await user.save();
+      // Add skills if they exist
+      if (Array.isArray(createUserDto.skills)) {
+        userData.skills = createUserDto.skills.map(skill => ({
+          name: skill.name,
+          description: skill.description || '',
+          proficiencyLevel: skill.proficiencyLevel
+        } as UserSkill));
+      }
+
+      // Add desired skills if they exist
+      if (Array.isArray(createUserDto.desiredSkills)) {
+        userData.desiredSkills = createUserDto.desiredSkills.map(skill => ({
+              name: skill.name,
+              description: skill.description || '',
+              desiredProficiencyLevel: skill.desiredProficiencyLevel,
+        } as UserDesiredSkill));
+      }
+
+      // Create the user document
+      const userDoc = await this.userModel.create(userData);
+
+      // Find and return the created user with populated fields
+      const createdUser = await this.userModel.findById(userDoc._id)
+        .select('+skills +desiredSkills')
+        .exec();
+
+      if (!createdUser) {
+        throw new NotFoundException('User not found after creation');
+      }
+
+      return createdUser;
     } catch (error) {
       if (error.code === 11000) {
         throw new ConflictException('Email already exists');
@@ -57,7 +91,6 @@ export class UsersService {
       throw error;
     }
   }
-
   async findAll(
     page: number = 1,
     limit: number = 10,
@@ -281,6 +314,25 @@ export class UsersService {
       default:
         return [];
     }
+  }
+
+  async findById(id: string): Promise<UserDocument> {
+    if (!Types.ObjectId.isValid(id)) {
+      throw new BadRequestException('Invalid user ID');
+    }
+
+    const user = await this.userModel
+      .findById(id)
+      .select('+password') // Include password field if needed
+      .populate('skills')
+      .populate('desiredSkills')
+      .exec();
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    return user;
   }
 
   // src/users/users.service.ts

@@ -15,4 +15,5 @@ export class UserDesiredSkill {
   desiredProficiencyLevel: string;
 }
 
-export const UserDesiredSkillSchema = SchemaFactory.createForClass(UserDesiredSkill);
+export const UserDesiredSkillSchema =
+  SchemaFactory.createForClass(UserDesiredSkill);

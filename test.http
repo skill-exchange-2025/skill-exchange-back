@@ -3,23 +3,27 @@ GET https://examples.http-client.intellij.net/get
     ?generated-in=WebStorm
 
 ###
-POST http://localhost:5000/auth/register
+POST http://localhost:5000/api/auth/register
 Content-Type: application/json
 
 {
-  "email": "jihsed1@gmail.com",
+  "email": "jied@gmail.com",
+  "phone": "12345678",
+  "name": "Jihed",
   "password": "jihed123",
   "roles": ["admin"]
 }
 
 ###
 ### Register a new user with skills
-POST http://localhost:5000/auth/register
+POST http://localhost:5000/api/auth/register
 Content-Type: application/json
 
 {
-  "email": "faroukk@gmail.com",
+  "email": "teast@gmail.com",
   "password": "Password123",
+  "phone": "12345678",
+  "name": "Jihed",
   "roles": ["user"],
   "skills": [
     {
@@ -42,15 +46,71 @@ Content-Type: application/json
   ]
 }
 
+
+
 ###
-POST http://localhost:5000/auth/login
+POST http://localhost:5000/api/auth/login
 Content-Type: application/json
 
 {
-  "email": "jihed1@gmail.com",
-  "password": "jihed123"
+  "email": "jiii@gmail.com",
+  "password": "Password123"
 }
 
+
 ###
-GET http://localhost:5000/auth/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2FhNjYxODU4MDE4NjFiNWM1MjA3NDciLCJlbWFpbCI6ImppaGVkMUBnbWFpbC5jb20iLCJpYXQiOjE3MzkyNzE5ODIsImV4cCI6MTczOTI3Mjg4Mn0.yHW5k1yOk9a4EO6sOVM8hDpuR89Ckq63DuFN7lEp4TI
+GET http://localhost:5000/api/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2IzOTRmZWMxY2M1NWQ5NGQ0YThlNjUiLCJlbWFpbCI6ImppaWlAZ21haWwuY29tIiwiaWF0IjoxNzM5ODk3NjU4LCJleHAiOjE3Mzk4OTg1NTh9.V6RIEKj-HRJbxvfFwOl7aXB82vmfF64alE3TeqzxrAQ
+
+
+### Create Profile
+POST http://localhost:5000/api/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2IzOTRmZWMxY2M1NWQ5NGQ0YThlNjUiLCJlbWFpbCI6ImppaWlAZ21haWwuY29tIiwiaWF0IjoxNzM5ODk3NTEyLCJleHAiOjE3Mzk4OTg0MTJ9.J6urQ7bKuMYvzpmC_RlafqJwm5BnH_GSXEnLSNkXh8A
+Content-Type: application/json
+
+{
+  "bio": "Software Developer with 5 years of experience",
+  "description": "Passionate about web development and new technologies",
+  "location": "New York, USA",
+  "socialLinks": [
+    "https://linkedin.com/in/username",
+    "https://github.com/username"
+  ],
+  "profession": "Full Stack Developer",
+  "interests": [
+    "Web Development",
+    "Machine Learning",
+    "Cloud Computing"
+  ],
+  "birthDate": "1990-01-01"
+}
+
+
+### Update Profile
+PUT http://localhost:5000/api/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2IzOTRmZWMxY2M1NWQ5NGQ0YThlNjUiLCJlbWFpbCI6ImppaWlAZ21haWwuY29tIiwiaWF0IjoxNzM5ODI2ODczLCJleHAiOjE3Mzk4Mjc3NzN9.I-d0paPU8PIEkEvcmzHYcdMsCgo45q4OEh2JdXVUHl8
+Content-Type: application/json
+
+{
+  "bio": "Updated bio - Senior Software Developer",
+  "description": "Updated description - Specialized in Node.js and React",
+  "location": "San Francisco, USA",
+  "profession": "Senior Full Stack Developer",
+  "interests": ["Programming", "AI", "Blockchain"],
+  "socialLinks": [
+    "https://linkedin.com/in/updated-username",
+    "https://github.com/updated-username"
+  ]
+}
+
+
+### Upload Profile Avatar
+POST http://localhost:5000/api/profile/avatar
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2IzOTRmZWMxY2M1NWQ5NGQ0YThlNjUiLCJlbWFpbCI6ImppaWlAZ21haWwuY29tIiwiaWF0IjoxNzM5ODI2ODczLCJleHAiOjE3Mzk4Mjc3NzN9.I-d0paPU8PIEkEvcmzHYcdMsCgo45q4OEh2JdXVUHl8
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="avatar"; filename="profile-picture.jpg"
+Content-Type: image/jpeg
+
+</ Users/jihed/Downloads/473021116_1124461089188286_3074189769567510121_n (2).jpg

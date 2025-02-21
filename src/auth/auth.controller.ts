@@ -25,7 +25,6 @@ import { CurrentUser } from './decorators/user.decorator';
 import { User } from '../users/schemas/user.schema';
 import { Roles } from './decorators/roles.decorator';
 import { Role } from './enums/role.enum';
-import { Permission } from './enums/permission.enum';
 import { RolesGuard } from './guards/roles.guard';
 import { PermissionsGuard } from './guards/permissions.guard';
 import { ResetPasswordDto } from './dto/reset-password.dto';
