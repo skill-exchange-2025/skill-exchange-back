@@ -40,15 +40,30 @@ export class UsersController {
   @Get()
   @Roles(Role.ADMIN, Role.MODERATOR)
   @Permissions(Permission.READ_USER)
-  @ApiQuery({ name: 'page', required: false, type: Number })
-  @ApiQuery({ name: 'limit', required: false, type: Number })
-  @ApiQuery({ name: 'search', required: false, type: String })
+  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Items per page' })
+  @ApiQuery({ name: 'search', required: false, type: String, description: 'Search in email and name' })
+  @ApiQuery({ name: 'role', required: false, type: String, description: 'Filter by role' })
+  @ApiQuery({ name: 'sortBy', required: false, type: String, description: 'Field to sort by' })
+  @ApiQuery({ name: 'sortOrder', required: false, enum: ['asc', 'desc'], description: 'Sort order' })
   async findAll(
       @Query('page') page?: number,
       @Query('limit') limit?: number,
-      @Query('search') search?: string
+      @Query('search') search?: string,
+      @Query('role') role?: string,
+      @Query('sortBy') sortBy?: string,
+      @Query('sortOrder') sortOrder?: 'asc' | 'desc'
   ) {
-    return await this.usersService.findAll(page, limit, search);
+    const options = {
+      page,
+      limit,
+      search,
+      role,
+      sortBy,
+      sortOrder
+    };
+
+    return await this.usersService.findAll(options);
   }
 
   @Get(':id')
