@@ -49,13 +49,7 @@ export class ProfileController {
   @Post('avatar')
   @UseInterceptors(FileInterceptor('avatar'))
   async uploadAvatar(@CurrentUser() user: any) {
-    // Here you would typically upload the file to a cloud storage service
-    // and get back the URL
     const avatarUrl = 'temporary-url'; // Replace with actual upload logic
     return await this.profileService.uploadAvatar(user.id, avatarUrl);
-  }
-  @Delete()
-  async deleteProfile(@CurrentUser() user: any) {
-    await this.profileService.deleteByUserId(user.id);
   }
 }
