@@ -34,7 +34,6 @@ export class ProfileService {
     return await profile.save();
   }
 
-  // profile.service.ts
   async findByUserId(userId: string): Promise<any> {
     try {
       const [profile, user, completionStatus] = await Promise.all([
@@ -43,12 +42,26 @@ export class ProfileService {
         this.calculateProfileCompletion(userId),
       ]);
 
-      if (!profile || !user) {
-        throw new NotFoundException('Profile or User not found');
+      if (!profile && user) {
+        return {
+          user: {
+            name: user.name,
+            email: user.email,
+            phone: user.phone,
+            skills: user.skills || [],
+            desiredSkills: user.desiredSkills || []
+          },
+          completionStatus,
+          profileExists: false
+        };
+      }
+
+      if (!user) {
+        throw new NotFoundException('User not found');
       }
 
       return {
-        ...profile.toJSON(),
+        ...profile?.toJSON(),
         user: {
           name: user.name,
           email: user.email,
@@ -56,7 +69,8 @@ export class ProfileService {
           skills: user.skills || [],
           desiredSkills: user.desiredSkills || []
         },
-        completionStatus
+        completionStatus,
+        profileExists: true
       };
     } catch (error) {
       if (error instanceof NotFoundException) {
