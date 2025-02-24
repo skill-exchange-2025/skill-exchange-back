@@ -20,10 +20,10 @@ POST http://localhost:5000/api/auth/register
 Content-Type: application/json
 
 {
-  "email": "aymenghazouani@gmail.com",
-  "password": "Password123",
-  "phone": "12345678",
-  "name": "ssss",
+  "email": "abcd@g.com",
+  "password": "Password1234",
+  "phone": "12345679",
+  "name": "aaaaaa",
   "roles": ["user"],
   "skills": [
     {

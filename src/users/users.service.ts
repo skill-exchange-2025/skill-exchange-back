@@ -50,7 +50,7 @@ export class UsersService {
         throw new ConflictException('Email already exists');
       }
 
-      const roles = createUserDto.roles || [Role.USER];
+      const roles = Array.isArray(createUserDto.roles) ? createUserDto.roles : [Role.USER];
       const permissions = await this.calculateUserPermissions(roles, []);
 
       const userData: Partial<User> = {
