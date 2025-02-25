@@ -1,0 +1,71 @@
+### Variables
+@baseUrl = http://localhost:5000/api
+@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2I3Yjk0MjQwNDQ2ZTY5OTBjZjZmOWEiLCJlbWFpbCI6ImppaGVkMDAwMEBnbWFpbC5jb20iLCJpYXQiOjE3NDAzMjQ3MTEsImV4cCI6MTc0MDMyNTYxMX0.wyP7FjvqlvzpOvqKdf1e0E_wOjIgtdEFPTJQo-2ecTU
+
+### Create new user
+POST {{baseUrl}}/users
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "Test123!",
+  "name": "Test User",
+  "phone": "1234567890",
+  "roles": ["USER"]
+}
+
+### Get all users with pagination and search
+GET {{baseUrl}}/users?page=1&limit=10
+Authorization: Bearer {{authToken}}
+
+### Get all users
+GET {{baseUrl}}/users?page=1&limit=10&search=test
+Authorization: Bearer {{authToken}}
+
+### Get user by ID
+GET {{baseUrl}}/users/user_id_here
+Authorization: Bearer {{authToken}}
+
+### Update user
+PUT {{baseUrl}}/users/user_id_here
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "name": "Updated Name",
+  "phone": "9876543210",
+  "roles": ["USER", "MODERATOR"]
+}
+
+### Delete user
+DELETE {{baseUrl}}/users/user_id_here
+Authorization: Bearer {{authToken}}
+
+### Change user password
+POST {{baseUrl}}/users/user_id_here/change-password
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "currentPassword": "OldPassword123!",
+  "newPassword": "NewPassword123!"
+}
+
+### Get user metrics
+GET {{baseUrl}}/users/metrics
+Authorization: Bearer {{authToken}}
+
+### Change user role
+POST {{baseUrl}}/users/change-role
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "userId": "user_id_here",
+  "roles": ["ADMIN"]
+}
+
+### Verify user
+POST {{baseUrl}}/users/user_id_here/verify
+Authorization: Bearer {{authToken}}

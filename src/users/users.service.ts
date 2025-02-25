@@ -38,12 +38,23 @@ export class UsersService {
   ) {}
   async create(createUserDto: CreateUserDto): Promise<UserDocument> {
     try {
-      const roles = createUserDto.roles || [Role.USER];
+      console.log('Creating user with email:', createUserDto.email);
+
+      // First check if user exists
+      const existingUser = await this.userModel.findOne({
+        email: createUserDto.email.toLowerCase().trim()
+      });
+
+      if (existingUser) {
+        console.log('Found existing user:', existingUser);
+        throw new ConflictException('Email already exists');
+      }
+
+      const roles = Array.isArray(createUserDto.roles) ? createUserDto.roles : [Role.USER];
       const permissions = await this.calculateUserPermissions(roles, []);
 
-      // Create a properly typed user data object
       const userData: Partial<User> = {
-        email: createUserDto.email,
+        email: createUserDto.email.toLowerCase().trim(),
         password: createUserDto.password,
         name: createUserDto.name,
         phone: Number(createUserDto.phone),
@@ -56,42 +67,30 @@ export class UsersService {
       // Add skills if they exist
       if (Array.isArray(createUserDto.skills)) {
         userData.skills = createUserDto.skills.map(
-          (skill) =>
-            ({
-              name: skill.name,
-              description: skill.description || '',
-              proficiencyLevel: skill.proficiencyLevel,
-            }) as UserSkill
+          (skill) => ({
+            name: skill.name,
+            description: skill.description || '',
+            proficiencyLevel: skill.proficiencyLevel,
+          }) as UserSkill
         );
       }
 
       // Add desired skills if they exist
       if (Array.isArray(createUserDto.desiredSkills)) {
         userData.desiredSkills = createUserDto.desiredSkills.map(
-          (skill) =>
-            ({
-              name: skill.name,
-              description: skill.description || '',
-              desiredProficiencyLevel: skill.desiredProficiencyLevel,
-            }) as UserDesiredSkill
+          (skill) => ({
+            name: skill.name,
+            description: skill.description || '',
+            desiredProficiencyLevel: skill.desiredProficiencyLevel,
+          }) as UserDesiredSkill
         );
       }
 
-      // Create the user document
       const userDoc = await this.userModel.create(userData);
+      return userDoc;
 
-      // Find and return the created user with populated fields
-      const createdUser = await this.userModel
-        .findById(userDoc._id)
-        .select('+skills +desiredSkills')
-        .exec();
-
-      if (!createdUser) {
-        throw new NotFoundException('User not found after creation');
-      }
-
-      return createdUser;
     } catch (error) {
+      console.log('Error creating user:', error);
       if (error.code === 11000) {
         throw new ConflictException('Email already exist');
       }
@@ -101,31 +100,64 @@ export class UsersService {
       throw error;
     }
   }
-  async findAll(
-    page: number = 1,
-    limit: number = 10,
-    search?: string
-  ): Promise<{ users: UserWithPermissions[]; total: number }> {
-    const query: Record<string, unknown> = {};
 
-    if (search) {
-      query.email = new RegExp(search, 'i');
+  async findAll(
+      pageOrOptions: number | { page?: number; limit?: number; search?: string; role?: string; sortBy?: string; sortOrder?: 'asc' | 'desc' },
+      limitParam?: number,
+      searchParam?: string
+  ) {
+    let page: number, limit: number, search: string, role: string | undefined, sortBy: string, sortOrder: 'asc' | 'desc';
+
+    // Handle both parameter styles
+    if (typeof pageOrOptions === 'object') {
+      ({
+        page = 1,
+        limit = 10,
+        search = '',
+        role,
+        sortBy = 'createdAt',
+        sortOrder = 'desc'
+      } = pageOrOptions);
+    } else {
+      page = pageOrOptions || 1;
+      limit = limitParam || 10;
+      search = searchParam || '';
+      sortBy = 'createdAt';
+      sortOrder = 'desc';
     }
 
-    const [users, total]: [UserDocument[], number] = await Promise.all([
+    const query: any = {};
+
+    if (search) {
+      query.$or = [
+        { email: new RegExp(search, 'i') },
+        { name: new RegExp(search, 'i') }
+      ];
+    }
+
+    if (role) {
+      query.roles = role;
+    }
+
+    const sort: any = {};
+    sort[sortBy] = sortOrder === 'asc' ? 1 : -1;
+
+    const [users, total] = await Promise.all([
       this.userModel
-        .find(query)
-        .skip((page - 1) * limit)
-        .limit(limit)
-        .populate('permissionGroups')
-        .sort({ createdAt: -1 })
-        .exec(),
-      this.userModel.countDocuments(query),
+          .find(query)
+          .sort(sort)
+          .skip((page - 1) * limit)
+          .limit(limit)
+          .select('-password')
+          .exec(),
+      this.userModel.countDocuments(query)
     ]);
 
     return {
-      users: users.map((user) => this.mapUserToDto(user)),
+      data: users,
       total,
+      page: Number(page),
+      limit: Number(limit)
     };
   }
 

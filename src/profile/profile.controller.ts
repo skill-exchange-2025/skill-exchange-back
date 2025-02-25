@@ -5,7 +5,7 @@ import {
   Put,
   Body,
   UseGuards,
-  UseInterceptors,
+  UseInterceptors, Delete,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -42,12 +42,13 @@ export class ProfileController {
   ) {
     return await this.profileService.update(user.id, updateProfileDto);
   }
-
+  @Get('completion-status')
+  async getCompletionStatus(@CurrentUser() user: any) {
+    return await this.profileService.calculateProfileCompletion(user.id);
+  }
   @Post('avatar')
   @UseInterceptors(FileInterceptor('avatar'))
   async uploadAvatar(@CurrentUser() user: any) {
-    // Here you would typically upload the file to a cloud storage service
-    // and get back the URL
     const avatarUrl = 'temporary-url'; // Replace with actual upload logic
     return await this.profileService.uploadAvatar(user.id, avatarUrl);
   }
