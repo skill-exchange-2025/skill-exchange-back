@@ -50,32 +50,39 @@ export class UsersService {
         roles,
         permissions,
         skills: [] as UserSkill[],
-        desiredSkills: [] as UserDesiredSkill[]
+        desiredSkills: [] as UserDesiredSkill[],
       };
 
       // Add skills if they exist
       if (Array.isArray(createUserDto.skills)) {
-        userData.skills = createUserDto.skills.map(skill => ({
-          name: skill.name,
-          description: skill.description || '',
-          proficiencyLevel: skill.proficiencyLevel
-        } as UserSkill));
+        userData.skills = createUserDto.skills.map(
+          (skill) =>
+            ({
+              name: skill.name,
+              description: skill.description || '',
+              proficiencyLevel: skill.proficiencyLevel,
+            }) as UserSkill
+        );
       }
 
       // Add desired skills if they exist
       if (Array.isArray(createUserDto.desiredSkills)) {
-        userData.desiredSkills = createUserDto.desiredSkills.map(skill => ({
+        userData.desiredSkills = createUserDto.desiredSkills.map(
+          (skill) =>
+            ({
               name: skill.name,
               description: skill.description || '',
               desiredProficiencyLevel: skill.desiredProficiencyLevel,
-        } as UserDesiredSkill));
+            }) as UserDesiredSkill
+        );
       }
 
       // Create the user document
       const userDoc = await this.userModel.create(userData);
 
       // Find and return the created user with populated fields
-      const createdUser = await this.userModel.findById(userDoc._id)
+      const createdUser = await this.userModel
+        .findById(userDoc._id)
         .select('+skills +desiredSkills')
         .exec();
 
@@ -86,7 +93,10 @@ export class UsersService {
       return createdUser;
     } catch (error) {
       if (error.code === 11000) {
-        throw new ConflictException('Email already exists');
+        throw new ConflictException('Email already exist');
+      }
+      if (error.code === 11001) {
+        throw new ConflictException('Phone number already exists');
       }
       throw error;
     }

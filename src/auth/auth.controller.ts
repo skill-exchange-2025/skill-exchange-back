@@ -47,7 +47,8 @@ export class AuthController {
   @ApiOperation({ summary: 'Register new user' })
   @ApiResponse({ status: 201, type: AuthResponseDto })
   @ApiResponse({ status: 400, description: 'Bad Request' })
-  @ApiResponse({ status: 409, description: 'Email already exists' })
+  @ApiResponse({ status: 409, description: 'Email already exists'})
+  @ApiResponse({ status: 408, description: 'Phone number already exists' })
   async register(@Body() registerDto: RegisterDto): Promise<AuthResponseDto> {
     console.log('registerDto', registerDto);
     return this.authService.register(registerDto);
