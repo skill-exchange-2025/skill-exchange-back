@@ -53,8 +53,9 @@ export class UsersService {
       const roles = createUserDto.roles || [Role.USER];
       const permissions = await this.calculateUserPermissions(roles, []);
 
+      // Create a properly typed user data object
       const userData: Partial<User> = {
-        email: createUserDto.email.toLowerCase().trim(),
+        email: createUserDto.email,
         password: createUserDto.password,
         name: createUserDto.name,
         phone: Number(createUserDto.phone),
@@ -67,28 +68,38 @@ export class UsersService {
       // Add skills if they exist
       if (Array.isArray(createUserDto.skills)) {
         userData.skills = createUserDto.skills.map(
-          (skill) => ({
-            name: skill.name,
-            description: skill.description || '',
-            proficiencyLevel: skill.proficiencyLevel,
-          }) as UserSkill
+          (skill) =>
+            ({
+              name: skill.name,
+              description: skill.description || '',
+              proficiencyLevel: skill.proficiencyLevel,
+            }) as UserSkill
         );
       }
 
       // Add desired skills if they exist
       if (Array.isArray(createUserDto.desiredSkills)) {
-        userData.desiredSkills = createUserDto.desiredSkills.map(
-          (skill) => ({
-            name: skill.name,
-            description: skill.description || '',
-            desiredProficiencyLevel: skill.desiredProficiencyLevel,
-          }) as UserDesiredSkill
-        );
+        userData.desiredSkills = createUserDto.desiredSkills.map(skill => ({
+              name: skill.name,
+              description: skill.description || '',
+              desiredProficiencyLevel: skill.desiredProficiencyLevel,
+        } as UserDesiredSkill));
       }
 
+      // Create the user document
       const userDoc = await this.userModel.create(userData);
-      return userDoc;
 
+      // Find and return the created user with populated fields
+      const createdUser = await this.userModel
+        .findById(userDoc._id)
+        .select('+skills +desiredSkills')
+        .exec();
+
+      if (!createdUser) {
+        throw new NotFoundException('User not found after creation');
+      }
+
+      return createdUser;
     } catch (error) {
       console.log('Error creating user:', error);
       if (error.code === 11000) {
@@ -97,7 +108,6 @@ export class UsersService {
       throw error;
     }
   }
-
   async findAll(
       pageOrOptions: number | { page?: number; limit?: number; search?: string; role?: string; sortBy?: string; sortOrder?: 'asc' | 'desc' },
       limitParam?: number,
@@ -387,5 +397,24 @@ export class UsersService {
       skills: user.skills || [],
       desiredSkills: user.desiredSkills || [],
     };
+  }
+
+  async findOne(email: string): Promise<UserDocument | null> {
+    return this.userModel.findOne({ email }).exec();
+  }
+
+  async updatePassword(
+    userId: string,
+    hashedPassword: string
+  ): Promise<UserDocument> {
+    const user = await this.userModel
+      .findByIdAndUpdate(userId, { password: hashedPassword }, { new: true })
+      .exec();
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return user;
   }
 }
