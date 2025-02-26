@@ -12,6 +12,8 @@ import {
 } from './schemas/permission-group.schema';
 import { JwtStrategy } from '../strategies/jwt.strategy';
 import { PassportModule } from '@nestjs/passport';
+import { User, UserSchema } from 'src/users/schemas/user.schema';
+import { OTP, OTPSchema } from './schemas/otp.schema';
 
 @Module({
   imports: [
@@ -30,6 +32,8 @@ import { PassportModule } from '@nestjs/passport';
     }),
     MongooseModule.forFeature([
       { name: PermissionGroup.name, schema: PermissionGroupSchema },
+      { name: User.name, schema: UserSchema },
+      { name: OTP.name, schema: OTPSchema },
     ]),
   ],
   controllers: [AuthController],

@@ -7,6 +7,8 @@ import {
   HttpCode,
   HttpStatus,
   UnauthorizedException,
+  SetMetadata,
+  BadRequestException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -25,17 +27,28 @@ import { Roles } from './decorators/roles.decorator';
 import { Role } from './enums/role.enum';
 import { RolesGuard } from './guards/roles.guard';
 import { PermissionsGuard } from './guards/permissions.guard';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import { VerifyOtpDto } from './dto/verify-otp.dto';
+
+export const Public = () => SetMetadata('isPublic', true);
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Public() // Add this decorator to make the endpoint public
+  @Post('reset-password')
+  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+    return await this.authService.resetPassword(resetPasswordDto.email);
+  }
+
   @Post('register')
   @ApiOperation({ summary: 'Register new user' })
   @ApiResponse({ status: 201, type: AuthResponseDto })
   @ApiResponse({ status: 400, description: 'Bad Request' })
-  @ApiResponse({ status: 409, description: 'Email already exists' })
+  @ApiResponse({ status: 409, description: 'Email already exists'})
+  @ApiResponse({ status: 408, description: 'Phone number already exists' })
   async register(@Body() registerDto: RegisterDto): Promise<AuthResponseDto> {
     console.log('registerDto', registerDto);
     return this.authService.register(registerDto);
@@ -73,5 +86,18 @@ export class AuthController {
       throw new UnauthorizedException('User not found');
     }
     return user;
+  }
+  @Post('verify-otp')
+  @Public()
+  async verifyOTP(@Body() verifyOtpDto: VerifyOtpDto) {
+    try {
+      const isValid = await this.authService.verifyOTP(
+        verifyOtpDto.email,
+        verifyOtpDto.otp
+      );
+      return { valid: isValid };
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
   }
 }
