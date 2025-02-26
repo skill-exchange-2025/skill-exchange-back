@@ -9,6 +9,7 @@ import {
   UnauthorizedException,
   SetMetadata,
   BadRequestException,
+  Query,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -47,7 +48,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Register new user' })
   @ApiResponse({ status: 201, type: AuthResponseDto })
   @ApiResponse({ status: 400, description: 'Bad Request' })
-  @ApiResponse({ status: 409, description: 'Email already exists'})
+  @ApiResponse({ status: 409, description: 'Email already exists' })
   @ApiResponse({ status: 408, description: 'Phone number already exists' })
   async register(@Body() registerDto: RegisterDto): Promise<AuthResponseDto> {
     console.log('registerDto', registerDto);
@@ -100,4 +101,16 @@ export class AuthController {
       throw new BadRequestException(error.message);
     }
   }
+
+  @Get('verify-email')
+  @Public()
+  async verifyEmail(@Query('token') token: string) {
+    try {
+      const result = await this.authService.verifyEmail(token);
+      return result;
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
 }
+

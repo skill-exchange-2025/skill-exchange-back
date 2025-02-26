@@ -42,7 +42,7 @@ export class UsersService {
 
       // First check if user exists
       const existingUser = await this.userModel.findOne({
-        email: createUserDto.email.toLowerCase().trim()
+        email: createUserDto.email.toLowerCase().trim(),
       });
 
       if (existingUser) {
@@ -50,7 +50,9 @@ export class UsersService {
         throw new ConflictException('Email already exists');
       }
 
-      const roles = Array.isArray(createUserDto.roles) ? createUserDto.roles : [Role.USER];
+      const roles = Array.isArray(createUserDto.roles)
+        ? createUserDto.roles
+        : [Role.USER];
       const permissions = await this.calculateUserPermissions(roles, []);
 
       const userData: Partial<User> = {
@@ -67,28 +69,29 @@ export class UsersService {
       // Add skills if they exist
       if (Array.isArray(createUserDto.skills)) {
         userData.skills = createUserDto.skills.map(
-          (skill) => ({
-            name: skill.name,
-            description: skill.description || '',
-            proficiencyLevel: skill.proficiencyLevel,
-          }) as UserSkill
+          (skill) =>
+            ({
+              name: skill.name,
+              description: skill.description || '',
+              proficiencyLevel: skill.proficiencyLevel,
+            }) as UserSkill
         );
       }
 
       // Add desired skills if they exist
       if (Array.isArray(createUserDto.desiredSkills)) {
         userData.desiredSkills = createUserDto.desiredSkills.map(
-          (skill) => ({
-            name: skill.name,
-            description: skill.description || '',
-            desiredProficiencyLevel: skill.desiredProficiencyLevel,
-          }) as UserDesiredSkill
+          (skill) =>
+            ({
+              name: skill.name,
+              description: skill.description || '',
+              desiredProficiencyLevel: skill.desiredProficiencyLevel,
+            }) as UserDesiredSkill
         );
       }
 
       const userDoc = await this.userModel.create(userData);
       return userDoc;
-
     } catch (error) {
       console.log('Error creating user:', error);
       if (error.code === 11000) {
@@ -102,11 +105,25 @@ export class UsersService {
   }
 
   async findAll(
-      pageOrOptions: number | { page?: number; limit?: number; search?: string; role?: string; sortBy?: string; sortOrder?: 'asc' | 'desc' },
-      limitParam?: number,
-      searchParam?: string
+    pageOrOptions:
+      | number
+      | {
+          page?: number;
+          limit?: number;
+          search?: string;
+          role?: string;
+          sortBy?: string;
+          sortOrder?: 'asc' | 'desc';
+        },
+    limitParam?: number,
+    searchParam?: string
   ) {
-    let page: number, limit: number, search: string, role: string | undefined, sortBy: string, sortOrder: 'asc' | 'desc';
+    let page: number,
+      limit: number,
+      search: string,
+      role: string | undefined,
+      sortBy: string,
+      sortOrder: 'asc' | 'desc';
 
     // Handle both parameter styles
     if (typeof pageOrOptions === 'object') {
@@ -116,7 +133,7 @@ export class UsersService {
         search = '',
         role,
         sortBy = 'createdAt',
-        sortOrder = 'desc'
+        sortOrder = 'desc',
       } = pageOrOptions);
     } else {
       page = pageOrOptions || 1;
@@ -131,7 +148,7 @@ export class UsersService {
     if (search) {
       query.$or = [
         { email: new RegExp(search, 'i') },
-        { name: new RegExp(search, 'i') }
+        { name: new RegExp(search, 'i') },
       ];
     }
 
@@ -144,20 +161,20 @@ export class UsersService {
 
     const [users, total] = await Promise.all([
       this.userModel
-          .find(query)
-          .sort(sort)
-          .skip((page - 1) * limit)
-          .limit(limit)
-          .select('-password')
-          .exec(),
-      this.userModel.countDocuments(query)
+        .find(query)
+        .sort(sort)
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .select('-password')
+        .exec(),
+      this.userModel.countDocuments(query),
     ]);
 
     return {
       data: users,
       total,
       page: Number(page),
-      limit: Number(limit)
+      limit: Number(limit),
     };
   }
 
@@ -179,6 +196,7 @@ export class UsersService {
       .select('+password')
       .exec();
   }
+  
 
   async update(
     id: string,
@@ -409,5 +427,11 @@ export class UsersService {
     }
 
     return user;
+  }
+
+  async markEmailAsVerified(userId: string): Promise<void> {
+    await this.userModel.findByIdAndUpdate(userId, {
+      isEmailVerified: true,
+    });
   }
 }

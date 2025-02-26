@@ -32,8 +32,8 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService
   ) {}
-  
-   // Add this method
+
+  // Add this method
   async resetPassword(email: string) {
     try {
       // Check if user exists
@@ -54,7 +54,7 @@ export class AuthService {
       });
 
       // Send email with OTP
-    await this.mailerService.sendMail({
+      await this.mailerService.sendMail({
         to: email,
         subject: 'Password Reset OTP',
         html: `
@@ -119,8 +119,56 @@ export class AuthService {
       password: hashedPassword,
       roles,
       permissions,
+      isEmailVerified: false,
+    });
+// Generate JWT token for email verification
+const verificationToken = this.jwtService.sign(
+  { email: normalizedEmail },
+  {
+    secret: this.configService.get<string>('jwt.secret'),
+    expiresIn: '1h', // Adjust expiration as needed
+  },
+);
+    // Generate verification link
+    const verificationLink = `${this.configService.get<string>(
+      'FRONTEND_URL',
+    )}/verify-email?token=${verificationToken}`;
+    // Send verification email
+    await this.mailerService.sendMail({
+      to: normalizedEmail,
+      subject: 'Verify Your Email',
+      html: `
+        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+          <h1 style="text-align: center; color: #4CAF50;">Verify Your Email</h1>
+          <p style="text-align: center; font-size: 16px;">
+            Thank you for registering! Please click the button below to verify your email.
+          </p>
+          <div style="text-align: center; margin: 20px 0;">
+            <a href="${verificationLink}" 
+               style="
+                 display: inline-block;
+                 padding: 12px 24px;
+                 font-size: 16px;
+                 font-weight: bold;
+                 color: #ffffff;
+                 background-color: #4CAF50;
+                 border-radius: 8px;
+                 text-decoration: none;
+               "
+            >
+              Verify Email
+            </a>
+          </div>
+          <p style="text-align: center; font-size: 14px; color: #666;">
+            If the button doesn't work, copy and paste this link into your browser:
+            <br>
+            ${verificationLink}
+          </p>
+        </div>
+      `,
     });
 
+    // Return auth response
     const { accessToken, refreshToken } = await this.generateTokens(user);
 
     return {
@@ -135,6 +183,7 @@ export class AuthService {
         permissions: user.permissions || [],
         skills: user.skills,
         desiredSkills: user.desiredSkills,
+        isEmailVerified: user.isEmailVerified,
       },
     };
   }
@@ -145,6 +194,11 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
+     // Check if email is verified
+     if (!user.isEmailVerified) {
+      throw new UnauthorizedException('Please verify your email before logging in');
+    }
+
 
     const { accessToken, refreshToken } = await this.generateTokens(user);
 
@@ -158,6 +212,7 @@ export class AuthService {
         email: user.email,
         roles: user.roles || [],
         permissions: user.permissions || [],
+        isEmailVerified: user.isEmailVerified,
       },
     };
   }
@@ -277,24 +332,23 @@ export class AuthService {
       email,
       otp,
       used: false,
-      expiresAt: { $gt: new Date() }
+      expiresAt: { $gt: new Date() },
     });
-  
+
     if (!otpRecord) {
       return false;
     }
-  
+
     // Mark OTP as used
     await this.otpModel.findByIdAndUpdate(otpRecord._id, { used: true });
-  
+
     return true;
   }
 
-  
   private async validateOTP(token: string, otp: string): Promise<boolean> {
     try {
       const otpRecord = await this.otpModel.findOne({ token });
-      
+
       if (!otpRecord) {
         throw new UnauthorizedException('Invalid token');
       }
@@ -322,5 +376,29 @@ export class AuthService {
     }
   }
 
-  
+  async verifyEmail(token: string): Promise<{ message: string }> {
+    try {
+      const payload = this.jwtService.verify(token, {
+        secret: this.configService.get<string>('jwt.secret'),
+      });
+
+      const user = await this.usersService.findByEmail(payload.email);
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+      if (user.isEmailVerified) {
+        throw new BadRequestException('Email is already verified');
+      }
+
+      await this.usersService.markEmailAsVerified(user.id);
+
+      return { message: 'Email verified successfully' };
+    } catch (error) {
+      if (error instanceof JsonWebTokenError) {
+        throw new UnauthorizedException('Invalid or expired token');
+      }
+      throw error;
+    }
+  }
 }
