@@ -28,8 +28,9 @@ import { Roles } from './decorators/roles.decorator';
 import { Role } from './enums/role.enum';
 import { RolesGuard } from './guards/roles.guard';
 import { PermissionsGuard } from './guards/permissions.guard';
-import { ResetPasswordDto } from './dto/reset-password.dto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
+import { InitiateResetPasswordDto } from './dto/reset-password.dto';
+import { CompleteResetPasswordDto } from './dto/reset-password.dto';
 
 export const Public = () => SetMetadata('isPublic', true);
 
@@ -37,12 +38,6 @@ export const Public = () => SetMetadata('isPublic', true);
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
-
-  @Public() // Add this decorator to make the endpoint public
-  @Post('reset-password')
-  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
-    return await this.authService.resetPassword(resetPasswordDto.email);
-  }
 
   @Post('register')
   @ApiOperation({ summary: 'Register new user' })
@@ -90,16 +85,14 @@ export class AuthController {
   }
   @Post('verify-otp')
   @Public()
+  @ApiOperation({ summary: 'Verify OTP code' })
+  @ApiResponse({ status: 200, description: 'OTP verified successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid OTP' })
   async verifyOTP(@Body() verifyOtpDto: VerifyOtpDto) {
-    try {
-      const isValid = await this.authService.verifyOTP(
-        verifyOtpDto.email,
-        verifyOtpDto.otp
-      );
-      return { valid: isValid };
-    } catch (error) {
-      throw new BadRequestException(error.message);
-    }
+    return await this.authService.verifyOTP(
+      verifyOtpDto.email,
+      verifyOtpDto.otp
+    );
   }
 
   @Get('verify-email')
@@ -112,5 +105,28 @@ export class AuthController {
       throw new BadRequestException(error.message);
     }
   }
-}
 
+  @Post('reset-password')
+  @Public()
+  @ApiOperation({ summary: 'Initiate password reset' })
+  @ApiResponse({ status: 200, description: 'OTP sent successfully' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  async initiateResetPassword(
+    @Body() resetPasswordDto: InitiateResetPasswordDto
+  ) {
+    return await this.authService.resetPassword(resetPasswordDto.email);
+  }
+
+  @Post('complete-reset-password')
+  @Public()
+  @ApiOperation({ summary: 'Complete password reset' })
+  @ApiResponse({ status: 200, description: 'Password updated successfully' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  async completeResetPassword(
+    @Body() completeResetPasswordDto: CompleteResetPasswordDto
+  ) {
+    return await this.authService.completeResetPassword(
+      completeResetPasswordDto
+    );
+  }
+}
