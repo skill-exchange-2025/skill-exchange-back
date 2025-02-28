@@ -32,12 +32,19 @@ import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { InitiateResetPasswordDto } from './dto/reset-password.dto';
 import { CompleteResetPasswordDto } from './dto/reset-password.dto';
 
+
 export const Public = () => SetMetadata('isPublic', true);
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
+  @Public() // Add this decorator to make the endpoint public
+  @Post('reset-password')
+  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+    return await this.authService.resetPassword(resetPasswordDto.email);
+  }
 
   @Post('register')
   @ApiOperation({ summary: 'Register new user' })
@@ -85,6 +92,7 @@ export class AuthController {
   }
   @Post('verify-otp')
   @Public()
+
   @ApiOperation({ summary: 'Verify OTP code' })
   @ApiResponse({ status: 200, description: 'OTP verified successfully' })
   @ApiResponse({ status: 400, description: 'Invalid OTP' })
@@ -101,6 +109,7 @@ export class AuthController {
     try {
       const result = await this.authService.verifyEmail(token);
       return result;
+
     } catch (error) {
       throw new BadRequestException(error.message);
     }
@@ -129,4 +138,5 @@ export class AuthController {
       completeResetPasswordDto
     );
   }
+
 }

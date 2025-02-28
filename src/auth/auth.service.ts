@@ -32,6 +32,16 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService
   ) {}
+  
+   // Add this method
+  async resetPassword(email: string) {
+    try {
+      // Check if user exists
+      const user = await this.userModel.findOne({ email });
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
 
   async resetPassword(email: string) {
     try {
@@ -40,6 +50,7 @@ export class AuthService {
       if (!user) {
         throw new NotFoundException('User not found');
       }
+
 
       // Generate 6-digit OTP
       const otp = Math.floor(100000 + Math.random() * 900000).toString();
@@ -53,7 +64,9 @@ export class AuthService {
       });
 
       // Send email with OTP
+
       await this.mailerService.sendMail({
+
         to: email,
         subject: 'Password Reset OTP',
         html: `
@@ -328,6 +341,7 @@ export class AuthService {
     return user;
   }
 
+
   async verifyOTP(email: string, otp: string) {
     try {
       const otpRecord = await this.otpModel.findOne({
@@ -363,6 +377,7 @@ export class AuthService {
     try {
       const otpRecord = await this.otpModel.findOne({ token });
 
+
       if (!otpRecord) {
         throw new UnauthorizedException('Invalid token');
       }
@@ -389,6 +404,7 @@ export class AuthService {
       throw new UnauthorizedException('Error validating OTP');
     }
   }
+
 
   async verifyEmail(token: string): Promise<{ message: string }> {
     try {
@@ -465,4 +481,5 @@ export class AuthService {
       throw new BadRequestException('Failed to reset password');
     }
   }
+
 }

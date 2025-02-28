@@ -1,3 +1,4 @@
+
 import { IsEmail, IsString, MinLength, Matches } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -36,4 +37,5 @@ export class CompleteResetPasswordDto {
       'Password must contain uppercase, lowercase, and number/special character',
   })
   password: string;
+
 }
