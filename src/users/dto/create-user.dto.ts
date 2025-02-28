@@ -9,6 +9,7 @@ import {
   MinLength,
   Matches,
   ValidateNested,
+  IsBoolean,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Role } from '../../auth/enums/role.enum';
@@ -100,4 +101,11 @@ export class CreateUserDto {
   @IsArray()
   @IsString({ each: true })
   permissionGroups?: string[];
+
+  @ApiProperty({ type: Boolean, required: false })
+  @IsOptional()
+  @IsBoolean()
+  isEmailVerified?: boolean;
+
+ 
 }

@@ -16,5 +16,6 @@ export class AuthResponseDto {
     permissions?: Permission[]; // Make it optional
     skills?: UserSkill[];
     desiredSkills?: UserDesiredSkill[];
+    isEmailVerified?: boolean;
   };
 }

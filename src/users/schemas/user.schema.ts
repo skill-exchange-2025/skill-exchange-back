@@ -18,25 +18,20 @@ export type UserDocument = User & Document;
   },
 })
 export class User {
-
   @Prop({ required: true })
   name: string;
 
-  @Prop ({ required: true , unique: true })
-  phone: number; 
-
+  @Prop({ required: true, unique: true })
+  phone: number;
 
   @Prop({ required: true, unique: true })
   email: string;
-  
 
   @Prop({ type: String, required: true, select: false })
   password: string;
 
   @Prop({ type: [String], enum: Role, default: [Role.USER] })
   roles: Role[];
-
-
 
   @Prop({ type: [String], enum: Permission, default: [] })
   permissions: Permission[];
@@ -51,6 +46,9 @@ export class User {
 
   @Prop({ type: [UserDesiredSkillSchema] })
   desiredSkills: UserDesiredSkill[];
+
+  @Prop({ default: false })
+  isEmailVerified: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

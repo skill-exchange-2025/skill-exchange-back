@@ -18,9 +18,9 @@ import { Model, ObjectId } from 'mongoose';
 import { OTP, OTPDocument } from './schemas/otp.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { MailerService } from '@nestjs-modules/mailer';
-import { ResetPasswordDto } from './dto/reset-password.dto';
 import { JsonWebTokenError } from 'jsonwebtoken';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
+import { CompleteResetPasswordDto } from './dto/reset-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -42,6 +42,16 @@ export class AuthService {
         throw new NotFoundException('User not found');
       }
 
+
+  async resetPassword(email: string) {
+    try {
+      // Check if user exists
+      const user = await this.userModel.findOne({ email });
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+
       // Generate 6-digit OTP
       const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
@@ -54,7 +64,9 @@ export class AuthService {
       });
 
       // Send email with OTP
-    await this.mailerService.sendMail({
+
+      await this.mailerService.sendMail({
+
         to: email,
         subject: 'Password Reset OTP',
         html: `
@@ -97,6 +109,7 @@ export class AuthService {
       throw new BadRequestException('Failed to process reset password request');
     }
   }
+
   async register(registerDto: RegisterDto): Promise<AuthResponseDto> {
     const hashedPassword = await bcrypt.hash(registerDto.password, 10);
     const rawPassword = registerDto.password.trim();
@@ -119,8 +132,56 @@ export class AuthService {
       password: hashedPassword,
       roles,
       permissions,
+      isEmailVerified: false,
+    });
+    // Generate JWT token for email verification
+    const verificationToken = this.jwtService.sign(
+      { email: normalizedEmail },
+      {
+        secret: this.configService.get<string>('jwt.secret'),
+        expiresIn: '1h', // Adjust expiration as needed
+      }
+    );
+    // Generate verification link
+    const verificationLink = `${this.configService.get<string>(
+      'FRONTEND_URL'
+    )}/verify-email?token=${verificationToken}`;
+    // Send verification email
+    await this.mailerService.sendMail({
+      to: normalizedEmail,
+      subject: 'Verify Your Email',
+      html: `
+        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+          <h1 style="text-align: center; color: #4CAF50;">Verify Your Email</h1>
+          <p style="text-align: center; font-size: 16px;">
+            Thank you for registering! Please click the button below to verify your email.
+          </p>
+          <div style="text-align: center; margin: 20px 0;">
+            <a href="${verificationLink}" 
+               style="
+                 display: inline-block;
+                 padding: 12px 24px;
+                 font-size: 16px;
+                 font-weight: bold;
+                 color: #ffffff;
+                 background-color: #4CAF50;
+                 border-radius: 8px;
+                 text-decoration: none;
+               "
+            >
+              Verify Email
+            </a>
+          </div>
+          <p style="text-align: center; font-size: 14px; color: #666;">
+            If the button doesn't work, copy and paste this link into your browser:
+            <br>
+            ${verificationLink}
+          </p>
+        </div>
+      `,
     });
 
+    // Return auth response
     const { accessToken, refreshToken } = await this.generateTokens(user);
 
     return {
@@ -135,6 +196,7 @@ export class AuthService {
         permissions: user.permissions || [],
         skills: user.skills,
         desiredSkills: user.desiredSkills,
+        isEmailVerified: user.isEmailVerified,
       },
     };
   }
@@ -144,6 +206,12 @@ export class AuthService {
 
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
+    }
+    // Check if email is verified
+    if (!user.isEmailVerified) {
+      throw new UnauthorizedException(
+        'Please verify your email before logging in'
+      );
     }
 
     const { accessToken, refreshToken } = await this.generateTokens(user);
@@ -158,6 +226,7 @@ export class AuthService {
         email: user.email,
         roles: user.roles || [],
         permissions: user.permissions || [],
+        isEmailVerified: user.isEmailVerified,
       },
     };
   }
@@ -272,29 +341,43 @@ export class AuthService {
     return user;
   }
 
-  async verifyOTP(email: string, otp: string): Promise<boolean> {
-    const otpRecord = await this.otpModel.findOne({
-      email,
-      otp,
-      used: false,
-      expiresAt: { $gt: new Date() }
-    });
-  
-    if (!otpRecord) {
-      return false;
+
+  async verifyOTP(email: string, otp: string) {
+    try {
+      const otpRecord = await this.otpModel.findOne({
+        email,
+        otp,
+        used: false,
+        expiresAt: { $gt: new Date() },
+      });
+
+      if (!otpRecord) {
+        return { valid: false };
+      }
+
+      // Generate a temporary token for the password reset
+      const token = this.jwtService.sign(
+        { email, otp },
+        {
+          secret: this.configService.get<string>('jwt.secret'),
+          expiresIn: '10m',
+        }
+      );
+
+      return {
+        valid: true,
+        token, // Return token to be used in the final step
+      };
+    } catch (error) {
+      throw new BadRequestException('Failed to verify OTP');
     }
-  
-    // Mark OTP as used
-    await this.otpModel.findByIdAndUpdate(otpRecord._id, { used: true });
-  
-    return true;
   }
 
-  
   private async validateOTP(token: string, otp: string): Promise<boolean> {
     try {
       const otpRecord = await this.otpModel.findOne({ token });
-      
+
+
       if (!otpRecord) {
         throw new UnauthorizedException('Invalid token');
       }
@@ -322,5 +405,81 @@ export class AuthService {
     }
   }
 
-  
+
+  async verifyEmail(token: string): Promise<{ message: string }> {
+    try {
+      const payload = this.jwtService.verify(token, {
+        secret: this.configService.get<string>('jwt.secret'),
+      });
+
+      const user = await this.usersService.findByEmail(payload.email);
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+      if (user.isEmailVerified) {
+        throw new BadRequestException('Email is already verified');
+      }
+
+      await this.usersService.markEmailAsVerified(user.id);
+
+      return { message: 'Email verified successfully' };
+    } catch (error) {
+      if (error instanceof JsonWebTokenError) {
+        throw new UnauthorizedException('Invalid or expired token');
+      }
+      throw error;
+    }
+  }
+
+  async completeResetPassword(
+    completeResetPasswordDto: CompleteResetPasswordDto
+  ) {
+    const { email, otp, password } = completeResetPasswordDto;
+
+    try {
+      // Verify OTP one last time
+      const otpRecord = await this.otpModel.findOne({
+        email,
+        otp,
+        used: false,
+        expiresAt: { $gt: new Date() },
+      });
+
+      if (!otpRecord) {
+        throw new UnauthorizedException('Invalid or expired OTP');
+      }
+
+      // Find user
+      const user = await this.userModel.findOne({ email });
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+      // Hash new password
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      // Update password
+      await this.userModel.findByIdAndUpdate(user._id, {
+        password: hashedPassword,
+      });
+
+      // Mark OTP as used
+      await this.otpModel.findByIdAndUpdate(otpRecord._id, { used: true });
+
+      return {
+        message: 'Password reset successfully',
+        success: true,
+      };
+    } catch (error) {
+      if (
+        error instanceof UnauthorizedException ||
+        error instanceof NotFoundException
+      ) {
+        throw error;
+      }
+      throw new BadRequestException('Failed to reset password');
+    }
+  }
+
 }
