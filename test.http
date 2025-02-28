@@ -7,12 +7,13 @@ POST http://localhost:5000/api/auth/register
 Content-Type: application/json
 
 {
-  "email": "jihed0000@gmail.com",
-  "phone": "2345678",
+  "email": "jiheddd0000@gmail.com",
+  "phone": "2645678",
   "name": "Jihed",
   "password": "jihed123",
   "roles": ["admin"]
 }
+
 
 ###
 ### Register a new user with skills
@@ -20,9 +21,9 @@ POST http://localhost:5000/api/auth/register
 Content-Type: application/json
 
 {
-  "email": "aymenghazouani@gmail.com",
+  "email": "jxjj@gmail.com",
   "password": "Password123",
-  "phone": "12345678",
+  "phone": "12373673",
   "name": "ssss",
   "roles": ["user"],
   "skills": [
@@ -53,7 +54,7 @@ POST http://localhost:5000/api/auth/login
 Content-Type: application/json
 
 {
-  "email": "jiii@gmail.com",
+  "email": "jxjj@gmail.com",
   "password": "Password123"
 }
 
@@ -110,13 +111,26 @@ DELETE http://localhost:5000/api/profile
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2IzOTRmZWMxY2M1NWQ5NGQ0YThlNjUiLCJlbWFpbCI6ImppaWlAZ21haWwuY29tIiwiaWF0IjoxNzM5ODkwMzk4LCJleHAiOjE3Mzk4OTEyOTh9.MC-GnsKV0mCh4vehAhsaW-66bKr-DLMmMt29WkRkgWg
 Content-Type: application/json
 
-### Upload Profile Avatar
+###
 POST http://localhost:5000/api/profile/avatar
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2IzOTRmZWMxY2M1NWQ5NGQ0YThlNjUiLCJlbWFpbCI6ImppaWlAZ21haWwuY29tIiwiaWF0IjoxNzM5ODI2ODczLCJleHAiOjE3Mzk4Mjc3NzN9.I-d0paPU8PIEkEvcmzHYcdMsCgo45q4OEh2JdXVUHl8
-Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2JlMjRjYjBkZWI2MzI3NWYwNmRhZDEiLCJlbWFpbCI6Imp4ampAZ21haWwuY29tIiwiaWF0IjoxNzQwNjc5NzA3LCJleHAiOjE3NDA2ODA2MDd9.SFey4yU8UphWEbwKxw8ghKrgGyHISV7UiTNo4eTIHCk
+Content-Type: multipart/form-data; boundary=boundary
 
-------WebKitFormBoundary7MA4YWxkTrZu0gW
-Content-Disposition: form-data; name="avatar"; filename="profile-picture.jpg"
-Content-Type: image/jpeg
+--boundary
+Content-Disposition: form-data; name="avatar"; filename="test.png"
+Content-Type: image/png
 
-</ Users/jihed/Downloads/473021116_1124461089188286_3074189769567510121_n (2).jpg
+< ./test.png
+--boundary--
+
+###
+POST http://localhost:5000/api/profile/avatar
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2JlMjRjYjBkZWI2MzI3NWYwNmRhZDEiLCJlbWFpbCI6Imp4ampAZ21haWwuY29tIiwiaWF0IjoxNzQwNjc5NzA3LCJleHAiOjE3NDA2ODA2MDd9.SFey4yU8UphWEbwKxw8ghKrgGyHISV7UiTNo4eTIHCk
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="avatar"; filename="test.png"
+Content-Type: image/png
+
+< ./test.png
+--boundary--

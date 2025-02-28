@@ -9,12 +9,32 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { ProfileModule } from './profile/profile.module';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
+import * as fs from 'fs';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
     AuthModule,
     UsersModule,
     ProfileModule,
+    MulterModule.register({
+      storage: diskStorage({
+        destination: (req, file, cb) => {
+          const uploadPath = './uploads';
+          if (!fs.existsSync(uploadPath)) {
+            fs.mkdirSync(uploadPath, { recursive: true });
+          }
+          cb(null, uploadPath);
+        },
+        filename: (req, file, cb) => {
+          const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+          const ext = extname(file.originalname);
+          cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+        },
+      }),
+    }),
     ConfigModule.forRoot({ isGlobal: true }), // Load environment variables globally
     MongooseModule.forRoot(process.env.MONGO_URI || 'mongodb://localhost/nest'),
     MailerModule.forRootAsync({

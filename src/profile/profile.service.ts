@@ -85,7 +85,7 @@ export class ProfileService {
       const { userUpdate, profileUpdate } = this.separateUpdateData(updateData);
 
       const [updatedProfile, updatedUser, completionStatus] = await Promise.all([
-        this.profileModel
+          this.profileModel
           .findOneAndUpdate({ userId }, profileUpdate, { new: true })
           .exec(),
         Object.keys(userUpdate).length > 0
@@ -107,7 +107,7 @@ export class ProfileService {
           skills: updatedUser.skills || [],
           desiredSkills: updatedUser.desiredSkills || [],
         },
-        completionStatus
+        completionStatus,
       };
     } catch (error) {
       if (error instanceof NotFoundException) {
@@ -141,7 +141,6 @@ export class ProfileService {
       throw new BadRequestException('Error uploading avatar');
     }
   }
-
   private separateUpdateData(updateData: any) {
     const profileFields = [
       'bio',
