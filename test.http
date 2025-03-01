@@ -1,6 +1,8 @@
 ### GET request to example server
-GET https://examples.http-client.intellij.net/get
-    ?generated-in=WebStorm
+GET http://localhost:5000/api/users/skills
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2I3Yjk0MjQwNDQ2ZTY5OTBjZjZmOWEiLCJlbWFpbCI6ImppaGVkMDAwMEBnbWFpbC5jb20iLCJpYXQiOjE3NDA3ODc2NTEsImV4cCI6MTc0MDc4ODU1MX0.tx-UVuHrn3teoA_2_o6DNXI0-vzJoCNyIObhLG2ggco
+
+
 
 ###
 POST http://localhost:5000/api/auth/register
@@ -53,15 +55,15 @@ POST http://localhost:5000/api/auth/login
 Content-Type: application/json
 
 {
-  "email": "jiii@gmail.com",
-  "password": "Password123"
+  "email": "jihed0000@gmail.com",
+  "password": "jihed123"
 }
 
 
 
 ###
 GET http://localhost:5000/api/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2I3Yjk0MjQwNDQ2ZTY5OTBjZjZmOWEiLCJlbWFpbCI6ImppaGVkMDAwMEBnbWFpbC5jb20iLCJpYXQiOjE3NDAxMjg4NzksImV4cCI6MTc0MDEyOTc3OX0.qZczMXIu1DCD3IqKhdSl03LE_Yhkei3Iqn3o7rqDBcA
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2I3Yjk0MjQwNDQ2ZTY5OTBjZjZmOWEiLCJlbWFpbCI6ImppaGVkMDAwMEBnbWFpbC5jb20iLCJpYXQiOjE3NDA3NDcwNjIsImV4cCI6MTc0MDc0Nzk2Mn0.0LG7KuQv9eyGoaZ66ZW9jNW2R3xsnjbLozFkVoI5P4s
 
 
 
