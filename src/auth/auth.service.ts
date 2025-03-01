@@ -32,15 +32,6 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService
   ) {}
-  
-   // Add this method
-  async resetPassword(email: string) {
-    try {
-      // Check if user exists
-      const user = await this.userModel.findOne({ email });
-      if (!user) {
-        throw new NotFoundException('User not found');
-      }
 
 
   async resetPassword(email: string) {

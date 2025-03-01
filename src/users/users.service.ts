@@ -36,6 +36,7 @@ export class UsersService {
     @InjectModel(UserDesiredSkill.name)
     private userDesiredSkillModel: Model<UserDesiredSkillDocument>
   ) {}
+
   async create(createUserDto: CreateUserDto): Promise<UserDocument> {
     try {
       console.log('Creating user with email:', createUserDto.email);
@@ -97,19 +98,6 @@ export class UsersService {
       const userDoc = await this.userModel.create(userData);
 
       return userDoc;
-
-
-      // Find and return the created user with populated fields
-      const createdUser = await this.userModel
-        .findById(userDoc._id)
-        .select('+skills +desiredSkills')
-        .exec();
-
-      if (!createdUser) {
-        throw new NotFoundException('User not found after creation');
-      }
-
-      return createdUser;
 
     } catch (error) {
       console.log('Error creating user:', error);
