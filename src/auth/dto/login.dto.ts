@@ -10,8 +10,12 @@ export class LoginDto {
   @IsString()
   password: string;
 
-  constructor(email: string, password: string) {
-    this.email = email.trim().toLowerCase(); // Normalize on input
-    this.password = password.trim();
+  constructor(email?: string, password?: string) {
+    if (email) {
+      this.email = email.trim().toLowerCase(); // Normalize on input
+    }
+    if (password) {
+      this.password = password.trim();
+    }
   }
 }

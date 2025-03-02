@@ -9,13 +9,23 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { ProfileModule } from './profile/profile.module';
+import { MarketplaceModule } from './marketplace/marketplace.module'; // Add this line
+
 
 @Module({
   imports: [
     AuthModule,
     UsersModule,
     ProfileModule,
-    ConfigModule.forRoot({ isGlobal: true }), // Load environment variables globally
+    MarketplaceModule, 
+    ConfigModule.forRoot({ isGlobal: true ,
+      load: [
+        () => ({
+          STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+          STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
+        }),
+      ],
+    }),     
     MongooseModule.forRoot(process.env.MONGO_URI || 'mongodb://localhost/nest'),
     MailerModule.forRootAsync({
       imports: [ConfigModule],
@@ -35,7 +45,9 @@ import { ProfileModule } from './profile/profile.module';
         },
       }),
     }),
+
   ],
+
   controllers: [AppController, AuthController],
   providers: [AppService, JwtModule],
 })

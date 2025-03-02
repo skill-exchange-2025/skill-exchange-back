@@ -40,9 +40,13 @@ export class RegisterDto {
   @IsEnum(Permission, { each: true })
   permissions?: Permission[];
 
-  constructor(email: string, password: string, roles?: string[]) {
-    this.email = email.trim().toLowerCase(); // Trim + lowercase email
-    this.password = password.trim(); // Trim password
+  constructor(email?: string, password?: string, roles?: string[]) {
+    if (email) {
+      this.email = email.trim().toLowerCase(); // Trim + lowercase email
+    }
+    if (password) {
+      this.password = password.trim(); // Trim password
+    }
     this.roles = roles;
   }
 }

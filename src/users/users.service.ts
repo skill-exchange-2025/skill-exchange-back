@@ -81,7 +81,6 @@ export class UsersService {
 
       // Add desired skills if they exist
       if (Array.isArray(createUserDto.desiredSkills)) {
-
         userData.desiredSkills = createUserDto.desiredSkills.map(
           (skill) =>
             ({
@@ -90,7 +89,6 @@ export class UsersService {
               desiredProficiencyLevel: skill.desiredProficiencyLevel,
             }) as UserDesiredSkill
         );
-
       }
 
       // Create the user document
@@ -202,7 +200,6 @@ export class UsersService {
       .select('+password')
       .exec();
   }
-  
 
   async update(
     id: string,
@@ -435,11 +432,9 @@ export class UsersService {
     return user;
   }
 
-
   async markEmailAsVerified(userId: string): Promise<void> {
     await this.userModel.findByIdAndUpdate(userId, {
       isEmailVerified: true,
     });
   }
-
 }
