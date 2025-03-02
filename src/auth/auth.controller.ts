@@ -42,7 +42,7 @@ export class AuthController {
 
   @Public() // Add this decorator to make the endpoint public
   @Post('reset-password')
-  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+  async resetPassword(@Body() resetPasswordDto: InitiateResetPasswordDto) {
     return await this.authService.resetPassword(resetPasswordDto.email);
   }
 

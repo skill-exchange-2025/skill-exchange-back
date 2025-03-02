@@ -43,15 +43,6 @@ export class AuthService {
       }
 
 
-  async resetPassword(email: string) {
-    try {
-      // Check if user exists
-      const user = await this.userModel.findOne({ email });
-      if (!user) {
-        throw new NotFoundException('User not found');
-      }
-
-
       // Generate 6-digit OTP
       const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
