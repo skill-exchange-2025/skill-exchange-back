@@ -19,7 +19,6 @@ import {
 } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
-import { ResetPasswordDto } from './dto/reset-password.dto'
 import { LoginDto } from './dto/login.dto';
 import { AuthResponseDto } from './dto/auth-response.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -43,7 +42,7 @@ export class AuthController {
 
   @Public() // Add this decorator to make the endpoint public
   @Post('reset-password')
-  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+  async resetPassword(@Body() resetPasswordDto: InitiateResetPasswordDto) {
     return await this.authService.resetPassword(resetPasswordDto.email);
   }
 
