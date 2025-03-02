@@ -15,6 +15,10 @@ export class CreateListingDto {
   @IsString()
   skillName: string;
 
+  @ApiProperty({ example: 'Web Development' })
+  @IsString()
+  category: string;
+
   @ApiProperty({ example: 'Expert' })
   @IsString()
   proficiencyLevel: string;
@@ -29,4 +33,10 @@ export class CreateListingDto {
   @IsArray()
   @IsString({ each: true })
   tags?: string[];
+
+  @ApiProperty({ example: ['https://example.com/image1.jpg', 'https://example.com/image2.jpg'], required: false })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  imagesUrl?: string[];
 }

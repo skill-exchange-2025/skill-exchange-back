@@ -9,11 +9,6 @@ export class SkillDto {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  description?: string;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsString()
   proficiencyLevel?: string;
 }
 
@@ -21,11 +16,6 @@ export class DesiredSkillDto {
   @ApiProperty({ example: 'Python Programming' })
   @IsString()
   name: string;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsString()
-  description?: string;
 
   @ApiProperty({ required: false })
   @IsOptional()

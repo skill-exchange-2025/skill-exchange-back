@@ -24,11 +24,6 @@ export class SkillDto {
 
   @ApiProperty()
   @IsString()
-  @IsOptional()
-  description?: string;
-
-  @ApiProperty()
-  @IsString()
   proficiencyLevel: string;
 }
 
@@ -36,11 +31,6 @@ export class DesiredSkillDto {
   @ApiProperty()
   @IsString()
   name: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsOptional()
-  description?: string;
 
   @ApiProperty()
   @IsString()

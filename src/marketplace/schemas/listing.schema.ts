@@ -23,6 +23,9 @@ export class Listing {
   proficiencyLevel: string;
 
   @Prop({ required: true })
+  category: string;
+
+  @Prop({ required: true })
   price: number;
 
   @Prop({ default: 'active', enum: ['active', 'sold', 'inactive'] })
@@ -33,6 +36,9 @@ export class Listing {
 
   @Prop({ default: 0 })
   views: number;
+
+  @Prop({ default: [] })
+  imagesUrl: string[];
 }
 
 export const ListingSchema = SchemaFactory.createForClass(Listing);

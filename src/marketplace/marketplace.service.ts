@@ -300,7 +300,7 @@ export class MarketplaceService {
 
   // Helper methods
   private isProficiencyHigher(newLevel: string, currentLevel: string): boolean {
-    const levels = ['Beginner', 'Intermediate', 'Advanced', 'Expert'];
+    const levels = ['Beginner', 'Intermediate', 'Advanced'];
     return levels.indexOf(newLevel) > levels.indexOf(currentLevel);
   }
 }
