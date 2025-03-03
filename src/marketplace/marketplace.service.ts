@@ -5,7 +5,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Listing, ListingDocument } from './schemas/listing.schema';
 import { Transaction, TransactionDocument } from './schemas/transaction.schema';
 import { Review, ReviewDocument } from './schemas/review.schema';
@@ -31,7 +31,11 @@ export class MarketplaceService {
     userId: string,
     createListingDto: CreateListingDto
   ): Promise<ListingDocument> {
+    console.log('Creating listing with userId:', userId);
+    console.log('CreateListingDto in service:', createListingDto);
+
     const user = await this.usersService.findById(userId);
+    console.log('Found user:', user);
 
     // Verify user has the skill they're selling
     const hasSkill = user.skills.some(
@@ -46,10 +50,20 @@ export class MarketplaceService {
       );
     }
 
+    // Create a new listing with all required fields
     const listing = new this.listingModel({
-      ...createListingDto,
-      seller: userId,
+      title: createListingDto.title,
+      description: createListingDto.description,
+      skillName: createListingDto.skillName,
+      category: createListingDto.category,
+      proficiencyLevel: createListingDto.proficiencyLevel,
+      price: createListingDto.price,
+      seller: user._id as any, // Use the actual user._id from the database
+      tags: createListingDto.tags || [],
+      imagesUrl: createListingDto.imagesUrl || [],
     });
+
+    console.log('Listing object before save:', listing);
 
     return listing.save();
   }
@@ -136,27 +150,32 @@ export class MarketplaceService {
       throw new BadRequestException('This listing is no longer available');
     }
 
-    if (listing.seller.toString() === userId) {
+    // Get the user object to ensure we have a valid ObjectId
+    const buyer = await this.usersService.findById(userId);
+
+    if (listing.seller.toString() === (buyer._id as any).toString()) {
       throw new BadRequestException('You cannot buy your own listing');
     }
 
     // Create transaction first with pending status
     const transaction = new this.transactionModel({
-      buyer: userId,
+      buyer: buyer._id as any,
       seller: listing.seller,
       listing: listing._id,
       amount: listing.price,
       status: 'pending_payment',
     });
 
+    console.log('Transaction object before save:', transaction);
+
     // Save the transaction to get an ID
     const savedTransaction = await transaction.save();
-    const transactionId = (savedTransaction as any)._id.toString();
+    const transactionId = (savedTransaction._id as any).toString();
 
     try {
       // Process payment using wallet
       await this.paymentService.processMarketplaceTransaction(
-        userId,
+        (buyer._id as any).toString(),
         listing.seller.toString(),
         listing.price,
         transactionId // Use transaction ID as reference
@@ -265,11 +284,16 @@ export class MarketplaceService {
       );
     }
 
+    // Get the user object to ensure we have a valid ObjectId
+    const reviewer = await this.usersService.findById(userId);
+
     // Determine if user is buyer or seller
     let reviewee: string;
-    if (transaction.buyer.toString() === userId) {
+    if (transaction.buyer.toString() === (reviewer._id as any).toString()) {
       reviewee = transaction.seller.toString();
-    } else if (transaction.seller.toString() === userId) {
+    } else if (
+      transaction.seller.toString() === (reviewer._id as any).toString()
+    ) {
       reviewee = transaction.buyer.toString();
     } else {
       throw new BadRequestException('You are not part of this transaction');
@@ -278,7 +302,7 @@ export class MarketplaceService {
     // Check if review already exists
     const existingReview = await this.reviewModel.findOne({
       transaction: createReviewDto.transactionId,
-      reviewer: userId,
+      reviewer: reviewer._id as any,
     });
 
     if (existingReview) {
@@ -288,12 +312,14 @@ export class MarketplaceService {
     }
 
     const review = new this.reviewModel({
-      reviewer: userId,
+      reviewer: reviewer._id as any,
       reviewee,
       transaction: createReviewDto.transactionId,
       rating: createReviewDto.rating,
-      comment: createReviewDto.comment,
+      comment: createReviewDto.comment || '',
     });
+
+    console.log('Review object before save:', review);
 
     return review.save();
   }
