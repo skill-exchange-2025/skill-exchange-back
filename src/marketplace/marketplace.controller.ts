@@ -10,6 +10,8 @@ import {
   Request,
   Patch,
   BadRequestException,
+  Put,
+  Delete,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -42,6 +44,25 @@ export class MarketplaceController {
       req.user._id,
       createListingDto
     );
+  }
+
+  @Put('listings/:id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update a listing' })
+  async updateListing(
+    @Param('id') id: string,
+    @Body() updateListingDto: CreateListingDto
+  ) {
+    return this.marketplaceService.updateListing(id, updateListingDto);
+  }
+
+  @Delete('listings/:id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Delete a listing' })
+  async deleteListing(@Param('id') id: string) {
+    return this.marketplaceService.deleteListing(id);
   }
 
   @Get('listings')

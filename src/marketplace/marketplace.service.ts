@@ -68,6 +68,30 @@ export class MarketplaceService {
     return listing.save();
   }
 
+  async updateListing(
+    listingId: string,
+    updateListingDto: CreateListingDto
+  ): Promise<ListingDocument> {
+    const listing = await this.listingModel.findByIdAndUpdate(
+      listingId,
+      updateListingDto,
+      { new: true }
+    );
+
+    if (!listing) {
+      throw new NotFoundException('Listing not found');
+    }
+    return listing;
+  }
+
+  async deleteListing(listingId: string): Promise<void> {
+    const result = await this.listingModel.findByIdAndDelete(listingId);
+    if (!result) {
+      throw new NotFoundException('Listing not found');
+    }
+  }
+  
+
   async getListings(
     page = 1,
     limit = 10,
