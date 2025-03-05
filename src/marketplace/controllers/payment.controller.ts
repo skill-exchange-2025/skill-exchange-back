@@ -26,7 +26,7 @@ import {
       @Request() req,
       @Body() body: { amount: number }
     ) {
-      return this.paymentService.createPaymentIntent(req.user.userId, body.amount);
+      return this.paymentService.createPaymentIntent(req.user._id, body.amount);
     }
   
     @Post('confirm-payment')
@@ -38,7 +38,7 @@ import {
       @Body() body: { paymentIntentId: string, amount: number }
     ) {
       return this.paymentService.processPayment(
-        req.user.userId, 
+        req.user._id, 
         body.paymentIntentId, 
         body.amount
       );
@@ -47,9 +47,9 @@ import {
     @Get('wallet')
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @ApiOperation({ summary: 'Get user wallet information' })
+    @ApiOperation({ summary: 'Get user wallet balance' })
     async getWallet(@Request() req) {
-      return this.paymentService.getWallet(req.user.userId);
+      return this.paymentService.getWallet(req.user._id);
     }
   
     @Get('transactions')
@@ -61,6 +61,6 @@ import {
       @Query('page') page: number = 1,
       @Query('limit') limit: number = 10
     ) {
-      return this.paymentService.getTransactionHistory(req.user.userId, page, limit);
+      return this.paymentService.getTransactionHistory(req.user._id, page, limit);
     }
   }

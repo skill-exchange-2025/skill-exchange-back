@@ -24,7 +24,6 @@ import { MarketplaceService } from './marketplace.service';
 import { CreateListingDto } from './dto/create-listing.dto';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { CreateReviewDto } from './dto/create-review.dto';
-
 @ApiTags('marketplace')
 @Controller('marketplace')
 export class MarketplaceController {
@@ -105,7 +104,7 @@ export class MarketplaceController {
     );
   }
 
-  @Patch('transactions/:id/complete')
+  @Put('transactions/:id/complete')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Complete a transaction' })
