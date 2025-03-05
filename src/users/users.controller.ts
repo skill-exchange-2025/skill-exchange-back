@@ -124,7 +124,6 @@ export class UsersController {
     return await this.usersService.verifyEmail(id);
   }
 
-  // Activate a user
 @Post(':id/activate')
 @Roles(Role.ADMIN)
 @Permissions(Permission.MANAGE_USERS)
@@ -132,10 +131,9 @@ async activateUser(@Param('id') id: string) {
   return await this.usersService.activateUser(id);
 }
 
-// Deactivate a user
 @Patch('deactivate/:id')
 async deactivate(@Param('id') id: string, @Req() req: Request) {
-  const token = req.headers['authorization']?.split(' ')[1];  // Assuming token is sent in the Authorization header
+  const token = req.headers['authorization']?.split(' ')[1];  
   if (!token) {
     throw new UnauthorizedException('Token is required');
   }

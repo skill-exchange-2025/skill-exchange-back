@@ -50,7 +50,7 @@ export class User {
   @Prop({ default: false })
   isEmailVerified: boolean;
 
-  @Prop({ default: false })
+  @Prop({ default: true })
   isActive: boolean;
 
 }
