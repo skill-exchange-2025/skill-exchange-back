@@ -538,7 +538,7 @@ export class AuthService {
           <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
             <h1 style="text-align: center; color: #4CAF50;">Referral Reward</h1>
             <p style="text-align: center; font-size: 16px;">
-              Good news! Someone signed up using your referral and you've received ${REFERRAL_REWARD} credits in your wallet.
+              Good news! Someone signed up using your referral and you've received ${REFERRAL_REWARD} 🪙 in your wallet.
             </p>
             <div style="text-align: center; margin: 20px 0;">
               <p>Thank you for helping our community grow!</p>
