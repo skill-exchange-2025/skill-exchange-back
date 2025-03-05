@@ -9,6 +9,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { ProfileModule } from './profile/profile.module';
+import { BlacklistModule } from './blacklist/blacklist.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { ProfileModule } from './profile/profile.module';
         },
       }),
     }),
+    BlacklistModule,
   ],
   controllers: [AppController, AuthController],
   providers: [AppService, JwtModule],

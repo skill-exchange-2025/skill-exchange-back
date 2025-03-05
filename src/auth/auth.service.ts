@@ -204,6 +204,9 @@ export class AuthService {
         'Please verify your email before logging in'
       );
     }
+     if (!user.isActive) {
+    throw new UnauthorizedException('Account is deactivated');
+  }
 
     const { accessToken, refreshToken } = await this.generateTokens(user);
 
