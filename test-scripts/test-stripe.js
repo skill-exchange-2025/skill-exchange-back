@@ -66,9 +66,6 @@ if (!process.env.STRIPE_SECRET_KEY) {
   console.error('Error: STRIPE_SECRET_KEY environment variable is not set.');
   console.log('Please set it by running:');
   console.log(
-    '  export STRIPE_SECRET_KEY=your_stripe_secret_key  # For Linux/Mac'
-  );
-  console.log(
     '  set STRIPE_SECRET_KEY=your_stripe_secret_key     # For Windows CMD'
   );
   console.log(
