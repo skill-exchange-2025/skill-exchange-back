@@ -7,8 +7,8 @@ export class BlacklistService implements OnModuleInit, OnModuleDestroy {
 
   onModuleInit() {
     this.redisClient = new Redis({
-      host: 'localhost', // Change if using a different host
-      port: 6379,        // Default Redis port
+      host: 'localhost', 
+      port: 6379,        
     });
   }
 
@@ -17,10 +17,10 @@ export class BlacklistService implements OnModuleInit, OnModuleDestroy {
   }
 
   async isBlacklisted(token: string) {
-    return await this.redisClient.get(`blacklist:${token}`); // Check if token is blacklisted
+    return await this.redisClient.get(`blacklist:${token}`); 
   }
 
   onModuleDestroy() {
-    this.redisClient.quit(); // Close Redis connection when module is destroyed
+    this.redisClient.quit(); 
   }
 }
