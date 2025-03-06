@@ -13,7 +13,8 @@ export class BlacklistService implements OnModuleInit, OnModuleDestroy {
   }
 
   async addToBlacklist(token: string) {
-    return await this.redisClient.set(`blacklist:${token}`, 'true', 'EX', 180); // 3 mins expiration
+    return await this.redisClient.set(`blacklist:${token}`,'true'); //desactivated aala toul
+
   }
 
   async isBlacklisted(token: string) {
