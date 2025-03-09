@@ -40,9 +40,3 @@ export class CompleteResetPasswordDto {
 
 }
 
-export class ResetPasswordDto {
-
-  @ApiProperty()
-  @IsEmail()
-  email: string;
-  }

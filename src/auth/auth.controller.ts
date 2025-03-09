@@ -19,12 +19,11 @@ import {
 } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
-import { ResetPasswordDto } from './dto/reset-password.dto'
 import { LoginDto } from './dto/login.dto';
 import { AuthResponseDto } from './dto/auth-response.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { CurrentUser } from './decorators/user.decorator';
-import { User } from '../users/schemas/user.schema';
+import { User, UserDocument } from '../users/schemas/user.schema';
 import { Roles } from './decorators/roles.decorator';
 import { Role } from './enums/role.enum';
 import { RolesGuard } from './guards/roles.guard';
@@ -32,7 +31,8 @@ import { PermissionsGuard } from './guards/permissions.guard';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { InitiateResetPasswordDto } from './dto/reset-password.dto';
 import { CompleteResetPasswordDto } from './dto/reset-password.dto';
-
+import { ReferralDto } from './dto/referral.dto';
+import { Types } from 'mongoose';
 
 export const Public = () => SetMetadata('isPublic', true);
 
@@ -43,7 +43,7 @@ export class AuthController {
 
   @Public() // Add this decorator to make the endpoint public
   @Post('reset-password')
-  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+  async resetPassword(@Body() resetPasswordDto: InitiateResetPasswordDto) {
     return await this.authService.resetPassword(resetPasswordDto.email);
   }
 
@@ -93,7 +93,6 @@ export class AuthController {
   }
   @Post('verify-otp')
   @Public()
-
   @ApiOperation({ summary: 'Verify OTP code' })
   @ApiResponse({ status: 200, description: 'OTP verified successfully' })
   @ApiResponse({ status: 400, description: 'Invalid OTP' })
@@ -110,7 +109,6 @@ export class AuthController {
     try {
       const result = await this.authService.verifyEmail(token);
       return result;
-
     } catch (error) {
       throw new BadRequestException(error.message);
     }
@@ -140,4 +138,11 @@ export class AuthController {
     );
   }
 
+  @Post('referral')
+  @Public()
+  @ApiOperation({ summary: 'Process a referral' })
+  @ApiResponse({ status: 200, description: 'Referral processed successfully' })
+  async processReferral(@Body() referralDto: ReferralDto) {
+    return await this.authService.processReferral(null, referralDto);
+  }
 }

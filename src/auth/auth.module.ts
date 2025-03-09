@@ -14,6 +14,8 @@ import { JwtStrategy } from '../strategies/jwt.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { User, UserSchema } from 'src/users/schemas/user.schema';
 import { OTP, OTPSchema } from './schemas/otp.schema';
+import { MarketplaceModule } from '../marketplace/marketplace.module';
+import { Wallet, WalletSchema } from '../marketplace/schemas/wallet.schema';
 
 @Module({
   imports: [
@@ -34,7 +36,9 @@ import { OTP, OTPSchema } from './schemas/otp.schema';
       { name: PermissionGroup.name, schema: PermissionGroupSchema },
       { name: User.name, schema: UserSchema },
       { name: OTP.name, schema: OTPSchema },
+      { name: Wallet.name, schema: WalletSchema },
     ]),
+    MarketplaceModule, // Import MarketplaceModule to have access to the Wallet model
   ],
   controllers: [AuthController],
   providers: [JwtModule, AuthService, JwtStrategy],

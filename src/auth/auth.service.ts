@@ -21,18 +21,21 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { JsonWebTokenError } from 'jsonwebtoken';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { CompleteResetPasswordDto } from './dto/reset-password.dto';
+import { ReferralDto } from './dto/referral.dto';
+import * as mongoose from 'mongoose';
+import { Wallet, WalletDocument } from '../marketplace/schemas/wallet.schema';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     @InjectModel(OTP.name) private otpModel: Model<OTPDocument>,
+    @InjectModel(Wallet.name) private walletModel: Model<WalletDocument>,
     private mailerService: MailerService,
     private usersService: UsersService,
     private jwtService: JwtService,
     private configService: ConfigService
   ) {}
-
 
   async resetPassword(email: string) {
     try {
@@ -41,7 +44,6 @@ export class AuthService {
       if (!user) {
         throw new NotFoundException('User not found');
       }
-
 
       // Generate 6-digit OTP
       const otp = Math.floor(100000 + Math.random() * 900000).toString();
@@ -57,7 +59,6 @@ export class AuthService {
       // Send email with OTP
 
       await this.mailerService.sendMail({
-
         to: email,
         subject: 'Password Reset OTP',
         html: `
@@ -332,7 +333,6 @@ export class AuthService {
     return user;
   }
 
-
   async verifyOTP(email: string, otp: string) {
     try {
       const otpRecord = await this.otpModel.findOne({
@@ -368,7 +368,6 @@ export class AuthService {
     try {
       const otpRecord = await this.otpModel.findOne({ token });
 
-
       if (!otpRecord) {
         throw new UnauthorizedException('Invalid token');
       }
@@ -395,7 +394,6 @@ export class AuthService {
       throw new UnauthorizedException('Error validating OTP');
     }
   }
-
 
   async verifyEmail(token: string): Promise<{ message: string }> {
     try {
@@ -473,4 +471,86 @@ export class AuthService {
     }
   }
 
+  /**
+   * Process a referral and reward the referrer with credits
+   * @param userId The ID of the new user
+   * @param referralDto The referral data containing the referrer's email
+   * @returns A message indicating the result of the referral process
+   */
+  async processReferral(
+    userId: string | null,
+    referralDto: ReferralDto
+  ): Promise<{ message: string }> {
+    try {
+      // Check if the referrer exists
+      const referrer = await this.userModel.findOne({
+        email: referralDto.referrerEmail.toLowerCase().trim(),
+      });
+
+      if (!referrer) {
+        return { message: 'Thank you for your feedback!' };
+      }
+
+      // If userId is provided, check for self-referrals
+      if (userId) {
+        const user = await this.userModel.findById(userId);
+        if (!user) {
+          return { message: 'Thank you for your feedback!' };
+        }
+
+        if (
+          user.email.toLowerCase() === referralDto.referrerEmail.toLowerCase()
+        ) {
+          return { message: 'Thank you for your feedback!' };
+        }
+      }
+
+      // Get the referrer's wallet
+      let wallet = await this.walletModel.findOne({ user: referrer._id });
+
+      // Create wallet if it doesn't exist
+      if (!wallet) {
+        wallet = await this.walletModel.create({
+          user: referrer._id,
+          balance: 0,
+          transactions: [],
+        });
+      }
+
+      // Add 5 credits to the referrer's wallet
+      const REFERRAL_REWARD = 5;
+      wallet.balance += REFERRAL_REWARD;
+      wallet.transactions.push({
+        amount: REFERRAL_REWARD,
+        type: 'referral',
+        description: 'Referral reward',
+        timestamp: new Date(),
+        reference: userId ? `referral:${userId}` : 'referral:anonymous',
+      });
+
+      await wallet.save();
+
+      // Send email notification to the referrer
+      await this.mailerService.sendMail({
+        to: referrer.email,
+        subject: 'You received a referral reward!',
+        html: `
+          <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+            <h1 style="text-align: center; color: #4CAF50;">Referral Reward</h1>
+            <p style="text-align: center; font-size: 16px;">
+              Good news! Someone signed up using your referral and you've received ${REFERRAL_REWARD} 🪙 in your wallet.
+            </p>
+            <div style="text-align: center; margin: 20px 0;">
+              <p>Thank you for helping our community grow!</p>
+            </div>
+          </div>
+        `,
+      });
+
+      return { message: 'Referral processed successfully' };
+    } catch (error) {
+      console.error('Error processing referral:', error);
+      return { message: 'Thank you for your feedback!' };
+    }
+  }
 }
