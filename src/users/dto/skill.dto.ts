@@ -6,10 +6,6 @@ export class SkillDto {
   @IsString()
   name: string;
 
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsString()
-  description?: string;
 
   @ApiProperty({ required: false })
   @IsOptional()
@@ -22,10 +18,6 @@ export class DesiredSkillDto {
   @IsString()
   name: string;
 
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsString()
-  description?: string;
 
   @ApiProperty({ required: false })
   @IsOptional()

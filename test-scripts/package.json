@@ -1,0 +1,16 @@
+{
+  "name": "marketplace-stripe-tests",
+  "version": "1.0.0",
+  "description": "Test scripts for marketplace and Stripe integration",
+  "main": "index.js",
+  "scripts": {
+    "test:stripe": "node test-stripe.js",
+    "test:marketplace": "node test-marketplace-api.js",
+    "test:auth": "node test-auth.js",
+    "test:all": "npm run test:stripe && npm run test:marketplace"
+  },
+  "dependencies": {
+    "axios": "^1.6.2",
+    "stripe": "^14.5.0"
+  }
+}
