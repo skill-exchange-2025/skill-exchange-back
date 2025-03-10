@@ -81,4 +81,11 @@ export class ProfileController {
     const avatarUrl = `/uploads/${file.filename}`;
     return await this.profileService.uploadAvatar(user.id, avatarUrl);
   }
+
+
+  @Get('avatar')
+  async getAvatar(@CurrentUser() user: any) {
+    return await this.profileService.getAvatar(user.id);
+  }
 }
+

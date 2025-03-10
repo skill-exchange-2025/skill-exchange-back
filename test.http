@@ -20,11 +20,11 @@ POST http://localhost:5000/api/auth/register
 Content-Type: application/json
 
 {
-  "email": "xxabcd@g.com",
+  "email": "admin@g.com",
   "password": "Password1234",
-  "phone": "02345679",
+  "phone": "32345679",
   "name": "aaaaaa",
-  "roles": ["user"],
+  "roles": ["admin"],
   "skills": [
     {
       "name": "react",
@@ -67,7 +67,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2I3Yjk0M
 
 ### Create Profile
 POST http://localhost:5000/api/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2I3Yjk0MjQwNDQ2ZTY5OTBjZjZmOWEiLCJlbWFpbCI6ImppaGVkMDAwMEBnbWFpbC5jb20iLCJpYXQiOjE3NDAxMjg4NzksImV4cCI6MTc0MDEyOTc3OX0.qZczMXIu1DCD3IqKhdSl03LE_Yhkei3Iqn3o7rqDBcA
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2M2M2QyZDliMWY3MDBkYTczM2FkZTMiLCJlbWFpbCI6Inh4YWJjZEBnLmNvbSIsImlhdCI6MTc0MTA0Njk1NiwiZXhwIjoxNzQxMDQ3ODU2fQ.YApxi-VuCgt8rd9gr4bTyPrpvd4P9h7zqAk55zB4jpM
 Content-Type: application/json
 
 {
@@ -121,3 +121,7 @@ Content-Type: image/png
 
 < ./test.png
 --boundary--
+
+### Get Profile
+GET http://localhost:5000/api/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2M2M2QyZDliMWY3MDBkYTczM2FkZTMiLCJlbWFpbCI6Inh4YWJjZEBnLmNvbSIsImlhdCI6MTc0MTEzNzUwNSwiZXhwIjoxNzQxMTM4NDA1fQ.hyuQ56DyaLomzO0QlzM24WCT9sNJiYenHtjFABGOwCg

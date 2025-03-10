@@ -49,10 +49,10 @@ export class ProfileService {
             email: user.email,
             phone: user.phone,
             skills: user.skills || [],
-            desiredSkills: user.desiredSkills || []
+            desiredSkills: user.desiredSkills || [],
           },
           completionStatus,
-          profileExists: false
+          profileExists: false,
         };
       }
 
@@ -67,10 +67,10 @@ export class ProfileService {
           email: user.email,
           phone: user.phone,
           skills: user.skills || [],
-          desiredSkills: user.desiredSkills || []
+          desiredSkills: user.desiredSkills || [],
         },
         completionStatus,
-        profileExists: true
+        profileExists: true,
       };
     } catch (error) {
       if (error instanceof NotFoundException) {
@@ -84,15 +84,17 @@ export class ProfileService {
     try {
       const { userUpdate, profileUpdate } = this.separateUpdateData(updateData);
 
-      const [updatedProfile, updatedUser, completionStatus] = await Promise.all([
-        this.profileModel
-          .findOneAndUpdate({ userId }, profileUpdate, { new: true })
-          .exec(),
-        Object.keys(userUpdate).length > 0
-          ? this.usersService.update(userId, userUpdate)
-          : this.usersService.findById(userId),
-        this.calculateProfileCompletion(userId),
-      ]);
+      const [updatedProfile, updatedUser, completionStatus] = await Promise.all(
+        [
+          this.profileModel
+            .findOneAndUpdate({ userId }, profileUpdate, { new: true })
+            .exec(),
+          Object.keys(userUpdate).length > 0
+            ? this.usersService.update(userId, userUpdate)
+            : this.usersService.findById(userId),
+          this.calculateProfileCompletion(userId),
+        ]
+      );
 
       if (!updatedProfile) {
         throw new NotFoundException('Profile not found');
@@ -107,7 +109,7 @@ export class ProfileService {
           skills: updatedUser.skills || [],
           desiredSkills: updatedUser.desiredSkills || [],
         },
-        completionStatus
+        completionStatus,
       };
     } catch (error) {
       if (error instanceof NotFoundException) {
@@ -150,7 +152,7 @@ export class ProfileService {
       'socialLinks',
       'profession',
       'interests',
-      'birthDate'
+      'birthDate',
     ];
 
     const userFields = ['name', 'email', 'phone', 'skills', 'desiredSkills'];
@@ -211,6 +213,20 @@ export class ProfileService {
       };
     } catch (error) {
       throw new BadRequestException('Error calculating profile completion');
+    }
+  }
+  async getAvatar(userId: string): Promise<string> {
+    try {
+      const profile = await this.profileModel.findOne({ userId }).exec();
+      if (!profile) {
+        throw new NotFoundException('Profile not found');
+      }
+      return profile.avatarUrl;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new BadRequestException('Error fetching avatar');
     }
   }
 }
