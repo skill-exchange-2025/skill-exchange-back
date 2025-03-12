@@ -112,7 +112,7 @@ Content-Type: application/json
 ###
 
 POST http://localhost:5000/api/profile/avatar
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2M2M2QyZDliMWY3MDBkYTczM2FkZTMiLCJlbWFpbCI6Inh4YWJjZEBnLmNvbSIsImlhdCI6MTc0MTA0NTg0NiwiZXhwIjoxNzQxMDQ2NzQ2fQ.W0zHEG3vksukd_T31s0CdW-H0yFnTfdKDnsOA1T1KnA
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2M2M2QyZDliMWY3MDBkYTczM2FkZTMiLCJlbWFpbCI6Inh4YWJjZEBnLmNvbSIsImlhdCI6MTc0MTU2ODI5OCwiZXhwIjoxNzQxNTY5MTk4fQ.QOOqrD7kzwwc5YFoXb4SPwPQcjgpf_DkWWFQJ9RNPIA
 Content-Type: multipart/form-data; boundary=boundary
 
 --boundary
