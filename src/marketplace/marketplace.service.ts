@@ -38,34 +38,36 @@ export class MarketplaceService {
     console.log('Found user:', user);
 
     // Verify user has the skill they're selling
-    const hasSkill = user.skills.some(
-      (skill) =>
-        skill.name === createListingDto.skillName &&
-        skill.proficiencyLevel === createListingDto.proficiencyLevel
+    const userSkill = user.skills.find(
+      (skill) => skill.name === createListingDto.skillName
     );
 
-    if (!hasSkill) {
+    if (!userSkill) {
       throw new BadRequestException(
-        'You can only sell skills that you possess at the specified proficiency level'
+        'You can only sell skills that you possess'
       );
     }
 
-    // Create a new listing with all required fields
-    const listing = new this.listingModel({
-      title: createListingDto.title,
-      description: createListingDto.description,
-      skillName: createListingDto.skillName,
-      category: createListingDto.category,
-      proficiencyLevel: createListingDto.proficiencyLevel,
-      price: createListingDto.price,
-      seller: user._id as any, // Use the actual user._id from the database
-      tags: createListingDto.tags || [],
-      imagesUrl: createListingDto.imagesUrl || [],
+    // Check if user's proficiency level is equal to or higher than the listing level
+    const hasRequiredProficiency =
+      userSkill.proficiencyLevel === createListingDto.proficiencyLevel ||
+      this.isProficiencyHigher(
+        userSkill.proficiencyLevel,
+        createListingDto.proficiencyLevel
+      );
+
+    if (!hasRequiredProficiency) {
+      throw new BadRequestException(
+        'You can only sell skills at proficiency levels equal to or lower than what you possess'
+      );
+    }
+
+    const newListing = new this.listingModel({
+      ...createListingDto,
+      seller: userId,
     });
 
-    console.log('Listing object before save:', listing);
-
-    return listing.save();
+    return newListing.save();
   }
 
   async updateListing(
@@ -90,7 +92,6 @@ export class MarketplaceService {
       throw new NotFoundException('Listing not found');
     }
   }
-  
 
   async getListings(
     page = 1,
@@ -100,47 +101,108 @@ export class MarketplaceService {
     minPrice?: number,
     maxPrice?: number
   ) {
+    const skip = (page - 1) * limit;
     const query: any = { status: 'active' };
 
     if (search) {
       query.$or = [
-        { title: new RegExp(search, 'i') },
-        { description: new RegExp(search, 'i') },
-        { tags: { $in: [new RegExp(search, 'i')] } },
+        { title: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } },
+        { skillName: { $regex: search, $options: 'i' } },
       ];
     }
 
     if (skillName) {
-      query.skillName = new RegExp(skillName, 'i');
+      query.skillName = skillName;
     }
 
     if (minPrice !== undefined || maxPrice !== undefined) {
       query.price = {};
-      if (minPrice !== undefined) query.price.$gte = minPrice;
-      if (maxPrice !== undefined) query.price.$lte = maxPrice;
+      if (minPrice !== undefined) {
+        query.price.$gte = minPrice;
+      }
+      if (maxPrice !== undefined) {
+        query.price.$lte = maxPrice;
+      }
     }
 
-    const [listings, total] = await Promise.all([
-      this.listingModel
-        .find(query)
-        .populate('seller', 'name email')
-        .sort({ createdAt: -1 })
-        .skip((page - 1) * limit)
-        .limit(limit)
-        .exec(),
-      this.listingModel.countDocuments(query),
-    ]);
+    const listings = await this.listingModel
+      .find(query)
+      .populate('seller', 'username email profilePicture')
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 })
+      .exec();
+
+    const total = await this.listingModel.countDocuments(query);
 
     return {
       data: listings,
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit),
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
     };
   }
 
-  async getListingById(id: string): Promise<ListingDocument> {
+  async getListingsByType(
+    type: string,
+    page = 1,
+    limit = 10,
+    search?: string,
+    skillName?: string,
+    minPrice?: number,
+    maxPrice?: number
+  ) {
+    const skip = (page - 1) * limit;
+    const query: any = { status: 'active', type };
+
+    if (search) {
+      query.$or = [
+        { title: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } },
+        { skillName: { $regex: search, $options: 'i' } },
+      ];
+    }
+
+    if (skillName) {
+      query.skillName = skillName;
+    }
+
+    if (minPrice !== undefined || maxPrice !== undefined) {
+      query.price = {};
+      if (minPrice !== undefined) {
+        query.price.$gte = minPrice;
+      }
+      if (maxPrice !== undefined) {
+        query.price.$lte = maxPrice;
+      }
+    }
+
+    const listings = await this.listingModel
+      .find(query)
+      .populate('seller', 'username email profilePicture')
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 })
+      .exec();
+
+    const total = await this.listingModel.countDocuments(query);
+
+    return {
+      data: listings,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  }
+
+  async getListingById(id: string): Promise<any> {
     const listing = await this.listingModel
       .findById(id)
       .populate('seller', 'name email')
@@ -154,7 +216,20 @@ export class MarketplaceService {
     listing.views += 1;
     await listing.save();
 
-    return listing;
+    // Get review statistics
+    const reviews = await this.reviewModel.find({ listing: id });
+    const reviewCount = reviews.length;
+    const averageRating =
+      reviewCount > 0
+        ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviewCount
+        : 0;
+
+    // Return listing with review information
+    return {
+      ...listing.toJSON(),
+      reviewCount,
+      averageRating,
+    };
   }
 
   // Update the createTransaction method
@@ -205,8 +280,8 @@ export class MarketplaceService {
         transactionId // Use transaction ID as reference
       );
 
-      // Update transaction status to pending (service delivery)
-      savedTransaction.status = 'pending';
+      // Update transaction status to completed (service delivery)
+      savedTransaction.status = 'completed';
       await savedTransaction.save();
 
       // Update listing status
@@ -339,6 +414,7 @@ export class MarketplaceService {
       reviewer: reviewer._id as any,
       reviewee,
       transaction: createReviewDto.transactionId,
+      listing: transaction.listing,
       rating: createReviewDto.rating,
       comment: createReviewDto.comment || '',
     });
@@ -346,6 +422,33 @@ export class MarketplaceService {
     console.log('Review object before save:', review);
 
     return review.save();
+  }
+
+  async getListingReviews(listingId: string, page = 1, limit = 10) {
+    const skip = (page - 1) * limit;
+
+    const reviews = await this.reviewModel
+      .find({ listing: listingId })
+      .populate('reviewer', 'username profilePicture')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .exec();
+
+    const total = await this.reviewModel.countDocuments({ listing: listingId });
+
+    // Calculate average rating
+    const ratingSum = reviews.reduce((sum, review) => sum + review.rating, 0);
+    const averageRating = reviews.length > 0 ? ratingSum / reviews.length : 0;
+
+    return {
+      reviews,
+      total,
+      averageRating,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 
   // Helper methods

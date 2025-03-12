@@ -22,8 +22,12 @@ import {
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { MarketplaceService } from './marketplace.service';
 import { CreateListingDto } from './dto/create-listing.dto';
+import { CreateCourseListingDto } from './dto/create-course-listing.dto';
+import { CreateOnlineCourseListingDto } from './dto/create-online-course-listing.dto';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { CreateReviewDto } from './dto/create-review.dto';
+import { ListingType } from './schemas/listing.schema';
+
 @ApiTags('marketplace')
 @Controller('marketplace')
 export class MarketplaceController {
@@ -32,7 +36,7 @@ export class MarketplaceController {
   @Post('listings')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Create a new skill listing' })
+  @ApiOperation({ summary: 'Create a new skill listing (generic)' })
   async createListing(
     @Request() req,
     @Body() createListingDto: CreateListingDto
@@ -42,6 +46,43 @@ export class MarketplaceController {
     return this.marketplaceService.createListing(
       req.user._id,
       createListingDto
+    );
+  }
+
+  @Post('courses')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Create a new static course listing (PDFs, videos, etc.)',
+  })
+  async createCourseListing(
+    @Request() req,
+    @Body() createCourseListingDto: CreateCourseListingDto
+  ) {
+    console.log('User object:', req.user);
+    console.log('CreateCourseListingDto:', createCourseListingDto);
+    return this.marketplaceService.createListing(
+      req.user._id,
+      createCourseListingDto
+    );
+  }
+
+  @Post('online-courses')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary:
+      'Create a new interactive/live online course listing with student limits',
+  })
+  async createOnlineCourseListing(
+    @Request() req,
+    @Body() createOnlineCourseListingDto: CreateOnlineCourseListingDto
+  ) {
+    console.log('User object:', req.user);
+    console.log('CreateOnlineCourseListingDto:', createOnlineCourseListingDto);
+    return this.marketplaceService.createListing(
+      req.user._id,
+      createOnlineCourseListingDto
     );
   }
 
@@ -118,5 +159,62 @@ export class MarketplaceController {
   @ApiOperation({ summary: 'Create a review for a transaction' })
   async createReview(@Request() req, @Body() createReviewDto: CreateReviewDto) {
     return this.marketplaceService.createReview(req.user._id, createReviewDto);
+  }
+
+  @Get('listings/:id/reviews')
+  @ApiOperation({ summary: 'Get reviews for a specific listing' })
+  async getListingReviews(
+    @Param('id') id: string,
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10
+  ) {
+    return this.marketplaceService.getListingReviews(id, page, limit);
+  }
+
+  @Get('courses')
+  @ApiOperation({
+    summary: 'Get all static course listings (PDFs, videos, etc.)',
+  })
+  async getCoursesListings(
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+    @Query('search') search?: string,
+    @Query('skillName') skillName?: string,
+    @Query('minPrice') minPrice?: number,
+    @Query('maxPrice') maxPrice?: number
+  ) {
+    return this.marketplaceService.getListingsByType(
+      ListingType.COURSE,
+      page,
+      limit,
+      search,
+      skillName,
+      minPrice,
+      maxPrice
+    );
+  }
+
+  @Get('online-courses')
+  @ApiOperation({
+    summary:
+      'Get all interactive/live online course listings with student limits',
+  })
+  async getOnlineCoursesListings(
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+    @Query('search') search?: string,
+    @Query('skillName') skillName?: string,
+    @Query('minPrice') minPrice?: number,
+    @Query('maxPrice') maxPrice?: number
+  ) {
+    return this.marketplaceService.getListingsByType(
+      ListingType.ONLINE_COURSE,
+      page,
+      limit,
+      search,
+      skillName,
+      minPrice,
+      maxPrice
+    );
   }
 }

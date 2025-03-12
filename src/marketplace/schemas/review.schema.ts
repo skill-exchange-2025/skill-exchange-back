@@ -3,6 +3,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 import { User } from '../../users/schemas/user.schema';
 import { Transaction } from './transaction.schema';
+import { Listing } from './listing.schema';
 
 export type ReviewDocument = Review & Document;
 
@@ -14,8 +15,15 @@ export class Review {
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
   reviewee: User;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Transaction', required: true })
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    ref: 'Transaction',
+    required: true,
+  })
   transaction: Transaction;
+
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Listing', required: true })
+  listing: Listing;
 
   @Prop({ required: true, min: 1, max: 5 })
   rating: number;
