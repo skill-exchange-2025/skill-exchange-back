@@ -1,6 +1,8 @@
 ### GET request to example server
-GET https://examples.http-client.intellij.net/get
-    ?generated-in=WebStorm
+GET http://localhost:5000/api/users/skills
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2I3Yjk0MjQwNDQ2ZTY5OTBjZjZmOWEiLCJlbWFpbCI6ImppaGVkMDAwMEBnbWFpbC5jb20iLCJpYXQiOjE3NDA3ODc2NTEsImV4cCI6MTc0MDc4ODU1MX0.tx-UVuHrn3teoA_2_o6DNXI0-vzJoCNyIObhLG2ggco
+
+
 
 ###
 POST http://localhost:5000/api/auth/register
@@ -20,11 +22,11 @@ POST http://localhost:5000/api/auth/register
 Content-Type: application/json
 
 {
-  "email": "admin@g.com",
+  "email": "abcd@g.com",
   "password": "Password1234",
-  "phone": "32345679",
+  "phone": "12345679",
   "name": "aaaaaa",
-  "roles": ["admin"],
+  "roles": ["user"],
   "skills": [
     {
       "name": "react",
@@ -53,21 +55,21 @@ POST http://localhost:5000/api/auth/login
 Content-Type: application/json
 
 {
-  "email": "xxabcd@g.com",
-  "password": "Password1234"
+  "email": "jihed0000@gmail.com",
+  "password": "jihed123"
 }
 
 
 
 ###
 GET http://localhost:5000/api/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2I3Yjk0MjQwNDQ2ZTY5OTBjZjZmOWEiLCJlbWFpbCI6ImppaGVkMDAwMEBnbWFpbC5jb20iLCJpYXQiOjE3NDAxMjg4NzksImV4cCI6MTc0MDEyOTc3OX0.qZczMXIu1DCD3IqKhdSl03LE_Yhkei3Iqn3o7rqDBcA
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2I3Yjk0MjQwNDQ2ZTY5OTBjZjZmOWEiLCJlbWFpbCI6ImppaGVkMDAwMEBnbWFpbC5jb20iLCJpYXQiOjE3NDA3NDcwNjIsImV4cCI6MTc0MDc0Nzk2Mn0.0LG7KuQv9eyGoaZ66ZW9jNW2R3xsnjbLozFkVoI5P4s
 
 
 
 ### Create Profile
 POST http://localhost:5000/api/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2M2M2QyZDliMWY3MDBkYTczM2FkZTMiLCJlbWFpbCI6Inh4YWJjZEBnLmNvbSIsImlhdCI6MTc0MTA0Njk1NiwiZXhwIjoxNzQxMDQ3ODU2fQ.YApxi-VuCgt8rd9gr4bTyPrpvd4P9h7zqAk55zB4jpM
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2I3Yjk0MjQwNDQ2ZTY5OTBjZjZmOWEiLCJlbWFpbCI6ImppaGVkMDAwMEBnbWFpbC5jb20iLCJpYXQiOjE3NDAxMjg4NzksImV4cCI6MTc0MDEyOTc3OX0.qZczMXIu1DCD3IqKhdSl03LE_Yhkei3Iqn3o7rqDBcA
 Content-Type: application/json
 
 {
@@ -109,19 +111,14 @@ Content-Type: application/json
 DELETE http://localhost:5000/api/profile
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2IzOTRmZWMxY2M1NWQ5NGQ0YThlNjUiLCJlbWFpbCI6ImppaWlAZ21haWwuY29tIiwiaWF0IjoxNzM5ODkwMzk4LCJleHAiOjE3Mzk4OTEyOTh9.MC-GnsKV0mCh4vehAhsaW-66bKr-DLMmMt29WkRkgWg
 Content-Type: application/json
-###
 
+### Upload Profile Avatar
 POST http://localhost:5000/api/profile/avatar
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2M2M2QyZDliMWY3MDBkYTczM2FkZTMiLCJlbWFpbCI6Inh4YWJjZEBnLmNvbSIsImlhdCI6MTc0MTU2ODI5OCwiZXhwIjoxNzQxNTY5MTk4fQ.QOOqrD7kzwwc5YFoXb4SPwPQcjgpf_DkWWFQJ9RNPIA
-Content-Type: multipart/form-data; boundary=boundary
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2IzOTRmZWMxY2M1NWQ5NGQ0YThlNjUiLCJlbWFpbCI6ImppaWlAZ21haWwuY29tIiwiaWF0IjoxNzM5ODI2ODczLCJleHAiOjE3Mzk4Mjc3NzN9.I-d0paPU8PIEkEvcmzHYcdMsCgo45q4OEh2JdXVUHl8
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
---boundary
-Content-Disposition: form-data; name="avatar"; filename="test.png"
-Content-Type: image/png
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="avatar"; filename="profile-picture.jpg"
+Content-Type: image/jpeg
 
-< ./test.png
---boundary--
-
-### Get Profile
-GET http://localhost:5000/api/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2M2M2QyZDliMWY3MDBkYTczM2FkZTMiLCJlbWFpbCI6Inh4YWJjZEBnLmNvbSIsImlhdCI6MTc0MTEzNzUwNSwiZXhwIjoxNzQxMTM4NDA1fQ.hyuQ56DyaLomzO0QlzM24WCT9sNJiYenHtjFABGOwCg
+</ Users/jihed/Downloads/473021116_1124461089188286_3074189769567510121_n (2).jpg

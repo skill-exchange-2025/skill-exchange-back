@@ -22,6 +22,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import {JwtAuthGuard} from "../auth/guards/jwt-auth.guard";
+import { Public } from '../auth/auth.controller';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -67,7 +68,7 @@ export class UsersController {
   }
 
   @Get(':id')
-  @Roles(Role.ADMIN, Role.MODERATOR)
+  @Roles(Role.ADMIN, Role.MODERATOR, Role.USER)
   @Permissions(Permission.READ_USER)
   async findOne(@Param('id') id: string) {
     return await this.usersService.findById(id);
@@ -120,4 +121,12 @@ export class UsersController {
   async verifyUser(@Param('id') id: string) {
     return await this.usersService.verifyEmail(id);
   }
+
+  @Get('skills')
+  @Public() // Make it public or specify required roles
+  async getAllSkills() {
+    return this.usersService.getAllSkills();
+  }
+
+
 }
