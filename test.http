@@ -22,14 +22,14 @@ POST http://localhost:5000/api/auth/register
 Content-Type: application/json
 
 {
-  "email": "abcd@g.com",
+  "email": "test@g.com",
   "password": "Password1234",
-  "phone": "12345679",
+  "phone": "18345679",
   "name": "aaaaaa",
-  "roles": ["user"],
+  "roles": ["admin"],
   "skills": [
     {
-      "name": "react",
+      "name": "python",
       "description": "Modern JavaScript development",
       "proficiencyLevel": "intermediate"
     },
@@ -55,15 +55,29 @@ POST http://localhost:5000/api/auth/login
 Content-Type: application/json
 
 {
-  "email": "jihed0000@gmail.com",
-  "password": "jihed123"
+  "email": "jihedsaguer128@gmail.com",
+  "password": "Jihed12345"
 }
-
-
-
 ###
-GET http://localhost:5000/api/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2I3Yjk0MjQwNDQ2ZTY5OTBjZjZmOWEiLCJlbWFpbCI6ImppaGVkMDAwMEBnbWFpbC5jb20iLCJpYXQiOjE3NDA3NDcwNjIsImV4cCI6MTc0MDc0Nzk2Mn0.0LG7KuQv9eyGoaZ66ZW9jNW2R3xsnjbLozFkVoI5P4s
+GET http://localhost:5000/api/marketplace/listings/67d4be0c68259a619e7d9dd6
+
+### Then use the token to create a lesson
+POST http://localhost:5000/api/lessons/listing/67d4be0c68259a619e7d9dd6
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Q0YmNlYjY4MjU5YTYxOWU3ZDlkNTkiLCJlbWFpbCI6ImppaGVkc2FndWVyMTI4QGdtYWlsLmNvbSIsImlhdCI6MTc0MjA4MDQyOCwiZXhwIjoxNzQyMDgxMzI4fQ.cX69uyvw7A3TuXHSoMCjHuk6WNObLZIqwSBdg_G29_k
+Content-Type: application/json
+
+{
+  "title": "Introduction to Programming",
+  "description": "Learn the basics of programming with this introductory lesson",
+  "duration": 60,
+  "type": "recorded",
+  "textContent": "This is the main content of the lesson...",
+  "isPreview": true
+}
+###
+GET http://localhost:5000/api/lessons/67d60c75163fec36531700c9
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Q0YmNlYjY4MjU5YTYxOWU3ZDlkNTkiLCJlbWFpbCI6ImppaGVkc2FndWVyMTI4QGdtYWlsLmNvbSIsImlhdCI6MTc0MjA4MDQyOCwiZXhwIjoxNzQyMDgxMzI4fQ.cX69uyvw7A3TuXHSoMCjHuk6WNObLZIqwSBdg_G29_k
+
 
 
 
@@ -122,3 +136,8 @@ Content-Disposition: form-data; name="avatar"; filename="profile-picture.jpg"
 Content-Type: image/jpeg
 
 </ Users/jihed/Downloads/473021116_1124461089188286_3074189769567510121_n (2).jpg
+
+
+
+
+

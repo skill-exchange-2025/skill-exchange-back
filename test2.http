@@ -1,0 +1,57 @@
+### Create a new lesson for a listing
+POST http://localhost:5000/api/lessons/listing/67d4be0c68259a619e7d9dd6
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Q0YmNlYjY4MjU5YTYxOWU3ZDlkNTkiLCJlbWFpbCI6ImppaGVkc2FndWVyMTI4QGdtYWlsLmNvbSIsImlhdCI6MTc0MjA4MTQ0MywiZXhwIjoxNzQyMDgyMzQzfQ.yBwpqBLE1YfSXW46XBBF3Ag_4oBPfo-5Hcv-xN6yGgA
+Content-Type: application/json
+
+{
+  "title": "Introduction to Programming Basics",
+  "description": "Learn the fundamental concepts of programming",
+  "duration": 60,
+  "content": "# Introduction to Programming\n\n## What is Programming?\nProgramming is the process of creating a set of instructions that tell a computer how to perform a task.\n\n## Basic Concepts\n- Variables\n- Data Types\n- Control Flow\n- Functions",
+  "order": 1,
+  "materials": [
+    "https://example.com/slides.pdf",
+    "https://example.com/exercise.pdf"
+  ],
+  "videoUrl": "https://example.com/lesson-video.mp4",
+  "isPublished": true,
+  "prerequisites": ["Basic computer knowledge"],
+  "objectives": [
+    "Understand basic programming concepts",
+    "Write simple programs",
+    "Understand variables and data types"
+  ]
+}
+
+### Get all lessons for a listing
+@listingId =67d4be0c68259a619e7d9dd6
+GET http://localhost:5000/api/lessons/listing/{{listingId}}?page=1&limit=10
+
+### Get lesson by ID
+GET http://localhost:5000/api/lessons/{{lessonId}}
+
+### Update a lesson
+PUT http://localhost:5000/api/lessons/{{lessonId}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "title": "Updated Programming Lesson",
+  "description": "Updated description",
+  "duration": 90,
+  "content": "Updated lesson content",
+  "order": 2
+}
+
+### Delete a lesson
+DELETE http://localhost:5000/api/lessons/{{lessonId}}
+Authorization: Bearer {{authToken}}
+
+### Update lesson order
+PUT http://localhost:5000/api/lessons/{{lessonId}}/order
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "order": 3
+}

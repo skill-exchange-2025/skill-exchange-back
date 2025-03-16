@@ -13,6 +13,9 @@ import { Payment, PaymentSchema } from './schemas/payment.schema';
 import { PaymentService } from './services/payment.service';
 import { PaymentController } from './controllers/payment.controller';
 import { StripeWebhookController } from './controllers/stripe-webhook.controller';
+import { Lesson, LessonSchema } from './schemas/lesson.schema';
+import { LessonService } from './services/lessons.service';
+import { LessonController } from './controllers/lessons.controller';
 
 @Module({
   imports: [
@@ -22,6 +25,8 @@ import { StripeWebhookController } from './controllers/stripe-webhook.controller
       { name: Review.name, schema: ReviewSchema },
       { name: Wallet.name, schema: WalletSchema },
       { name: Payment.name, schema: PaymentSchema },
+      { name: Listing.name, schema: ListingSchema },
+      { name: Lesson.name, schema: LessonSchema },
     ]),
     UsersModule,
     ProfileModule,
@@ -30,8 +35,9 @@ import { StripeWebhookController } from './controllers/stripe-webhook.controller
     MarketplaceController,
     PaymentController,
     StripeWebhookController,
+    LessonController,
   ],
-  providers: [MarketplaceService, PaymentService],
-  exports: [MarketplaceService, PaymentService],
+  providers: [MarketplaceService, PaymentService, LessonService],
+  exports: [MarketplaceService, PaymentService, LessonService],
 })
 export class MarketplaceModule {}
