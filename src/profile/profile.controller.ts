@@ -5,7 +5,9 @@ import {
   Put,
   Body,
   UseGuards,
-  UseInterceptors, UploadedFile, BadRequestException,
+  UseInterceptors,
+  UploadedFile,
+  BadRequestException,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -62,17 +64,18 @@ export class ProfileController {
       storage: diskStorage({
         destination: './uploads',
         filename: (req, file, callback) => {
-          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
           const ext = extname(file.originalname);
           const filename = `${uniqueSuffix}${ext}`;
           callback(null, filename);
         },
       }),
-    }),
+    })
   )
   async uploadAvatar(
     @CurrentUser() user: any,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file: Express.Multer.File
   ) {
     if (!file) {
       throw new BadRequestException('No file uploaded');
@@ -82,10 +85,8 @@ export class ProfileController {
     return await this.profileService.uploadAvatar(user.id, avatarUrl);
   }
 
-
   @Get('avatar')
   async getAvatar(@CurrentUser() user: any) {
     return await this.profileService.getAvatar(user.id);
   }
 }
-
