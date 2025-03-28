@@ -113,7 +113,12 @@ export class MarketplaceController {
     @Query('search') search?: string,
     @Query('skillName') skillName?: string,
     @Query('minPrice') minPrice?: number,
-    @Query('maxPrice') maxPrice?: number
+    @Query('maxPrice') maxPrice?: number,
+    @Query('category') category?: string,
+    @Query('proficiencyLevel') proficiencyLevel?: string,
+    @Query('type') type?: string,
+    @Query('sortBy') sortBy: string = 'createdAt',
+    @Query('sortOrder') sortOrder: 'asc' | 'desc' = 'desc'
   ) {
     return this.marketplaceService.getListings(
       page,
@@ -121,7 +126,12 @@ export class MarketplaceController {
       search,
       skillName,
       minPrice,
-      maxPrice
+      maxPrice,
+      category,
+      proficiencyLevel,
+      type,
+      sortBy,
+      sortOrder
     );
   }
 

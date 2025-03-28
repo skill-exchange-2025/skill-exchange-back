@@ -99,11 +99,17 @@ export class MarketplaceService {
     search?: string,
     skillName?: string,
     minPrice?: number,
-    maxPrice?: number
+    maxPrice?: number,
+    category?: string,
+    proficiencyLevel?: string,
+    type?: string,
+    sortBy: string = 'createdAt',
+    sortOrder: 'asc' | 'desc' = 'desc'
   ) {
     const skip = (page - 1) * limit;
     const query: any = { status: 'active' };
 
+    // Search filter
     if (search) {
       query.$or = [
         { title: { $regex: search, $options: 'i' } },
@@ -112,10 +118,27 @@ export class MarketplaceService {
       ];
     }
 
+    // Category filter
+    if (category) {
+      query.category = category;
+    }
+
+    // Skill name filter
     if (skillName) {
       query.skillName = skillName;
     }
 
+    // Proficiency level filter
+    if (proficiencyLevel) {
+      query.proficiencyLevel = proficiencyLevel;
+    }
+
+    // Type filter
+    if (type) {
+      query.type = type;
+    }
+
+    // Price range filter
     if (minPrice !== undefined || maxPrice !== undefined) {
       query.price = {};
       if (minPrice !== undefined) {
@@ -126,12 +149,16 @@ export class MarketplaceService {
       }
     }
 
+    // Build sort object
+    const sort: any = {};
+    sort[sortBy] = sortOrder === 'asc' ? 1 : -1;
+
     const listings = await this.listingModel
       .find(query)
-      .populate('seller', 'username email profilePicture')
+      .populate('seller', 'name email')
+      .sort(sort)
       .skip(skip)
       .limit(limit)
-      .sort({ createdAt: -1 })
       .exec();
 
     const total = await this.listingModel.countDocuments(query);
@@ -183,7 +210,7 @@ export class MarketplaceService {
 
     const listings = await this.listingModel
       .find(query)
-      .populate('seller', 'username email profilePicture')
+      .populate('seller', 'name email')
       .skip(skip)
       .limit(limit)
       .sort({ createdAt: -1 })
