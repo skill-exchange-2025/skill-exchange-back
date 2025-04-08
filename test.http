@@ -1,0 +1,124 @@
+### GET request to example server
+GET http://localhost:5000/api/users/skills
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2I3Yjk0MjQwNDQ2ZTY5OTBjZjZmOWEiLCJlbWFpbCI6ImppaGVkMDAwMEBnbWFpbC5jb20iLCJpYXQiOjE3NDA3ODc2NTEsImV4cCI6MTc0MDc4ODU1MX0.tx-UVuHrn3teoA_2_o6DNXI0-vzJoCNyIObhLG2ggco
+
+
+
+###
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "jihed0000@gmail.com",
+  "phone": "2345678",
+  "name": "Jihed",
+  "password": "jihed123",
+  "roles": ["admin"]
+}
+
+###
+### Register a new user with skills
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "abcd@g.com",
+  "password": "Password1234",
+  "phone": "12345679",
+  "name": "aaaaaa",
+  "roles": ["user"],
+  "skills": [
+    {
+      "name": "react",
+      "description": "Modern JavaScript development",
+      "proficiencyLevel": "intermediate"
+    },
+    {
+      "name": "Python",
+      "description": "Python programming",
+      "proficiencyLevel": "beginner"
+    }
+  ],
+  "desiredSkills": [
+    {
+      "name": "React",
+      "description": "React.js framework",
+      "desiredProficiencyLevel": "advanced"
+    }
+  ]
+}
+
+
+
+###
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "jihed0000@gmail.com",
+  "password": "jihed123"
+}
+
+
+
+###
+GET http://localhost:5000/api/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2I3Yjk0MjQwNDQ2ZTY5OTBjZjZmOWEiLCJlbWFpbCI6ImppaGVkMDAwMEBnbWFpbC5jb20iLCJpYXQiOjE3NDA3NDcwNjIsImV4cCI6MTc0MDc0Nzk2Mn0.0LG7KuQv9eyGoaZ66ZW9jNW2R3xsnjbLozFkVoI5P4s
+
+
+
+### Create Profile
+POST http://localhost:5000/api/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2I3Yjk0MjQwNDQ2ZTY5OTBjZjZmOWEiLCJlbWFpbCI6ImppaGVkMDAwMEBnbWFpbC5jb20iLCJpYXQiOjE3NDAxMjg4NzksImV4cCI6MTc0MDEyOTc3OX0.qZczMXIu1DCD3IqKhdSl03LE_Yhkei3Iqn3o7rqDBcA
+Content-Type: application/json
+
+{
+  "bio": "Software Developer with 5 years of experience",
+  "description": "Passionate about web development and new technologies",
+  "location": "New York, USA",
+  "socialLinks": [
+    "https://linkedin.com/in/username",
+    "https://github.com/username"
+  ],
+  "profession": "Full Stack Developer",
+  "interests": [
+    "Web Development",
+    "Machine Learning",
+    "Cloud Computing"
+  ],
+  "birthDate": "1990-01-01"
+}
+
+
+### Update Profile
+PUT http://localhost:5000/api/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2I3Yjk0MjQwNDQ2ZTY5OTBjZjZmOWEiLCJlbWFpbCI6ImppaGVkMDAwMEBnbWFpbC5jb20iLCJpYXQiOjE3NDAxMzU5NDUsImV4cCI6MTc0MDEzNjg0NX0.X6JIUstZNcQhrhnnxLDs1VxhROAUCVOtVfivOzgxZHI
+Content-Type: application/json
+
+{
+  "bio": "Updated bio - Senior Software Developer",
+  "description": "Updated description - Specialized in Node.js and React",
+  "location": "San Francisco, USA",
+  "profession": "Senior Full Stack Developer",
+  "interests": ["Programming", "AI", "Blockchain"],
+  "socialLinks": [
+    "https://linkedin.com/in/updated-username",
+    "https://github.com/updated-username"
+  ]
+}
+
+### Delete Profile
+DELETE http://localhost:5000/api/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2IzOTRmZWMxY2M1NWQ5NGQ0YThlNjUiLCJlbWFpbCI6ImppaWlAZ21haWwuY29tIiwiaWF0IjoxNzM5ODkwMzk4LCJleHAiOjE3Mzk4OTEyOTh9.MC-GnsKV0mCh4vehAhsaW-66bKr-DLMmMt29WkRkgWg
+Content-Type: application/json
+
+### Upload Profile Avatar
+POST http://localhost:5000/api/profile/avatar
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2IzOTRmZWMxY2M1NWQ5NGQ0YThlNjUiLCJlbWFpbCI6ImppaWlAZ21haWwuY29tIiwiaWF0IjoxNzM5ODI2ODczLCJleHAiOjE3Mzk4Mjc3NzN9.I-d0paPU8PIEkEvcmzHYcdMsCgo45q4OEh2JdXVUHl8
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="avatar"; filename="profile-picture.jpg"
+Content-Type: image/jpeg
+
+</ Users/jihed/Downloads/473021116_1124461089188286_3074189769567510121_n (2).jpg
