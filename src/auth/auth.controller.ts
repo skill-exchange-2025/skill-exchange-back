@@ -54,7 +54,7 @@ export class AuthController {
   @ApiResponse({ status: 409, description: 'Email already exists' })
   @ApiResponse({ status: 408, description: 'Phone number already exists' })
   async register(@Body() registerDto: RegisterDto): Promise<AuthResponseDto> {
-    console.log('registerDto', registerDto);
+    console.log('registerDto', registerDto); 
     return this.authService.register(registerDto);
   }
 

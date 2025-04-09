@@ -25,6 +25,7 @@ import { ReferralDto } from './dto/referral.dto';
 import * as mongoose from 'mongoose';
 import { Wallet, WalletDocument } from '../marketplace/schemas/wallet.schema';
 import { BlacklistService } from 'src/blacklist/blacklist/blacklist.service';
+import { InfobipService } from 'src/infobip/infobip.service';
 
 @Injectable()
 export class AuthService {
@@ -36,7 +37,8 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
     private configService: ConfigService,
-    private readonly blacklistService: BlacklistService
+    private readonly blacklistService: BlacklistService,
+    private readonly infobipService: InfobipService,
   ) {}
 
   async resetPassword(email: string) {
@@ -128,6 +130,10 @@ export class AuthService {
       permissions,
       isEmailVerified: false,
     });
+
+    // Send SMS notification to you (the admin) with the user's name
+    await this.infobipService.sendSMS(name,normalizedEmail);  
+
     // Generate JWT token for email verification
     const verificationToken = this.jwtService.sign(
       { email: normalizedEmail },
@@ -194,6 +200,10 @@ export class AuthService {
       },
     };
   }
+
+
+
+
 
   async login(loginDto: LoginDto): Promise<AuthResponseDto> {
     const user = await this.validateUser(loginDto.email, loginDto.password);

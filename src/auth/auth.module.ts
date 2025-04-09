@@ -17,6 +17,7 @@ import { OTP, OTPSchema } from './schemas/otp.schema';
 import { MarketplaceModule } from '../marketplace/marketplace.module';
 import { Wallet, WalletSchema } from '../marketplace/schemas/wallet.schema';
 import { BlacklistService } from 'src/blacklist/blacklist/blacklist.service';
+import { InfobipService } from 'src/infobip/infobip.service';
 
 @Module({
   imports: [
@@ -42,7 +43,7 @@ import { BlacklistService } from 'src/blacklist/blacklist/blacklist.service';
     MarketplaceModule, // Import MarketplaceModule to have access to the Wallet model
   ],
   controllers: [AuthController],
-  providers: [JwtModule, AuthService, JwtStrategy,BlacklistService],
+  providers: [JwtModule, AuthService, JwtStrategy,BlacklistService,InfobipService],
   exports: [AuthService],
 })
 export class AuthModule {}
