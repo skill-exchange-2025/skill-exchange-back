@@ -115,13 +115,15 @@ export class UsersService {
   }
 
   async getAllSkills() {
-    const skills = await this.userSkillModel.find().select('name proficiencyLevel').exec();
+    const skills = await this.userSkillModel
+      .find()
+      .select('name proficiencyLevel')
+      .exec();
     return {
       data: skills,
-      success: true
+      success: true,
     };
   }
-
 
   async findAll(
     pageOrOptions:
@@ -312,7 +314,7 @@ export class UsersService {
 
   async verifyEmail(id: string): Promise<UserWithPermissions> {
     const user = await this.userModel
-      .findByIdAndUpdate(id, { isVerified: true }, { new: true })
+      .findByIdAndUpdate(id, { isEmailVerified: true }, { new: true })
       .populate('permissionGroups');
 
     if (!user) {
@@ -320,6 +322,10 @@ export class UsersService {
     }
 
     return this.mapUserToDto(user);
+  }
+
+  async markEmailAsVerified(id: string): Promise<UserWithPermissions> {
+    return this.verifyEmail(id);
   }
 
   async getMetrics(): Promise<any> {
