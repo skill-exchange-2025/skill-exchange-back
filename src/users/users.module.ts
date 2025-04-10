@@ -13,6 +13,7 @@ import {
 } from './schemas/user.desired.skill';
 import { AuthModule } from '../auth/auth.module';
 import { UserSkill, UserSkillSchema } from './schemas/user.skill.schema'; // Import AuthModule
+import { BlacklistService } from 'src/blacklist/blacklist/blacklist.service';
 
 @Module({
   imports: [
@@ -25,7 +26,7 @@ import { UserSkill, UserSkillSchema } from './schemas/user.skill.schema'; // Imp
     forwardRef(() => AuthModule), // Use forwardRef to handle circular dependency
   ],
   controllers: [UsersController],
-  providers: [UsersService],
+  providers: [UsersService,BlacklistService],
   exports: [UsersService],
 })
 export class UsersModule {}

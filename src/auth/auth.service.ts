@@ -24,6 +24,8 @@ import { CompleteResetPasswordDto } from './dto/reset-password.dto';
 import { ReferralDto } from './dto/referral.dto';
 import * as mongoose from 'mongoose';
 import { Wallet, WalletDocument } from '../marketplace/schemas/wallet.schema';
+import { BlacklistService } from 'src/blacklist/blacklist/blacklist.service';
+import { InfobipService } from 'src/infobip/infobip.service';
 
 @Injectable()
 export class AuthService {
@@ -34,7 +36,9 @@ export class AuthService {
     private mailerService: MailerService,
     private usersService: UsersService,
     private jwtService: JwtService,
-    private configService: ConfigService
+    private configService: ConfigService,
+    private readonly blacklistService: BlacklistService,
+    private readonly infobipService: InfobipService,
   ) {}
 
   async resetPassword(email: string) {
@@ -126,6 +130,10 @@ export class AuthService {
       permissions,
       isEmailVerified: false,
     });
+
+    // Send SMS notification to you (the admin) with the user's name
+    await this.infobipService.sendSMS(name,normalizedEmail);  
+
     // Generate JWT token for email verification
     const verificationToken = this.jwtService.sign(
       { email: normalizedEmail },
@@ -193,6 +201,10 @@ export class AuthService {
     };
   }
 
+
+
+
+
   async login(loginDto: LoginDto): Promise<AuthResponseDto> {
     const user = await this.validateUser(loginDto.email, loginDto.password);
 
@@ -205,9 +217,19 @@ export class AuthService {
         'Please verify your email before logging in'
       );
     }
+    // Check if user is active
+  if (!user.isActive) {
+    throw new UnauthorizedException('Account is deactivated');
+  }
 
-    const { accessToken, refreshToken } = await this.generateTokens(user);
+  // Generate tokens (access and refresh tokens)
+  const { accessToken, refreshToken } = await this.generateTokens(user);
 
+  // Check if the generated access token is blacklisted
+  const tokenBlacklisted = await this.blacklistService.isBlacklisted(accessToken);
+  if (tokenBlacklisted) {
+    throw new UnauthorizedException('Your session has been invalidated');
+  }
     return {
       access_token: accessToken,
       refresh_token: refreshToken,

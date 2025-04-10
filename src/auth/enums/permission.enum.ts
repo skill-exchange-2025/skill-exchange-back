@@ -5,4 +5,6 @@ export enum Permission {
   DELETE_USER = 'delete:user',
   MANAGE_ROLES = 'manage:roles',
   VIEW_METRICS = 'view:metrics',
+  MANAGE_USERS = 'manage_users',
+
 }

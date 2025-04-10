@@ -11,6 +11,11 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { ProfileModule } from './profile/profile.module';
 import { MarketplaceModule } from './marketplace/marketplace.module';
 import { MessagingModule } from './messaging/messaging.module';
+import { InfobipService } from './infobip/infobip.service';
+import { InfobipController } from './infobip/infobip.controller';
+import { InfobipModule } from './infobip/infobip.module';
+import { PrivateChatModule } from './chat-gateway/module/private-chat/private-chat.module';
+
 
 @Module({
   imports: [
@@ -47,8 +52,10 @@ import { MessagingModule } from './messaging/messaging.module';
         },
       }),
     }),
+    InfobipModule,
+    PrivateChatModule,
   ],
-  controllers: [AppController, AuthController],
-  providers: [AppService, JwtModule],
+  controllers: [AppController, AuthController, InfobipController],
+  providers: [AppService, JwtModule, InfobipService],
 })
 export class AppModule {}
