@@ -52,8 +52,7 @@ export class User {
   @Prop({ default: true })
   isActive: boolean;
 
-  @Prop({ default: '' })
-token: string;
+  
 
 }
 

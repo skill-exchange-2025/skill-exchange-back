@@ -217,16 +217,19 @@ export class AuthService {
         'Please verify your email before logging in'
       );
     }
-    if (!user.isActive) {
-      throw new UnauthorizedException('Account is deactivated');
-    }
-    const tokenBlacklisted = await this.blacklistService.isBlacklisted(user.token);
-    if (tokenBlacklisted) {
-      throw new UnauthorizedException('Your session has been invalidated');
-    }
+    // Check if user is active
+  if (!user.isActive) {
+    throw new UnauthorizedException('Account is deactivated');
+  }
 
-    const { accessToken, refreshToken } = await this.generateTokens(user);
+  // Generate tokens (access and refresh tokens)
+  const { accessToken, refreshToken } = await this.generateTokens(user);
 
+  // Check if the generated access token is blacklisted
+  const tokenBlacklisted = await this.blacklistService.isBlacklisted(accessToken);
+  if (tokenBlacklisted) {
+    throw new UnauthorizedException('Your session has been invalidated');
+  }
     return {
       access_token: accessToken,
       refresh_token: refreshToken,
