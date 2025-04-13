@@ -1,0 +1,87 @@
+### Variables
+@baseUrl = http://localhost:5000/api
+@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2I3Yjk0MjQwNDQ2ZTY5OTBjZjZmOWEiLCJlbWFpbCI6ImppaGVkMDAwMEBnbWFpbC5jb20iLCJpYXQiOjE3NDQzMjA5NjksImV4cCI6MTc0NDMyMTg2OX0.-x76kEhK9sNQctggkxrIv7QfNohBPLeuDtD68ZVa108
+
+### Auth - Get token (if you need to implement this)
+# POST {{baseUrl}}/auth/login
+# Content-Type: application/json
+#
+# {
+#   "email": "user@example.com",
+#   "password": "password123"
+# }
+
+### Create a Coding Room
+POST {{baseUrl}}/coding-rooms
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "name": "JavaScript Interview Practice",
+  "description": "Room for practicing JS interview questions",
+  "isPrivate": false,
+  "language": "javascript",
+  "theme": "vs-dark",
+  "tags": ["interview", "javascript", "algorithms"]
+}
+
+### Get All Rooms (user has access to)
+GET {{baseUrl}}/coding-rooms
+Authorization: Bearer {{authToken}}
+
+### Get Public Rooms Only
+GET {{baseUrl}}/coding-rooms?public=true
+Authorization: Bearer {{authToken}}
+
+### Search Rooms
+GET {{baseUrl}}/coding-rooms/search?q=javascript
+Authorization: Bearer {{authToken}}
+
+### Get Room by ID
+GET {{baseUrl}}/coding-rooms/ROOM_ID_HERE
+Authorization: Bearer {{authToken}}
+
+### Update Room
+PUT {{baseUrl}}/coding-rooms/ROOM_ID_HERE
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "name": "Updated Room Name",
+  "description": "Updated description",
+  "isPrivate": true,
+  "language": "typescript",
+  "theme": "github",
+  "tags": ["typescript", "practice"],
+  "status": "active"
+}
+
+### Delete Room
+DELETE {{baseUrl}}/coding-rooms/ROOM_ID_HERE
+Authorization: Bearer {{authToken}}
+
+### Join Room
+POST {{baseUrl}}/coding-rooms/ROOM_ID_HERE/join
+Authorization: Bearer {{authToken}}
+
+### Update Room Theme
+POST {{baseUrl}}/coding-rooms/ROOM_ID_HERE/theme
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "theme": "github-dark"
+}
+
+### Update Participant Role
+PUT {{baseUrl}}/coding-rooms/ROOM_ID_HERE/participants/USER_ID_HERE/role
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "role": "EDITOR"
+}
+
+### Remove Participant
+DELETE {{baseUrl}}/coding-rooms/ROOM_ID_HERE/participants/PARTICIPANT_ID_HERE
+Authorization: Bearer {{authToken}}

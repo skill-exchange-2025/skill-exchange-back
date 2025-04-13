@@ -11,6 +11,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { ProfileModule } from './profile/profile.module';
 import { MarketplaceModule } from './marketplace/marketplace.module';
 import { MessagingModule } from './messaging/messaging.module';
+import { CodingRoomsModule } from './codingrooms/codingrooms.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { MessagingModule } from './messaging/messaging.module';
     MessagingModule,
     ConfigModule.forRoot({ isGlobal: true }), // Load environment variables globally
     MarketplaceModule,
+    CodingRoomsModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [
