@@ -2,6 +2,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 import { User } from '../../users/schemas/user.schema';
+import { Lesson } from './lesson.schema';
 
 export type ListingDocument = Listing & Document;
 
@@ -80,6 +81,10 @@ export class Listing {
 
   @Prop({ type: Number, required: false })
   durationHours?: number;
+
+  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Lesson' }] })
+  lessons: Lesson[];
+
 }
 
 export const ListingSchema = SchemaFactory.createForClass(Listing);
