@@ -43,7 +43,7 @@ export class Lesson {
   textContent?: string;
 
   @Prop({ type: [String], default: [] })
-  materials: string[]; // For PDFs, documents
+  materials: string[];
 
   @Prop({ type: [String], default: [] })
   imageUrls: string[];
@@ -52,9 +52,8 @@ export class Lesson {
   videoUrl?: string;
 
   @Prop({ type: Boolean, default: false })
-  isPreview: boolean; // For free preview lessons
+  isPreview: boolean;
 
-  // Live/Interactive specific fields
   @Prop({ type: Date })
   startDate?: Date;
 

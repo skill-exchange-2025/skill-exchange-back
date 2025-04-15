@@ -11,6 +11,7 @@ import { Listing, ListingDocument } from '../schemas/listing.schema';
 import { CreateLessonDto } from '../dto/create-lesson.dto';
 import { UpdateLessonDto } from '../dto/update-lesson.dto';
 import { PopulatedLesson } from '../interfaces/populated-lesson.interface';
+import { LessonResponseDto } from '../dto/LessonResponseDto';
 
 @Injectable()
 export class LessonService {
@@ -38,7 +39,6 @@ export class LessonService {
         throw new NotFoundException(`Listing with ID ${listingId} not found`);
       }
 
-      // Convert both to strings to ensure proper comparison
       const sellerId = listing.seller.toString();
       const currentUserId = userId.toString();
 
@@ -112,23 +112,25 @@ export class LessonService {
     };
   }
 
-  async getLessonById(id: string): Promise<PopulatedLesson> {
-    if (!Types.ObjectId.isValid(id)) {
-      throw new NotFoundException('Invalid lesson ID format');
-    }
-
+  async getLessonById(id: string): Promise<LessonResponseDto> {
     const lesson = await this.lessonModel
       .findById(id)
       .populate('instructor', 'name email')
-      .populate('listing', 'title type');
+      .populate('listing', 'title type')
+      .lean();
 
     if (!lesson) {
       throw new NotFoundException(`Lesson with ID ${id} not found`);
     }
 
-    return lesson as unknown as PopulatedLesson;
+    // Transform to response DTO
+    return {
+      ...lesson,
+      textContent: lesson.textContent || '',
+      materials: lesson.materials || [],
+      imageUrls: lesson.imageUrls || [],
+    } as unknown as LessonResponseDto;
   }
-
   async updateLesson(
     userId: string,
     lessonId: string,
@@ -335,6 +337,7 @@ export class LessonService {
       }
     };
   }
+
 
   async searchLessons(
     searchTerm: string,

@@ -1,13 +1,13 @@
 ### Create a new lesson for a listing
-POST http://localhost:5000/api/lessons/listing/67d4be0c68259a619e7d9dd6
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Q0YmNlYjY4MjU5YTYxOWU3ZDlkNTkiLCJlbWFpbCI6ImppaGVkc2FndWVyMTI4QGdtYWlsLmNvbSIsImlhdCI6MTc0MjA4MTQ0MywiZXhwIjoxNzQyMDgyMzQzfQ.yBwpqBLE1YfSXW46XBBF3Ag_4oBPfo-5Hcv-xN6yGgA
+POST http://localhost:5000/api/lessons/listing/67fe89e1c843233750dd3122
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Q0YmNlYjY4MjU5YTYxOWU3ZDlkNTkiLCJlbWFpbCI6ImppaGVkc2FndWVyMTI4QGdtYWlsLmNvbSIsImlhdCI6MTc0NDczNTk5MCwiZXhwIjoxNzQ0NzM2ODkwfQ.WkJ9C92A5SPTn3pPfeS32EYdhP5zfwjAhQ8TXYfdCyM
 Content-Type: application/json
 
 {
   "title": "Introduction to Programming Basics",
   "description": "Learn the fundamental concepts of programming",
   "duration": 60,
-  "content": "# Introduction to Programming\n\n## What is Programming?\nProgramming is the process of creating a set of instructions that tell a computer how to perform a task.\n\n## Basic Concepts\n- Variables\n- Data Types\n- Control Flow\n- Functions",
+  "textContent": "This is the main content of the lesson. It can contain detailed explanations, formatting, and other text-based content that will be displayed to students.",
   "order": 1,
   "materials": [
     "https://example.com/slides.pdf",
@@ -28,7 +28,7 @@ Content-Type: application/json
 GET http://localhost:5000/api/lessons/listing/{{listingId}}?page=1&limit=10
 
 ### Get lesson by ID
-GET http://localhost:5000/api/lessons/{{lessonId}}
+GET http://localhost:5000/api/lessons/67d60c75163fec36531700c9
 
 ### Update a lesson
 PUT http://localhost:5000/api/lessons/{{lessonId}}
@@ -55,3 +55,50 @@ Content-Type: application/json
 {
   "order": 3
 }
+
+
+###
+POST http://localhost:5000/api/marketplace/listings
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Q0YmNlYjY4MjU5YTYxOWU3ZDlkNTkiLCJlbWFpbCI6ImppaGVkc2FndWVyMTI4QGdtYWlsLmNvbSIsImlhdCI6MTc0MzcxNzAzMCwiZXhwIjoxNzQzNzE3OTMwfQ.dmOB-GvRU84iwgDq_kePqq0EOnUYY86b2bq-yuu41sw
+
+{
+"seller": "67d4bceb68259a619e7d9d59",
+"title": "Test Listing",
+"description": "This is a test listing",
+"skillName": "JavaScript",
+"proficiencyLevel": "beginner",
+"category": "Electronics",
+"type": "course",
+"price": 100,
+"status": "active",
+"tags": ["repair", "electronics", "test"],
+"imagesUrl": ["https://example.com/image.jpg"],
+"contentUrls": ["https://example.com/content.pdf"],
+"contentDescription": "A beginner guide to electronics repair.",
+"location": "Online",
+"maxStudents": 50,
+"startDate": "2025-05-01",
+"endDate": "2025-05-15",
+"videoUrl": "https://example.com/intro-video.mp4",
+"materials": ["Intro to Electronics Repair"],
+"durationHours": 10}
+
+### Get All Listings
+GET http://localhost:3000/api/listings
+
+### Get Listing by ID
+GET http://localhost:3000/api/listings/1
+
+### Update a Listing
+PUT http://localhost:3000/api/listings/1
+Content-Type: application/json
+
+{
+  "title": "Updated Listing",
+  "description": "Updated description",
+  "price": 120
+}
+
+### Delete a Listing
+DELETE http://localhost:3000/api/listings/1
