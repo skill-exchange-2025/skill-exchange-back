@@ -2,7 +2,16 @@
 GET http://localhost:5000/api/users/skills
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2I3Yjk0MjQwNDQ2ZTY5OTBjZjZmOWEiLCJlbWFpbCI6ImppaGVkMDAwMEBnbWFpbC5jb20iLCJpYXQiOjE3NDA3ODc2NTEsImV4cCI6MTc0MDc4ODU1MX0.tx-UVuHrn3teoA_2_o6DNXI0-vzJoCNyIObhLG2ggco
 
+### Get all purchases
+GET http://localhost:5000/api/marketplace/my-purchases
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2MzOWU0ZjVhNGNhNWRlZjQ5MDQ2OWUiLCJlbWFpbCI6ImF5bWVlZW4uZ2hAZ21haWwuY29tIiwiaWF0IjoxNzQ0NzMyNjI3LCJleHAiOjE3NDQ3MzM1Mjd9.Bc8_cLECSsdatslQIWQeadk4xYPNxKn1FImiu802anc
+### Get only completed purchases
+GET /marketplace/my-purchases?status=completed
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2MzOWU0ZjVhNGNhNWRlZjQ5MDQ2OWUiLCJlbWFpbCI6ImF5bWVlZW4uZ2hAZ21haWwuY29tIiwiaWF0IjoxNzQ0NzMyNjI3LCJleHAiOjE3NDQ3MzM1Mjd9.Bc8_cLECSsdatslQIWQeadk4xYPNxKn1FImiu802anc
 
+### Get second page of purchases with 20 items per page
+GET /marketplace/my-purchases?page=2&limit=20
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2MzOWU0ZjVhNGNhNWRlZjQ5MDQ2OWUiLCJlbWFpbCI6ImF5bWVlZW4uZ2hAZ21haWwuY29tIiwiaWF0IjoxNzQ0NzMyNjI3LCJleHAiOjE3NDQ3MzM1Mjd9.Bc8_cLECSsdatslQIWQeadk4xYPNxKn1FImiu802anc
 
 ###
 POST http://localhost:5000/api/auth/register
