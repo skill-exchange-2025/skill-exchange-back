@@ -15,6 +15,11 @@ import { WsJwtAuthGuard } from '../../auth/guards/ws-jwt-auth.guard';
     origin: '*',
     credentials: true,
   },
+  // Add transport configuration
+  transports: ['websocket', 'polling'],
+  // Add ping timeout and interval
+  pingTimeout: 60000,
+  pingInterval: 25000,
 })
 export class CodingRoomGateway {
   @WebSocketServer()
@@ -26,9 +31,9 @@ export class CodingRoomGateway {
   @SubscribeMessage('joinRoom')
   async handleJoinRoom(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: { roomId: string; userId: string }
+    @MessageBody() data: { roomId: string; userId: string; token: string }
   ) {
-    console.log('dkhalna');
+    console.log('dkhalna', data.token);
     const { roomId, userId } = data;
 
     await client.join(roomId);

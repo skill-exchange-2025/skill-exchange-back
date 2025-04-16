@@ -12,6 +12,7 @@ import {
 } from './schemas/codingroom.schema';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
+import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class CodingRoomsService {
@@ -234,18 +235,33 @@ export class CodingRoomsService {
   }
 
   async checkUserAccess(roomId: string, userId: string): Promise<boolean> {
+    // Validate roomId is a valid ObjectId
+    if (!ObjectId.isValid(roomId)) {
+      return false;
+    }
+
     const room = await this.codingRoomModel.findById(roomId).exec();
     if (!room) return false;
 
     // If room is public, allow access
     if (!room.isPrivate) return true;
 
-    // If user is creator or participant, allow access
-    if (room.creator.toString() === userId) return true;
+    // Compare creator ID with userId
+    const creatorId = room.creator.toString();
+    const normalizedUserId = userId.toString();
 
-    const participant = room.participants.find(
-      (p) => p.user.toString() === userId
-    );
+    if (creatorId === normalizedUserId) return true;
+
+    // Check if user is a participant
+    const participant = room.participants.find((p) => {
+      const participantId =
+        p.user instanceof ObjectId
+          ? p.user.toString()
+          : p.user._id
+            ? p.user._id.toString()
+            : p.user.toString();
+      return participantId === normalizedUserId;
+    });
 
     return !!participant;
   }
