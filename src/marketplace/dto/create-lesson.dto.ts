@@ -1,4 +1,3 @@
-// src/marketplace/dto/create-lesson.dto.ts
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsString,
