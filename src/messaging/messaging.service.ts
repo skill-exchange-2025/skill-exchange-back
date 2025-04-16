@@ -11,8 +11,13 @@ import { Message, MessageDocument } from './schemas/message.schema';
 import { CreateChannelDto } from './dto/create-channel.dto';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
-import * as cheerio from 'cheerio';
 import axios from 'axios';
+import * as cheerio from 'cheerio';
+
+// Define interface for the return type
+interface ChannelWithMemberStatus extends Record<string, any> {
+  isMember: boolean;
+}
 
 @Injectable()
 export class MessagingService {
@@ -42,25 +47,23 @@ export class MessagingService {
       throw new BadRequestException('Rate limit exceeded');
     }
 
-    // Ensure content exists (even if empty)
-    if (!createMessageDto.content) {
-      createMessageDto.content = '';
-    }
+    // Extract channelId and properly map it to channel field
+    const { channelId, content = '', ...rest } = createMessageDto;
 
     const message = await this.messageModel.create({
       sender: userId,
-      ...createMessageDto,
+      channel: channelId,
+      content,
+      ...rest,
     });
 
-    // Format message content if it's not empty
-    if (createMessageDto.content && createMessageDto.content.trim() !== '') {
-      message.content = this.formatMessageContent(createMessageDto.content);
+    // Format message content if not empty
+    if (content && content.trim() !== '') {
+      message.content = this.formatMessageContent(content);
 
       // Handle URL previews
-      if (this.containsUrl(createMessageDto.content)) {
-        const urlPreview = await this.generateUrlPreview(
-          createMessageDto.content
-        );
+      if (this.containsUrl(content)) {
+        const urlPreview = await this.generateUrlPreview(content);
         if (urlPreview) {
           message.hasUrlPreview = true;
           message.urlPreview = urlPreview;
@@ -116,13 +119,12 @@ export class MessagingService {
       throw new NotFoundException('Message not found');
     }
 
-    // Initialize reactions as a Map if it doesn't exist
+    // Initialize reactions if needed
     if (!message.reactions) {
       message.reactions = new Map();
     }
 
-    // Get or create the array for this emoji
-    let users = message.reactions.get(emoji) || [];
+    const users = message.reactions.get(emoji) || [];
 
     // Add user if not already present
     if (!users.includes(userId)) {
@@ -195,18 +197,10 @@ export class MessagingService {
 
   private formatMessageContent(content: string): string {
     // Convert URLs to clickable links
-    content = content.replace(
+    return content.replace(
       /(https?:\/\/[^\s]+)/g,
       '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
     );
-
-    // Convert emojis to images (if you have an emoji library)
-    // content = emoji.replace(content);
-
-    // Convert markdown to HTML (if you want to support markdown)
-    // content = marked(content);
-
-    return content;
   }
 
   async joinChannel(channelId: string, userId: string): Promise<Channel> {
@@ -215,13 +209,9 @@ export class MessagingService {
       throw new NotFoundException('Channel not found');
     }
 
-    // Check if user is already in the channel
-    const userExists =
-      channel.members &&
-      channel.members.some((member) => member.toString() === userId);
-
-    if (userExists) {
-      throw new BadRequestException('User is already in this channel');
+    // Return if user is already a member
+    if (channel.members?.some((member) => member.toString() === userId)) {
+      return channel;
     }
 
     // Add user to members
@@ -229,99 +219,62 @@ export class MessagingService {
       channel.members = [];
     }
 
-    // Add user reference to the channel
-    channel.members.push(userId as any); // Cast to any to bypass type checking
-    await channel.save();
-
-    return channel;
+    channel.members.push(userId as any);
+    return channel.save();
   }
 
-  async leaveChannel(
-    channelId: string,
-    userId: string
-  ): Promise<{ message: string }> {
+  async leaveChannel(channelId: string, userId: string): Promise<void> {
     const channel = await this.channelModel.findById(channelId);
     if (!channel) {
       throw new NotFoundException('Channel not found');
     }
 
-    // Check if user is in the channel
-    const userExists =
-      channel.members &&
-      channel.members.some((member) => member.toString() === userId);
-
-    if (!userExists) {
-      throw new BadRequestException('User is not in this channel');
-    }
-
-    // Remove user from members
     channel.members = channel.members.filter(
       (member) => member.toString() !== userId
     );
     await channel.save();
-
-    return { message: 'Successfully left the channel' };
   }
 
-  async deleteMessage(
-    messageId: string,
-    userId: string
-  ): Promise<{ message: string }> {
+  async deleteMessage(messageId: string, userId: string): Promise<void> {
     const message = await this.messageModel.findById(messageId);
     if (!message) {
       throw new NotFoundException('Message not found');
     }
 
-    // Check if user is the sender of the message
     if (message.sender.toString() !== userId) {
       throw new BadRequestException('You can only delete your own messages');
     }
 
     await message.deleteOne();
-
-    return { message: 'Message deleted successfully' };
   }
 
   async getAllChannels(
     userId: string,
     page = 1,
     limit = 20
-  ): Promise<{ channels: Channel[]; total: number }> {
+  ): Promise<{ channels: any[]; total: number }> {
     const skip = (page - 1) * limit;
-
-    // Find all channels that are not archived
-    // You could add more filters here as needed
     const query = { isArchived: { $ne: true } };
 
     const [channels, total] = await Promise.all([
       this.channelModel
         .find(query)
-        .sort({ updatedAt: -1 }) // Most recently active channels first
+        .sort({ updatedAt: -1 })
         .skip(skip)
         .limit(limit)
-        .populate('members', 'name email username profileImage') // Populate member details
+        .populate('members', 'name email username profileImage')
         .exec(),
       this.channelModel.countDocuments(query),
     ]);
 
-    // Add a flag to indicate if the user is a member of each channel
+    // Add isMember flag to each channel
     const enhancedChannels = channels.map((channel) => {
-      // Check if the current user is a member of this channel
-      let isMember = false;
-
-      if (channel.members && Array.isArray(channel.members)) {
-        isMember = channel.members.some((member: any) => {
-          if (member._id) {
-            return member._id.toString() === userId;
-          }
-          return member.toString() === userId;
-        });
-      }
-
-      // Convert to plain object to add the new property
       const channelObj = channel.toObject();
-      (channelObj as any).isMember = isMember;
-
+      (channelObj as any).isMember = channel.members?.some((member: any) =>
+        member._id
+          ? member._id.toString() === userId
+          : member.toString() === userId
+      );
       return channelObj;
     });
 
@@ -338,7 +291,19 @@ export class MessagingService {
       throw new NotFoundException('Channel not found');
     }
 
-    // Return array of member objects
     return channel.members || [];
+  }
+
+  async populateMessage(message: MessageDocument): Promise<MessageDocument> {
+    const populatedMessage = await this.messageModel
+      .findById(message._id)
+      .populate('sender', 'name email username profileImage')
+      .exec();
+
+    if (!populatedMessage) {
+      throw new NotFoundException('Message not found');
+    }
+
+    return populatedMessage;
   }
 }
