@@ -36,7 +36,6 @@ export class UsersService {
     @InjectModel(UserDesiredSkill.name)
     private userDesiredSkillModel: Model<UserDesiredSkillDocument>
   ) {}
-
   async create(createUserDto: CreateUserDto): Promise<UserDocument> {
     try {
       console.log('Creating user with email:', createUserDto.email);
@@ -82,7 +81,6 @@ export class UsersService {
 
       // Add desired skills if they exist
       if (Array.isArray(createUserDto.desiredSkills)) {
-
         userData.desiredSkills = createUserDto.desiredSkills.map(
           (skill) =>
             ({
@@ -91,25 +89,42 @@ export class UsersService {
               desiredProficiencyLevel: skill.desiredProficiencyLevel,
             }) as UserDesiredSkill
         );
-
       }
 
       // Create the user document
       const userDoc = await this.userModel.create(userData);
 
-      return userDoc;
+      // Find and return the created user with populated fields
+      const createdUser = await this.userModel
+        .findById(userDoc._id)
+        .select('+skills +desiredSkills')
+        .exec();
 
+      if (!createdUser) {
+        throw new NotFoundException('User not found after creation');
+      }
+
+      return createdUser;
     } catch (error) {
       console.log('Error creating user:', error);
       if (error.code === 11000) {
-        throw new ConflictException('Email already exist');
-      }
-      if (error.code === 11001) {
-        throw new ConflictException('Phone number already exists');
+        throw new ConflictException('Email already exists');
       }
       throw error;
     }
   }
+
+  async getAllSkills() {
+    const skills = await this.userSkillModel
+      .find()
+      .select('name proficiencyLevel')
+      .exec();
+    return {
+      data: skills,
+      success: true,
+    };
+  }
+
   async findAll(
     pageOrOptions:
       | number
@@ -202,7 +217,6 @@ export class UsersService {
       .select('+password')
       .exec();
   }
-  
 
   async update(
     id: string,
@@ -300,7 +314,7 @@ export class UsersService {
 
   async verifyEmail(id: string): Promise<UserWithPermissions> {
     const user = await this.userModel
-      .findByIdAndUpdate(id, { isVerified: true }, { new: true })
+      .findByIdAndUpdate(id, { isEmailVerified: true }, { new: true })
       .populate('permissionGroups');
 
     if (!user) {
@@ -308,6 +322,10 @@ export class UsersService {
     }
 
     return this.mapUserToDto(user);
+  }
+
+  async markEmailAsVerified(id: string): Promise<UserWithPermissions> {
+    return this.verifyEmail(id);
   }
 
   async getMetrics(): Promise<any> {
@@ -434,12 +452,4 @@ export class UsersService {
 
     return user;
   }
-
-
-  async markEmailAsVerified(userId: string): Promise<void> {
-    await this.userModel.findByIdAndUpdate(userId, {
-      isEmailVerified: true,
-    });
-  }
-
 }

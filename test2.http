@@ -1,0 +1,104 @@
+### Create a new lesson for a listing
+POST http://localhost:5000/api/lessons/listing/67fe89e1c843233750dd3122
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Q0YmNlYjY4MjU5YTYxOWU3ZDlkNTkiLCJlbWFpbCI6ImppaGVkc2FndWVyMTI4QGdtYWlsLmNvbSIsImlhdCI6MTc0NDczNTk5MCwiZXhwIjoxNzQ0NzM2ODkwfQ.WkJ9C92A5SPTn3pPfeS32EYdhP5zfwjAhQ8TXYfdCyM
+Content-Type: application/json
+
+{
+  "title": "Introduction to Programming Basics",
+  "description": "Learn the fundamental concepts of programming",
+  "duration": 60,
+  "textContent": "This is the main content of the lesson. It can contain detailed explanations, formatting, and other text-based content that will be displayed to students.",
+  "order": 1,
+  "materials": [
+    "https://example.com/slides.pdf",
+    "https://example.com/exercise.pdf"
+  ],
+  "videoUrl": "https://example.com/lesson-video.mp4",
+  "isPublished": true,
+  "prerequisites": ["Basic computer knowledge"],
+  "objectives": [
+    "Understand basic programming concepts",
+    "Write simple programs",
+    "Understand variables and data types"
+  ]
+}
+
+### Get all lessons for a listing
+@listingId =67d4be0c68259a619e7d9dd6
+GET http://localhost:5000/api/lessons/listing/{{listingId}}?page=1&limit=10
+
+### Get lesson by ID
+GET http://localhost:5000/api/lessons/67d60c75163fec36531700c9
+
+### Update a lesson
+PUT http://localhost:5000/api/lessons/{{lessonId}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "title": "Updated Programming Lesson",
+  "description": "Updated description",
+  "duration": 90,
+  "content": "Updated lesson content",
+  "order": 2
+}
+
+### Delete a lesson
+DELETE http://localhost:5000/api/lessons/{{lessonId}}
+Authorization: Bearer {{authToken}}
+
+### Update lesson order
+PUT http://localhost:5000/api/lessons/{{lessonId}}/order
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "order": 3
+}
+
+
+###
+POST http://localhost:5000/api/marketplace/listings
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Q0YmNlYjY4MjU5YTYxOWU3ZDlkNTkiLCJlbWFpbCI6ImppaGVkc2FndWVyMTI4QGdtYWlsLmNvbSIsImlhdCI6MTc0MzcxNzAzMCwiZXhwIjoxNzQzNzE3OTMwfQ.dmOB-GvRU84iwgDq_kePqq0EOnUYY86b2bq-yuu41sw
+
+{
+"seller": "67d4bceb68259a619e7d9d59",
+"title": "Test Listing",
+"description": "This is a test listing",
+"skillName": "JavaScript",
+"proficiencyLevel": "beginner",
+"category": "Electronics",
+"type": "course",
+"price": 100,
+"status": "active",
+"tags": ["repair", "electronics", "test"],
+"imagesUrl": ["https://example.com/image.jpg"],
+"contentUrls": ["https://example.com/content.pdf"],
+"contentDescription": "A beginner guide to electronics repair.",
+"location": "Online",
+"maxStudents": 50,
+"startDate": "2025-05-01",
+"endDate": "2025-05-15",
+"videoUrl": "https://example.com/intro-video.mp4",
+"materials": ["Intro to Electronics Repair"],
+"durationHours": 10}
+
+### Get All Listings
+GET http://localhost:3000/api/listings
+
+### Get Listing by ID
+GET http://localhost:3000/api/listings/1
+
+### Update a Listing
+PUT http://localhost:3000/api/listings/1
+Content-Type: application/json
+
+{
+  "title": "Updated Listing",
+  "description": "Updated description",
+  "price": 120
+}
+
+### Delete a Listing
+DELETE http://localhost:3000/api/listings/1

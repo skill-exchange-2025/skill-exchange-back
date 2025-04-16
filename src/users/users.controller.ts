@@ -21,7 +21,8 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
-import {JwtAuthGuard} from "../auth/guards/jwt-auth.guard";
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { Public } from '../auth/auth.controller';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -40,19 +41,49 @@ export class UsersController {
   @Get()
   @Roles(Role.ADMIN, Role.MODERATOR)
   @Permissions(Permission.READ_USER)
-  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number' })
-  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Items per page' })
-  @ApiQuery({ name: 'search', required: false, type: String, description: 'Search in email and name' })
-  @ApiQuery({ name: 'role', required: false, type: String, description: 'Filter by role' })
-  @ApiQuery({ name: 'sortBy', required: false, type: String, description: 'Field to sort by' })
-  @ApiQuery({ name: 'sortOrder', required: false, enum: ['asc', 'desc'], description: 'Sort order' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    description: 'Page number',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    description: 'Items per page',
+  })
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    type: String,
+    description: 'Search in email and name',
+  })
+  @ApiQuery({
+    name: 'role',
+    required: false,
+    type: String,
+    description: 'Filter by role',
+  })
+  @ApiQuery({
+    name: 'sortBy',
+    required: false,
+    type: String,
+    description: 'Field to sort by',
+  })
+  @ApiQuery({
+    name: 'sortOrder',
+    required: false,
+    enum: ['asc', 'desc'],
+    description: 'Sort order',
+  })
   async findAll(
-      @Query('page') page?: number,
-      @Query('limit') limit?: number,
-      @Query('search') search?: string,
-      @Query('role') role?: string,
-      @Query('sortBy') sortBy?: string,
-      @Query('sortOrder') sortOrder?: 'asc' | 'desc'
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+    @Query('search') search?: string,
+    @Query('role') role?: string,
+    @Query('sortBy') sortBy?: string,
+    @Query('sortOrder') sortOrder?: 'asc' | 'desc'
   ) {
     const options = {
       page,
@@ -60,14 +91,14 @@ export class UsersController {
       search,
       role,
       sortBy,
-      sortOrder
+      sortOrder,
     };
 
     return await this.usersService.findAll(options);
   }
 
   @Get(':id')
-  @Roles(Role.ADMIN, Role.MODERATOR)
+  @Roles(Role.ADMIN, Role.MODERATOR, Role.USER)
   @Permissions(Permission.READ_USER)
   async findOne(@Param('id') id: string) {
     return await this.usersService.findById(id);
@@ -91,8 +122,8 @@ export class UsersController {
   @Roles(Role.ADMIN, Role.USER)
   @Permissions(Permission.UPDATE_USER)
   async changePassword(
-      @Param('id') id: string,
-      @Body() changePasswordDto: ChangePasswordDto
+    @Param('id') id: string,
+    @Body() changePasswordDto: ChangePasswordDto
   ) {
     return await this.usersService.changePassword(id, changePasswordDto);
   }
@@ -119,5 +150,11 @@ export class UsersController {
   @Permissions(Permission.VIEW_METRICS)
   async verifyUser(@Param('id') id: string) {
     return await this.usersService.verifyEmail(id);
+  }
+
+  @Get('skills')
+  @Public() // Make it public or specify required roles
+  async getAllSkills() {
+    return await this.usersService.getAllSkills();
   }
 }

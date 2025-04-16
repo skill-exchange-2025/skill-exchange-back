@@ -410,7 +410,7 @@ export class AuthService {
         throw new BadRequestException('Email is already verified');
       }
 
-      await this.usersService.markEmailAsVerified(user.id);
+    //  await this.usersService.markEmailAsVerified(user.id);
 
       return { message: 'Email verified successfully' };
     } catch (error) {
