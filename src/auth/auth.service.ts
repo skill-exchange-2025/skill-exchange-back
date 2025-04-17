@@ -41,6 +41,13 @@ export class AuthService {
     private readonly infobipService: InfobipService,
   ) {}
 
+   async findAllUsers() {
+      return this.userModel
+        .find()
+        .select('-password')
+        .exec();
+    }
+
   async resetPassword(email: string) {
     try {
       // Check if user exists

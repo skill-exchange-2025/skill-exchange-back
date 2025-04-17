@@ -39,6 +39,8 @@ export class UsersService {
     private readonly blacklistService: BlacklistService, // Inject BlacklistService
 
   ) {}
+ 
+  
   async create(createUserDto: CreateUserDto): Promise<UserDocument> {
     try {
       console.log('Creating user with email:', createUserDto.email);

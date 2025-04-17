@@ -14,7 +14,7 @@ import { MessagingModule } from './messaging/messaging.module';
 import { InfobipService } from './infobip/infobip.service';
 import { InfobipController } from './infobip/infobip.controller';
 import { InfobipModule } from './infobip/infobip.module';
-import { PrivateChatModule } from './chat-gateway/module/private-chat/private-chat.module';
+import { ChatModule } from './chat/chat.module';
 
 
 @Module({
@@ -53,7 +53,8 @@ import { PrivateChatModule } from './chat-gateway/module/private-chat/private-ch
       }),
     }),
     InfobipModule,
-    PrivateChatModule,
+    ChatModule,
+    
   ],
   controllers: [AppController, AuthController, InfobipController],
   providers: [AppService, JwtModule, InfobipService],
