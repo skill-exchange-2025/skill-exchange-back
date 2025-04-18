@@ -15,6 +15,9 @@ import { InfobipService } from './infobip/infobip.service';
 import { InfobipController } from './infobip/infobip.controller';
 import { InfobipModule } from './infobip/infobip.module';
 import { ChatModule } from './chat/chat.module';
+import { PrivateMessagesController } from './private-messages/private-messages.controller';
+import { PrivateMessagesModule } from './private-messages/private-messages.module';
+import { FriendRequestsModule } from './friend-requests/friend-requests.module';
 
 
 @Module({
@@ -54,9 +57,11 @@ import { ChatModule } from './chat/chat.module';
     }),
     InfobipModule,
     ChatModule,
+    PrivateMessagesModule,
+    FriendRequestsModule,
     
   ],
-  controllers: [AppController, AuthController, InfobipController],
+  controllers: [AppController, AuthController, InfobipController, PrivateMessagesController],
   providers: [AppService, JwtModule, InfobipService],
 })
 export class AppModule {}
