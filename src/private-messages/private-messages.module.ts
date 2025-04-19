@@ -17,6 +17,6 @@ import { FriendRequestsModule } from 'src/friend-requests/friend-requests.module
   ],
   controllers: [PrivateMessagesController],
   providers: [PrivateMessagesService, PrivateMessagesGateway],
-  exports: [PrivateMessagesService],
+  exports: [PrivateMessagesService,PrivateMessagesGateway],
 })
 export class PrivateMessagesModule {}

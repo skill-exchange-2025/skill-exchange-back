@@ -18,6 +18,8 @@ import { ChatModule } from './chat/chat.module';
 import { PrivateMessagesController } from './private-messages/private-messages.controller';
 import { PrivateMessagesModule } from './private-messages/private-messages.module';
 import { FriendRequestsModule } from './friend-requests/friend-requests.module';
+import { EventsModule } from './events/events.module';
+
 
 
 @Module({
@@ -59,6 +61,8 @@ import { FriendRequestsModule } from './friend-requests/friend-requests.module';
     ChatModule,
     PrivateMessagesModule,
     FriendRequestsModule,
+    EventsModule,
+    
     
   ],
   controllers: [AppController, AuthController, InfobipController, PrivateMessagesController],

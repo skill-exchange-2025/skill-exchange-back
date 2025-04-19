@@ -6,6 +6,7 @@ import { FriendRequest, FriendRequestSchema } from './friend-request.schema';
 import { User, UserSchema } from '../users/schemas/user.schema';
 import { AuthModule } from '../auth/auth.module';
 
+
 @Module({
   imports: [
     MongooseModule.forFeature([

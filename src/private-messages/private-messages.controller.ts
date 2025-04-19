@@ -3,6 +3,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PrivateMessagesService } from './private-messages.service';
 import { CreatePrivateMessageDto, EditPrivateMessageDto } from './private-message.dto';
 import { CurrentUser } from 'src/auth/decorators/user.decorator';
+import { User } from 'src/users/schemas/user.schema';
 
 @Controller('private-messages')
 @UseGuards(JwtAuthGuard)
@@ -41,4 +42,6 @@ export class PrivateMessagesController {
   ) {
     return this.privateMessagesService.editMessage(user.id, messageId, editMessageDto);
   }
+ 
+
 }

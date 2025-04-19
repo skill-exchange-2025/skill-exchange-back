@@ -5,6 +5,7 @@ import { PrivateMessage } from './private-message.schema';
 import { CreatePrivateMessageDto, EditPrivateMessageDto } from './private-message.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { FriendRequestService } from 'src/friend-requests/friend-requests.service';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class PrivateMessagesService {
@@ -74,4 +75,8 @@ export class PrivateMessagesService {
     this.eventEmitter.emit('message.updated', { messageId, content: editMessageDto.content });
     return updatedMessage;
   }
+
+ 
+  
+  
 }
