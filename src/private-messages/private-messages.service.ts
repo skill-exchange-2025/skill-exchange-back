@@ -17,21 +17,52 @@ export class PrivateMessagesService {
   ) {}
 
   async createMessage(senderId: string, createMessageDto: CreatePrivateMessageDto) {
-    const areFriends = await this.friendRequestService.areFriends(senderId, createMessageDto.recipientId);
+    const areFriends = await this.friendRequestService.areFriends(
+      senderId, 
+      createMessageDto.recipientId
+    );
   
     if (!areFriends) {
       throw new UnauthorizedException('You can only send messages to friends');
+    }
+  
+    let replyToData: { content: string; sender: Types.ObjectId } | undefined;
+  
+    if (createMessageDto.replyTo) {
+      const replyToMessage = await this.privateMessageModel.findById(createMessageDto.replyTo)
+        .populate('sender', '_id name')
+        .exec();
+          
+      if (!replyToMessage) {
+        throw new NotFoundException('Reply message not found');
+      }
+  
+      replyToData = {
+        content: replyToMessage.content,
+        sender: replyToMessage.sender._id
+      };
     }
   
     const newMessage = new this.privateMessageModel({
       content: createMessageDto.content,
       sender: senderId,
       recipient: createMessageDto.recipientId,
+      replyTo: replyToData
     });
   
+    // Save first
     const savedMessage = await newMessage.save();
-    this.eventEmitter.emit('message.created', savedMessage);
-    return savedMessage;
+    
+    // Then populate the saved message
+    const populatedMessage = await this.privateMessageModel
+      .findById(savedMessage._id)
+      .populate('sender', '_id name')
+      .populate('recipient', '_id name')
+      .populate('replyTo.sender', '_id name')
+      .exec();
+  
+    this.eventEmitter.emit('message.created', populatedMessage);
+    return populatedMessage;
   }
   
   
@@ -45,6 +76,9 @@ export class PrivateMessagesService {
         ],
         isDeleted: { $ne: true },
       })
+      .populate('sender', '_id name') // Add this line to populate sender details
+    .populate('recipient', '_id name') // Add this line to populate recipient details
+    .populate('replyTo.sender', '_id name')
       .sort({ createdAt: 'asc' })
       .exec();
   }

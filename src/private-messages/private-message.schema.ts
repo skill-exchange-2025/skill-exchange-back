@@ -15,6 +15,19 @@ export class PrivateMessage extends Document {
   @Prop({ default: false })
   isRead: boolean;
 
+  
+  @Prop({
+    type: {
+      content: String,
+      sender: { type: Types.ObjectId, ref: 'User' }
+    },
+    required: false
+  })
+  replyTo?: {
+    content: string;
+    sender: Types.ObjectId;
+  };
+
   @Prop({ default: false })
   isDeleted: boolean;
 }
