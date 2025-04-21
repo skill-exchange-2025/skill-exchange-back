@@ -66,12 +66,25 @@ export class FriendRequestService {
   }
   
   
-  
+  async searchUsersByName(name: string, currentUserId: string) {
+    const users = await this.userModel.find({
+      name: { $regex: name, $options: 'i' },  // Case-insensitive search
+      _id: { $ne: new Types.ObjectId(currentUserId) }  // Exclude current user
+    })
+    .select('_id name email phone')
+    .limit(5)
+    .exec();
 
+    return users.map(user => ({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone
+    }));
+  }
 
-  async create(senderId: string, email: string) {
-    // Find recipient by email
-    const recipient = await this.userModel.findOne({ email }).exec();
+  async create(senderId: string, name: string) {
+    const recipient = await this.userModel.findOne({ name }).exec();
     if (!recipient) {
       throw new NotFoundException('User not found');
     }

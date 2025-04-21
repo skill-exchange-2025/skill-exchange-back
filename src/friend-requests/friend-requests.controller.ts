@@ -8,6 +8,7 @@ import {
     Patch,
     Post,
     UseGuards,
+    Query,
   } from '@nestjs/common';
   import { FriendRequestService } from './friend-requests.service';
   import { CreateFriendDto } from './CreateFriend.dto';
@@ -26,10 +27,10 @@ export class FriendRequestController {
   @Post()
   async createFriendRequest(
     @Request() req,
-    @Body() { email }: CreateFriendDto,
+    @Body() { name }: CreateFriendDto,
   ) {
     // Access user ID from token
-    return this.friendRequestService.create(req.user._id, email);
+    return this.friendRequestService.create(req.user._id, name);
   }
 
   @Patch(':id/accept')
@@ -43,6 +44,10 @@ export class FriendRequestController {
   @Get('friends')
   async getFriends(@Request() req) {
     return this.friendRequestService.getFriends(req.user._id.toString());
+  }
+  @Get('search')
+  async searchUsers(@Request() req, @Query('name') name: string) {
+    return this.friendRequestService.searchUsersByName(name, req.user._id);
   }
 
   @Patch(':id/reject')

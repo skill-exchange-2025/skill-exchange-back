@@ -39,7 +39,7 @@ export class PrivateMessagesService {
   
       replyToData = {
         content: replyToMessage.content,
-        sender: replyToMessage.sender._id
+        sender: replyToMessage.sender //na7it l ._id
       };
     }
   
@@ -76,8 +76,8 @@ export class PrivateMessagesService {
         ],
         isDeleted: { $ne: true },
       })
-      .populate('sender', '_id name') // Add this line to populate sender details
-    .populate('recipient', '_id name') // Add this line to populate recipient details
+      .populate('sender', '_id name') 
+    .populate('recipient', '_id name') 
     .populate('replyTo.sender', '_id name')
       .sort({ createdAt: 'asc' })
       .exec();
