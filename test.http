@@ -57,7 +57,28 @@ Content-Type: application/json
   ]
 }
 
+### get feedbacks
+GET http://localhost:5000/api/feedback?page=1&limit=10
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Q0YmNlYjY4MjU5YTYxOWU3ZDlkNTkiLCJlbWFpbCI6ImppaGVkc2FndWVyMTI4QGdtYWlsLmNvbSIsImlhdCI6MTc0NTI1ODYyNSwiZXhwIjoxNzQ1MjU5NTI1fQ.PhFP_mfNzbkjf0aTVCgdRLAwh3ewXRzgwdvgcr2HQAo
+###
+DELETE http://localhost:5000/api/feedback/68064dca3799e146f7368e37
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Q0YmNlYjY4MjU5YTYxOWU3ZDlkNTkiLCJlbWFpbCI6ImppaGVkc2FndWVyMTI4QGdtYWlsLmNvbSIsImlhdCI6MTc0NTI1ODYyNSwiZXhwIjoxNzQ1MjU5NTI1fQ.PhFP_mfNzbkjf0aTVCgdRLAwh3ewXRzgwdvgcr2HQAo
 
+
+
+### Create new feedback
+POST http://localhost:5000/api/feedback
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Q0YmNlYjY4MjU5YTYxOWU3ZDlkNTkiLCJlbWFpbCI6ImppaGVkc2FndWVyMTI4QGdtYWlsLmNvbSIsImlhdCI6MTc0NTI1ODYyNSwiZXhwIjoxNzQ1MjU5NTI1fQ.PhFP_mfNzbkjf0aTVCgdRLAwh3ewXRzgwdvgcr2HQAo
+Content-Type: application/json
+
+{
+  "title": "Platform Improvement Suggestion",
+  "description": "It would be great to have a dark mode option",
+  "type": "improvement",
+  "priority": "medium",
+  "status": "pending"
+
+}
 
 ###
 POST http://localhost:5000/api/auth/login

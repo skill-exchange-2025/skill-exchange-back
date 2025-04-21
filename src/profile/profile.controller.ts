@@ -20,7 +20,6 @@ import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { existsSync, mkdirSync } from 'fs';
 
-// Ensure uploads directory exists
 const uploadDir = './uploads';
 if (!existsSync(uploadDir)) {
   mkdirSync(uploadDir, { recursive: true });
