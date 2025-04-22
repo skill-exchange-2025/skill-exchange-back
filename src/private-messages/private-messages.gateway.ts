@@ -196,7 +196,7 @@ import { Model } from 'mongoose';
       console.error('Accept friend request error:', error);
     }
   }
-
+  
     @SubscribeMessage('rejectFriendRequest')
     async handleRejectFriendRequest(@MessageBody() data: { requestId: string; userId: string }) {
       try {

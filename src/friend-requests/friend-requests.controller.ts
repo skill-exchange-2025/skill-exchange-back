@@ -67,6 +67,15 @@ export class FriendRequestController {
     // Access user ID from token
     return this.friendRequestService.cancel(requestId, req.user._id.toString());
   }
+@Get('status/:recipientId')
+async checkFriendRequestStatus(
+  @Request() req,
+  @Param('recipientId') recipientId: string
+) {
+  const senderId = req.user._id; 
+  return this.friendRequestService.checkRequestStatus(senderId, recipientId);
+}
+  
 
   
 

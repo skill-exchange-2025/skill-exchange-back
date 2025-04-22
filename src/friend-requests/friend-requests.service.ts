@@ -186,17 +186,18 @@ export class FriendRequestService {
   async cancel(requestId: string, userId: string) {
     const friendRequest = await this.friendRequestModel
       .findOne({
-        _id: requestId,
-        sender: userId,
-        status: 'pending',
+        _id: new Types.ObjectId(requestId),
+        sender: new Types.ObjectId(userId),
+        status: 'pending'
       })
       .exec();
-
+  
     if (!friendRequest) {
-      throw new NotFoundException('Friend request not found');
+      throw new NotFoundException('Pending friend request not found');
     }
-
-    return this.friendRequestModel.deleteOne({ _id: requestId }).exec();
+  
+    await this.friendRequestModel.deleteOne({ _id: requestId }).exec();
+    return { message: 'Friend request cancelled successfully' };
   }
   // In FriendRequestService
   async areFriends(userId1: string, userId2: string): Promise<boolean> {
@@ -220,7 +221,32 @@ export class FriendRequestService {
   
     return !!friendship;
   }
+  // In your service
+async checkRequestStatus(senderId: string, recipientId: string) {
+  // Check if already friends
+  const areFriends = await this.areFriends(senderId, recipientId);
+  if (areFriends) {
+    return { status: 'friends' };
+  }
 
+  const request = await this.friendRequestModel.findOne({
+    $or: [
+      { sender: new Types.ObjectId(senderId), recipient: new Types.ObjectId(recipientId) },
+      { sender: new Types.ObjectId(recipientId), recipient: new Types.ObjectId(senderId) }
+    ],
+    status: 'pending'
+  });
+
+  if (!request) {
+    return { status: 'none' };
+  }
+
+  return {
+    status: request.sender.toString() === senderId ? 'request-sent' : 'request-received',
+    requestId: request._id
+  };
+}
+  
 
   
   
