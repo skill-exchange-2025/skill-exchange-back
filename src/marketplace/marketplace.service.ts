@@ -26,10 +26,12 @@ export class MarketplaceService {
     @InjectModel(Review.name) private reviewModel: Model<ReviewDocument>,
     private usersService: UsersService,
     private paymentService: PaymentService,
-    private googleMeetService: GoogleMeetService,
-    private notificationService: NotificationService,
+    private readonly googleMeetService: GoogleMeetService,
+    private notificationService: NotificationService
   ) {}
-
+  async getCalendarMetadata(calendarId: string) {
+    return this.googleMeetService.getCalendarMetadata(calendarId);
+  }
   // Listing methods
   async createListing(
     userId: string,
@@ -268,14 +270,16 @@ export class MarketplaceService {
     userId: string,
     createTransactionDto: CreateTransactionDto
   ): Promise<TransactionDocument> {
-    const listing = await this.listingModel.findById(createTransactionDto.listingId);
+    const listing = await this.listingModel.findById(
+      createTransactionDto.listingId
+    );
 
     if (!listing) {
       throw new NotFoundException('Listing not found');
     }
 
-    if (listing.status !== 'active') {
-      throw new BadRequestException('This listing is no longer available');
+    if (listing.status === 'deleted') {
+      throw new BadRequestException('This listing has been deleted');
     }
 
     // Get the user object to ensure we have a valid ObjectId
@@ -297,21 +301,42 @@ export class MarketplaceService {
 
     // If it's an interactive course, create a Google Meet
     if (listing.type === 'interactive_course') {
-      if (!createTransactionDto.meetingStartTime || !createTransactionDto.meetingDuration) {
-        throw new BadRequestException('Meeting start time and duration are required for interactive courses');
+      if (!createTransactionDto.startTime || !createTransactionDto.endTime) {
+        throw new BadRequestException(
+          'Start time and end time are required for interactive courses'
+        );
       }
 
       const { meetLink, eventId } = await this.googleMeetService.createMeeting(
         listing.title,
-        createTransactionDto.meetingStartTime,
-        createTransactionDto.meetingDuration,
+        createTransactionDto.startTime,
+        Math.ceil(
+          (createTransactionDto.endTime.getTime() -
+            createTransactionDto.startTime.getTime()) /
+            (1000 * 60)
+        ),
         seller.email,
         buyer.email,
+        (seller as any)._id.toString(),
+        (buyer as any)._id.toString(),
+        (transaction as any)._id.toString()
       );
-      
+
       transaction.meetLink = meetLink;
-      transaction.meetingScheduledAt = createTransactionDto.meetingStartTime;
+      transaction.meetingScheduledAt = createTransactionDto.startTime;
       transaction.meetingEventId = eventId;
+
+      // Send notifications with all required IDs
+      await this.notificationService.sendMeetingNotification(
+        seller.email,
+        buyer.email,
+        listing.title,
+        createTransactionDto.startTime,
+        meetLink,
+        (seller as any)._id.toString(),
+        (buyer as any)._id.toString(),
+        (transaction as any)._id.toString()
+      );
     }
 
     // Save the transaction to get an ID
@@ -319,7 +344,31 @@ export class MarketplaceService {
     const transactionId = (savedTransaction._id as any).toString();
 
     try {
-      // Process payment using wallet
+      // If it's an interactive course, set up the meeting first
+      if (listing.type === 'interactive_course') {
+        const { meetLink, eventId } =
+          await this.googleMeetService.createMeeting(
+            listing.title,
+            createTransactionDto.startTime,
+            Math.ceil(
+              (createTransactionDto.endTime.getTime() -
+                createTransactionDto.startTime.getTime()) /
+                (1000 * 60)
+            ),
+            seller.email,
+            buyer.email,
+            (seller as any)._id.toString(),
+            (buyer as any)._id.toString(),
+            transactionId
+          );
+
+        savedTransaction.meetLink = meetLink;
+        savedTransaction.meetingScheduledAt = createTransactionDto.startTime;
+        savedTransaction.meetingEventId = eventId;
+        await savedTransaction.save();
+      }
+
+      // Process payment
       await this.paymentService.processMarketplaceTransaction(
         (buyer._id as any).toString(),
         listing.seller.toString(),
@@ -327,7 +376,7 @@ export class MarketplaceService {
         transactionId
       );
 
-      // Update transaction status to completed (service delivery)
+      // Update transaction status to completed only after payment and meeting setup
       savedTransaction.status = 'completed';
       await savedTransaction.save();
 
@@ -498,7 +547,12 @@ export class MarketplaceService {
     };
   }
 
-  async getTransactionsByBuyer(userId: string, page = 1, limit = 10, status?: string) {
+  async getTransactionsByBuyer(
+    userId: string,
+    page = 1,
+    limit = 10,
+    status?: string
+  ) {
     const skip = (page - 1) * limit;
 
     const query: any = { buyer: userId };
@@ -510,7 +564,8 @@ export class MarketplaceService {
       .find(query)
       .populate({
         path: 'listing',
-        select: 'title price description type skillName proficiencyLevel category status'
+        select:
+          'title price description type skillName proficiencyLevel category status',
       })
       .populate('seller', 'name email')
       .sort({ createdAt: -1 })
@@ -542,20 +597,32 @@ export class MarketplaceService {
       status: transaction.status,
     }));
 
-  return {
-    data: purchasedItems,
-    meta: {
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit),
-    },
-    success: true,
-  };
-} 
+    return {
+      data: purchasedItems,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+      success: true,
+    };
+  }
   // Helper methods
   private isProficiencyHigher(newLevel: string, currentLevel: string): boolean {
     const levels = ['Beginner', 'Intermediate', 'Advanced'];
     return levels.indexOf(newLevel) > levels.indexOf(currentLevel);
+  }
+
+  async getNotifications(userId: string, page = 1, limit = 10) {
+    return this.notificationService.getNotifications(userId, page, limit);
+  }
+
+  async markNotificationAsRead(notificationId: string, userId: string) {
+    return this.notificationService.markAsRead(notificationId, userId);
+  }
+
+  async markAllNotificationsAsRead(userId: string) {
+    return this.notificationService.markAllAsRead(userId);
   }
 }

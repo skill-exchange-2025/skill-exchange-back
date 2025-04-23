@@ -26,6 +26,7 @@ import { CreateOnlineCourseListingDto } from './dto/create-online-course-listing
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { ListingType } from './schemas/listing.schema';
+import { CreateMeetingDto } from './dto/create-meeting.dto';
 
 @ApiTags('marketplace')
 @Controller('marketplace')
@@ -34,7 +35,9 @@ export class MarketplaceController {
   @Get('my-purchases')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get current user\'s purchased courses and listings' })
+  @ApiOperation({
+    summary: "Get current user's purchased courses and listings",
+  })
   async getMyPurchases(
     @Request() req,
     @Query('page') page: number = 1,
@@ -111,7 +114,15 @@ export class MarketplaceController {
   ) {
     return this.marketplaceService.updateListing(id, updateListingDto);
   }
-
+  @Get('calendar/metadata')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get Google Calendar metadata' })
+  async getCalendarMetadata(
+    @Query('calendarId') calendarId: string = 'primary'
+  ) {
+    return this.marketplaceService.getCalendarMetadata(calendarId);
+  }
   @Delete('listings/:id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -241,5 +252,75 @@ export class MarketplaceController {
       minPrice,
       maxPrice
     );
+  }
+
+  @Post('meetings/book')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Book a meeting for a listing' })
+  @ApiResponse({ status: 201, description: 'Meeting booked successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid request' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async bookMeeting(
+    @Request() req,
+    @Body() createMeetingDto: CreateMeetingDto
+  ) {
+    if (!createMeetingDto.meetingStartTime) {
+      throw new BadRequestException('Meeting start time is required');
+    }
+
+    // Ensure meetingStartTime is a valid Date object
+    const startTime = new Date(createMeetingDto.meetingStartTime);
+    if (isNaN(startTime.getTime())) {
+      throw new BadRequestException('Invalid meeting start time');
+    }
+
+    const createTransactionDto: CreateTransactionDto = {
+      listingId: createMeetingDto.listingId,
+      buyerId: req.user._id,
+      sellerId: createMeetingDto.sellerId,
+      startTime: startTime,
+      endTime: new Date(
+        startTime.getTime() + createMeetingDto.meetingDuration * 60000
+      ),
+    };
+    return this.marketplaceService.createTransaction(
+      req.user._id,
+      createTransactionDto
+    );
+  }
+
+  @Get('notifications')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get user notifications' })
+  @ApiResponse({
+    status: 200,
+    description: 'Notifications retrieved successfully',
+  })
+  async getNotifications(
+    @Request() req,
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10
+  ) {
+    return this.marketplaceService.getNotifications(req.user._id, page, limit);
+  }
+
+  @Put('notifications/:id/read')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Mark a notification as read' })
+  @ApiResponse({ status: 200, description: 'Notification marked as read' })
+  async markNotificationAsRead(@Request() req, @Param('id') id: string) {
+    return this.marketplaceService.markNotificationAsRead(id, req.user._id);
+  }
+
+  @Put('notifications/read-all')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Mark all notifications as read' })
+  @ApiResponse({ status: 200, description: 'All notifications marked as read' })
+  async markAllNotificationsAsRead(@Request() req) {
+    return this.marketplaceService.markAllNotificationsAsRead(req.user._id);
   }
 }

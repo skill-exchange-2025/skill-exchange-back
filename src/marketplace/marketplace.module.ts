@@ -8,6 +8,10 @@ import { MarketplaceService } from './marketplace.service';
 import { Listing, ListingSchema } from './schemas/listing.schema';
 import { Transaction, TransactionSchema } from './schemas/transaction.schema';
 import { Review, ReviewSchema } from './schemas/review.schema';
+import {
+  Notification,
+  NotificationSchema,
+} from './schemas/notification.schema';
 import { UsersModule } from '../users/users.module';
 import { ProfileModule } from '../profile/profile.module';
 import { Wallet, WalletSchema } from './schemas/wallet.schema';
@@ -41,6 +45,7 @@ import { NotificationService } from './services/notification.service';
       { name: Review.name, schema: ReviewSchema },
       { name: Wallet.name, schema: WalletSchema },
       { name: Payment.name, schema: PaymentSchema },
+      { name: Notification.name, schema: NotificationSchema },
     ]),
     UsersModule,
     ProfileModule,

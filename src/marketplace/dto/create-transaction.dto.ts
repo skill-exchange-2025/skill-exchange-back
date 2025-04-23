@@ -1,6 +1,12 @@
 // src/marketplace/dto/create-transaction.dto.ts
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsDate, IsNumber, IsOptional } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsDate,
+  IsNumber,
+  IsOptional,
+} from 'class-validator';
 
 export class CreateTransactionDto {
   @ApiProperty()
@@ -8,11 +14,23 @@ export class CreateTransactionDto {
   @IsString()
   listingId: string;
 
-  @IsOptional()
-  @IsDate()
-  meetingStartTime?: Date;
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  buyerId: string;
 
-  @IsOptional()
-  @IsNumber()
-  meetingDuration?: number;
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  sellerId: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsDate()
+  startTime: Date;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsDate()
+  endTime: Date;
 }
