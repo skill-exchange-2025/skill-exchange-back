@@ -179,6 +179,31 @@ import { Model } from 'mongoose';
         console.error('Friend request error:', error);
       }
     }
+    @SubscribeMessage('getSentFriendRequests')
+async handleGetSentFriendRequests(@ConnectedSocket() client: AuthenticatedSocket) {
+  const userId = client.user?._id?.toString();
+  if (userId) {
+    try {
+      const requests = await this.friendRequestService.getSentFriendRequests(userId);
+      client.emit('sentFriendRequests', requests);
+    } catch (error) {
+      console.error('Get sent friend requests error:', error);
+      client.emit('error', { message: 'Failed to get sent friend requests' });
+    }
+  }
+}
+// Add this with your other listening methods
+listenForSentFriendRequests(callback: (requests: any[]) => void) {
+  if (this.socket) {
+    this.socket.on('sentFriendRequests', callback);
+  }
+}
+
+getSentFriendRequests() {
+  if (this.socket && this.connected) {
+    this.socket.emit('getSentFriendRequests');
+  }
+}
 
     @SubscribeMessage('acceptFriendRequest')
   async handleAcceptFriendRequest(@MessageBody() data: { requestId: string; userId: string }) {
@@ -209,7 +234,7 @@ import { Model } from 'mongoose';
         console.error('Reject friend request error:', error);
       }
     }
-
+    
     @SubscribeMessage('getFriendRequests')
     async handleGetFriendRequests(@ConnectedSocket() client: AuthenticatedSocket) {
       const userId = client.user?._id?.toString();

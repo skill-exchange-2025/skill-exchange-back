@@ -67,14 +67,37 @@ export class FriendRequestService {
   
   
   async searchUsersByName(name: string, currentUserId: string) {
+    // First, find all pending friend requests involving the current user
+    const pendingRequests = await this.friendRequestModel.find({
+      $or: [
+        { sender: new Types.ObjectId(currentUserId), status: 'pending' },
+        { recipient: new Types.ObjectId(currentUserId), status: 'pending' }
+      ]
+    });
+  
+    // Get the IDs of users involved in pending requests
+    const userIdsWithPendingRequests: Types.ObjectId[] = pendingRequests.reduce((ids: Types.ObjectId[], request) => {
+      if (request.sender.toString() !== currentUserId) {
+        ids.push(request.sender);
+      }
+      if (request.recipient.toString() !== currentUserId) {
+        ids.push(request.recipient);
+      }
+      return ids;
+    }, []);
+  
+    // Find users excluding current user and users with pending requests
     const users = await this.userModel.find({
       name: { $regex: name, $options: 'i' },  // Case-insensitive search
-      _id: { $ne: new Types.ObjectId(currentUserId) }  // Exclude current user
+      _id: { 
+        $ne: new Types.ObjectId(currentUserId),  // Exclude current user
+        $nin: userIdsWithPendingRequests  // Exclude users with pending requests
+      }
     })
     .select('_id name email phone')
     .limit(5)
     .exec();
-
+  
     return users.map(user => ({
       _id: user._id,
       name: user.name,
@@ -83,16 +106,70 @@ export class FriendRequestService {
     }));
   }
 
-  async create(senderId: string, name: string) {
-    const recipient = await this.userModel.findOne({ name }).exec();
+
+
+
+
+  async getSentFriendRequests(userId: string) {
+    const requests = await this.friendRequestModel
+      .find({
+        sender: userId,
+        status: 'pending',
+      })
+      .populate('recipient', 'name email phone')
+      .exec();
+  
+    return requests.map((req) => ({
+      _id: req._id,
+      recipient: {
+        _id: (req.recipient as any)._id,
+        name: (req.recipient as any).name,
+        email: (req.recipient as any).email,
+        phone: (req.recipient as any).phone,
+      },
+      status: req.status
+    }));
+  }
+
+  // async create(senderId: string, name: string) {
+  //   const recipient = await this.userModel.findOne({ name }).exec();
+  //   if (!recipient) {
+  //     throw new NotFoundException('User not found');
+  //   }
+
+  //   if ((recipient._id as Types.ObjectId).toString() === senderId.toString()) {
+  //           throw new BadRequestException('Cannot send friend request to yourself');
+  //   }
+    
+
+  //   // Check if friend request already exists
+  //   const existingRequest = await this.friendRequestModel.findOne({
+  //     $or: [
+  //       { sender: senderId, recipient: recipient._id, status: 'pending' },
+  //       { sender: recipient._id, recipient: senderId, status: 'pending' },
+  //     ],
+  //   });
+
+  //   if (existingRequest) {
+  //     throw new BadRequestException('Friend request already exists');
+  //   }
+
+  //   const friendRequest = new this.friendRequestModel({
+  //     sender: senderId,
+  //     recipient: recipient._id,
+  //   });
+
+  //   return (await friendRequest.save()).populate('sender recipient', 'name email phone');
+  // }
+  async create(senderId: string, recipientEmail: string) {
+    const recipient = await this.userModel.findOne({ email: recipientEmail }).exec();
     if (!recipient) {
       throw new NotFoundException('User not found');
     }
 
     if ((recipient._id as Types.ObjectId).toString() === senderId.toString()) {
-            throw new BadRequestException('Cannot send friend request to yourself');
+      throw new BadRequestException('Cannot send friend request to yourself');
     }
-    
 
     // Check if friend request already exists
     const existingRequest = await this.friendRequestModel.findOne({
@@ -112,7 +189,7 @@ export class FriendRequestService {
     });
 
     return (await friendRequest.save()).populate('sender recipient', 'name email phone');
-  }
+}
 
   async accept(requestId: string, userId: string) {
     // Find the friend request and populate sender and recipient
@@ -196,7 +273,7 @@ export class FriendRequestService {
       throw new NotFoundException('Pending friend request not found');
     }
   
-    await this.friendRequestModel.deleteOne({ _id: requestId }).exec();
+    await this.friendRequestModel.deleteOne({ _id: new Types.ObjectId(requestId) }).exec();
     return { message: 'Friend request cancelled successfully' };
   }
   // In FriendRequestService
@@ -229,6 +306,7 @@ async checkRequestStatus(senderId: string, recipientId: string) {
     return { status: 'friends' };
   }
 
+  // Check for pending requests in either direction
   const request = await this.friendRequestModel.findOne({
     $or: [
       { sender: new Types.ObjectId(senderId), recipient: new Types.ObjectId(recipientId) },

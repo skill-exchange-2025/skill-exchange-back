@@ -24,14 +24,26 @@ export class FriendRequestController {
     return this.friendRequestService.getFriendRequests(req.user._id);
   }
 
-  @Post()
-  async createFriendRequest(
-    @Request() req,
-    @Body() { name }: CreateFriendDto,
-  ) {
-    // Access user ID from token
-    return this.friendRequestService.create(req.user._id, name);
-  }
+@Post()
+async createFriendRequest(
+  @Request() req,
+  @Body() { email }: CreateFriendDto, 
+) {
+  return this.friendRequestService.create(req.user._id, email);
+}
+//   @Post()
+// async createFriendRequest(
+//   @Request() req,
+//   @Body() createFriendDto: CreateFriendDto,
+// ) {
+//   return this.friendRequestService.create(req.user._id, createFriendDto);
+// }
+@Get('sent')
+async getSentFriendRequests(@Request() req) {
+  return this.friendRequestService.getSentFriendRequests(req.user._id);
+}
+
+  
 
   @Patch(':id/accept')
   async acceptFriendRequest(
