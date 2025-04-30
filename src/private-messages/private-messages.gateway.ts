@@ -121,6 +121,8 @@ import { Model } from 'mongoose';
         // Emit to recipient
         const recipientSocket = this.userSockets.get(data.recipientId);
         if (recipientSocket) {
+
+          console.log('Recipient socket:', recipientSocket);
           this.server.to(recipientSocket).emit('newPrivateMessage', populatedMessage);
         }
     
@@ -198,7 +200,76 @@ listenForSentFriendRequests(callback: (requests: any[]) => void) {
     this.socket.on('sentFriendRequests', callback);
   }
 }
+@SubscribeMessage('addReaction')
+async handleAddReaction(
+  @ConnectedSocket() client: AuthenticatedSocket,
+  @MessageBody() data: { messageId: string; type: string }
+) {
+  try {
+    const userId = client.user?._id?.toString();
+    if (!userId) {
+      throw new Error('User not authenticated');
+    }
 
+    const updatedMessage = await this.privateMessagesService.addReaction(
+      userId,
+      data.messageId,
+      data.type
+    );
+
+    // Notify both sender and recipient about the new reaction
+    client.emit('reactionAdded', updatedMessage);
+
+    // Notify the other user
+    const otherUserId = updatedMessage.sender.toString() === userId 
+      ? updatedMessage.recipient.toString() 
+      : updatedMessage.sender.toString();
+    
+    const otherUserSocket = this.userSockets.get(otherUserId);
+    if (otherUserSocket) {
+      this.server.to(otherUserSocket).emit('reactionAdded', updatedMessage);
+    }
+
+  } catch (error) {
+    console.error('Error adding reaction:', error);
+    client.emit('error', { message: 'Failed to add reaction' });
+  }
+}
+
+@SubscribeMessage('removeReaction')
+async handleRemoveReaction(
+  @ConnectedSocket() client: AuthenticatedSocket,
+  @MessageBody() data: { messageId: string }
+) {
+  try {
+    const userId = client.user?._id?.toString();
+    if (!userId) {
+      throw new Error('User not authenticated');
+    }
+
+    const updatedMessage = await this.privateMessagesService.removeReaction(
+      userId,
+      data.messageId
+    );
+
+    // Notify both users about the removed reaction
+    client.emit('reactionRemoved', updatedMessage);
+
+    // Notify the other user
+    const otherUserId = updatedMessage.sender.toString() === userId 
+      ? updatedMessage.recipient.toString() 
+      : updatedMessage.sender.toString();
+    
+    const otherUserSocket = this.userSockets.get(otherUserId);
+    if (otherUserSocket) {
+      this.server.to(otherUserSocket).emit('reactionRemoved', updatedMessage);
+    }
+
+  } catch (error) {
+    console.error('Error removing reaction:', error);
+    client.emit('error', { message: 'Failed to remove reaction' });
+  }
+}
 getSentFriendRequests() {
   if (this.socket && this.connected) {
     this.socket.emit('getSentFriendRequests');

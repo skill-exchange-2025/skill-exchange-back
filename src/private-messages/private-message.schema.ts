@@ -1,6 +1,17 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 
+// Define the Reaction class with the necessary properties
+@Schema()
+class Reaction {
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  user: Types.ObjectId;
+
+  @Prop({ required: true, enum: ['❤️', '👍', '😊', '😂', '😮'] })
+  type: string;
+}
+
+// Define the PrivateMessage schema with reactions as an array of Reaction objects
 @Schema({ timestamps: true })
 export class PrivateMessage extends Document {
   @Prop({ required: true })
@@ -15,7 +26,10 @@ export class PrivateMessage extends Document {
   @Prop({ default: false })
   isRead: boolean;
 
-  
+  // Define reactions as an array of Reaction objects
+  @Prop({ type: [Reaction], default: [] })
+  reactions: Reaction[];
+
   @Prop({
     type: {
       content: String,

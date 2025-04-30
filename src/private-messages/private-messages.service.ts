@@ -65,7 +65,42 @@ export class PrivateMessagesService {
     return populatedMessage;
   }
   
+  async addReaction(userId: string, messageId: string, type: string) {
+    const message = await this.privateMessageModel.findById(messageId);
+    if (!message) {
+      throw new NotFoundException('Message not found');
+    }
   
+    // Check if user already reacted
+    const existingReaction = message.reactions.find(
+      reaction => reaction.user.toString() === userId
+    );
+  
+    if (existingReaction) {
+      // Update existing reaction
+      existingReaction.type = type;
+    } else {
+      // Add new reaction
+      message.reactions.push({ user: new Types.ObjectId(userId), type });
+    }
+  
+    const updatedMessage = await message.save();
+    return updatedMessage;
+  }
+  
+  async removeReaction(userId: string, messageId: string) {
+    const message = await this.privateMessageModel.findById(messageId);
+    if (!message) {
+      throw new NotFoundException('Message not found');
+    }
+  
+    message.reactions = message.reactions.filter(
+      reaction => reaction.user.toString() !== userId
+    );
+  
+    const updatedMessage = await message.save();
+    return updatedMessage;
+  }
 
   async getMessagesBetweenUsers(userId: string, otherUserId: string) {
     return this.privateMessageModel
@@ -82,6 +117,7 @@ export class PrivateMessagesService {
       .sort({ createdAt: 'asc' })
       .exec();
   }
+  
 
   async deleteMessage(userId: string, messageId: string) {
     const message = await this.privateMessageModel.findById(messageId);
