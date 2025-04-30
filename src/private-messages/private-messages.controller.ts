@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Param, Delete, Put, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Delete, Put, UseGuards, Patch } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PrivateMessagesService } from './private-messages.service';
 import { CreatePrivateMessageDto, EditPrivateMessageDto } from './private-message.dto';
@@ -30,6 +30,17 @@ async addReaction(
     createReactionDto.type
   );
 }
+
+@Patch('mark-as-read/:otherUserId')
+  async markMessagesAsRead(
+    @CurrentUser() user: any,
+    @Param('otherUserId') otherUserId: string,
+  ) {
+    await this.privateMessagesService.markMessagesAsRead(user.id, otherUserId);
+    return { message: 'Messages marked as read' };
+  }
+
+
 
 @Delete(':messageId/reactions')
 async removeReaction(

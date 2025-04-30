@@ -102,6 +102,23 @@ export class PrivateMessagesService {
     return updatedMessage;
   }
 
+
+
+  async markMessagesAsRead(userId: string, otherUserId: string) {
+    await this.privateMessageModel.updateMany(
+      {
+        sender: otherUserId,
+        recipient: userId,
+        isRead: false,
+      },
+      { $set: { isRead: true } }
+    );
+  }
+
+
+
+  
+  
   async getMessagesBetweenUsers(userId: string, otherUserId: string) {
     return this.privateMessageModel
       .find({
