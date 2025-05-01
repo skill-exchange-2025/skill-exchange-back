@@ -17,17 +17,20 @@ if (!existsSync(uploadDir)) {
       storage: diskStorage({
         destination: './uploads',
         filename: (req, file, callback) => {
-          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-          const ext = extname(file.originalname);
-          callback(null, `${uniqueSuffix}${ext}`);
+          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+          // const ext = extname(file.originalname);
+          // const filename = `${uniqueSuffix}${ext}`;
+          // callback(null, filename);
+          callback(null, `${uniqueSuffix}.mp3`);
+
         },
       }),
       fileFilter: (req, file, callback) => {
         // Accept only audio files
-        if (file.mimetype.startsWith('audio/')) {
+        if (file.mimetype === 'audio/mpeg') {
           callback(null, true);
         } else {
-          callback(new Error('Only audio files are allowed'), false);
+          callback(new Error('Only MP3 files are allowed'), false);
         }
       },
       limits: {

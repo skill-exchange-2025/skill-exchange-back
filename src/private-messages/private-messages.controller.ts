@@ -73,12 +73,12 @@ async createVoiceMessage(
     destination: './uploads',
     filename: (req, file, cb) => {
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-      const ext = file.originalname.split('.').pop(); // Get file extension
-      cb(null, `voice-${uniqueSuffix}.${ext}`);
+      // Force .mp3 extension instead of getting it from original file
+      cb(null, `voice-${uniqueSuffix}.mp3`);
     },
   }),
   fileFilter: (req, file, cb) => {
-    // Accept only audio files
+    // Accept audio files
     if (file.mimetype.startsWith('audio/')) {
       cb(null, true);
     } else {
