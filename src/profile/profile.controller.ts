@@ -37,6 +37,7 @@ export class ProfileController {
   async getProfile(@CurrentUser() user: any) {
     return await this.profileService.findByUserId(user.id);
   }
+  
 
   @Post()
   async createProfile(

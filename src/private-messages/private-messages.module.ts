@@ -11,6 +11,8 @@ import { FriendRequestsModule } from 'src/friend-requests/friend-requests.module
 import { UsersModule } from 'src/users/users.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
+import { ProfileService } from 'src/profile/profile.service';
+import { Profile, ProfileSchema } from 'src/profile/schemas/profile.schema';
 
 @Module({
   imports: [
@@ -30,13 +32,15 @@ import { diskStorage } from 'multer';
     }),
     MongooseModule.forFeature([
       { name: PrivateMessage.name, schema: PrivateMessageSchema },
+      { name: Profile.name, schema: ProfileSchema },
     ]),
     EventEmitterModule.forRoot(),
     FriendRequestsModule,
     UsersModule,
+    
   ],
   controllers: [PrivateMessagesController],
-  providers: [PrivateMessagesService, PrivateMessagesGateway],
+  providers: [PrivateMessagesService, PrivateMessagesGateway,ProfileService],
   exports: [PrivateMessagesService, PrivateMessagesGateway],
 })
 export class PrivateMessagesModule {}

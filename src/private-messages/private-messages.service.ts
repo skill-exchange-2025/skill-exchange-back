@@ -6,12 +6,14 @@ import { CreatePrivateMessageDto, CreateVoiceMessageDto, EditPrivateMessageDto }
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { FriendRequestService } from 'src/friend-requests/friend-requests.service';
 import { Types } from 'mongoose';
+import { Profile, ProfileDocument } from 'src/profile/schemas/profile.schema';
 
 @Injectable()
 export class PrivateMessagesService {
   constructor(
-    @InjectModel(PrivateMessage.name)
-    private privateMessageModel: Model<PrivateMessage>,
+    @InjectModel(PrivateMessage.name) private privateMessageModel: Model<PrivateMessage>,
+    @InjectModel(Profile.name) private profileModel: Model<ProfileDocument>,
+    // private privateMessageModel: Model<PrivateMessage>,
     private eventEmitter: EventEmitter2,
     private readonly friendRequestService: FriendRequestService,
   ) {}
@@ -119,8 +121,24 @@ export class PrivateMessagesService {
 
 
   
+  // async getMessagesBetweenUsers(userId: string, otherUserId: string) {
+  //   return this.privateMessageModel
+  //     .find({
+  //       $or: [
+  //         { sender: userId, recipient: otherUserId },
+  //         { sender: otherUserId, recipient: userId },
+  //       ],
+  //       isDeleted: { $ne: true },
+  //     })
+  //     .populate('sender', '_id name') 
+  //   .populate('recipient', '_id name') 
+  //   .populate('replyTo.sender', '_id name')
+  //     .sort({ createdAt: 'asc' })
+  //     .exec();
+      
+  // }
   async getMessagesBetweenUsers(userId: string, otherUserId: string) {
-    return this.privateMessageModel
+    const messages = await this.privateMessageModel
       .find({
         $or: [
           { sender: userId, recipient: otherUserId },
@@ -128,13 +146,46 @@ export class PrivateMessagesService {
         ],
         isDeleted: { $ne: true },
       })
-      .populate('sender', '_id name') 
-    .populate('recipient', '_id name') 
-    .populate('replyTo.sender', '_id name')
+      .populate('sender', '_id name')
+      .populate('recipient', '_id name')
+      .populate('replyTo.sender', '_id name')
       .sort({ createdAt: 'asc' })
       .exec();
-      
+  
+    // Get unique sender IDs
+    const senderIds = [...new Set(messages.map(msg => msg.sender._id.toString()))];
+  
+    // Get profiles for those senders
+    const profiles = await this.profileModel.find({ userId: { $in: senderIds } });
+  
+    // Map userId => avatarUrl
+    const avatarMap = new Map<string, string>();
+    profiles.forEach(profile => {
+      avatarMap.set(profile.userId.toString(), profile.avatarUrl);
+    });
+  
+    // Attach avatarUrl to each message
+    const enrichedMessages = messages.map((msg: any) => {
+      const msgObj = msg.toObject(); // Convert full message to plain object
+    
+      const sender = msgObj.sender || {};
+      const senderId = sender._id?.toString?.() || msg.sender?.toString?.();
+    
+      const avatarUrl = avatarMap.get(senderId) || null;
+    
+      return {
+        ...msgObj,
+        sender: {
+          ...sender,
+          avatarUrl,
+        },
+      };
+    });
+    
+  
+    return enrichedMessages;
   }
+  
 
  // In private-messages.service.ts
  async createVoiceMessage(senderId: string, createVoiceMessageDto: CreateVoiceMessageDto) {

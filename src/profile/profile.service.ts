@@ -41,7 +41,10 @@ export class ProfileService {
         this.usersService.findById(userId),
         this.calculateProfileCompletion(userId),
       ]);
-
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+      
       if (!profile && user) {
         return {
           user: {
@@ -59,16 +62,24 @@ export class ProfileService {
       if (!user) {
         throw new NotFoundException('User not found');
       }
+      const userData = {
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        skills: user.skills || [],
+        desiredSkills: user.desiredSkills || [],
+      };
+      if (!profile) {
+        return {
+          user: userData,
+          profileExists: false,
+          completionStatus
+        };
+      }
 
       return {
         ...profile?.toJSON(),
-        user: {
-          name: user.name,
-          email: user.email,
-          phone: user.phone,
-          skills: user.skills || [],
-          desiredSkills: user.desiredSkills || [],
-        },
+        user: userData,
         completionStatus,
         profileExists: true,
       };
