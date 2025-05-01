@@ -72,48 +72,47 @@ import { Model } from 'mongoose';
       }
     }
 
-    @SubscribeMessage('voiceMessage')
-    async handleVoiceMessage(
-      @ConnectedSocket() client: AuthenticatedSocket,
-      @MessageBody() data: { 
-        recipientId: string; 
-        audioUrl: string;
-        duration: number;
-      }
-    ) {
-      try {
-        const senderId = client.user?._id?.toString();
-        if (!senderId) {
-          throw new Error('User not authenticated');
-        }
-  
-        const savedMessage = await this.privateMessagesService.createVoiceMessage(
-          senderId,
-          {
-            recipientId: data.recipientId,
-            audioUrl: data.audioUrl,
-            duration: data.duration
-          }
-        );
-  
-        // Emit to recipient
-        const recipientSocket = this.userSockets.get(data.recipientId);
-        if (recipientSocket) {
-          this.server.to(recipientSocket).emit('newVoiceMessage', savedMessage);
-        }
-  
-        // Emit back to sender
-        client.emit('voiceMessageSaved', savedMessage);
-  
-      } catch (error) {
-        console.error('Error handling voice message:', error);
-        client.emit('error', { 
-          message: error instanceof UnauthorizedException 
-            ? error.message 
-            : 'Failed to send voice message' 
-        });
-      }
+@SubscribeMessage('voiceMessage')
+async handleVoiceMessage(
+  @ConnectedSocket() client: AuthenticatedSocket,
+  @MessageBody() data: { 
+    recipientId: string; 
+    audioUrl: string;
+    duration: number;
+  }
+) {
+  console.log('Received voice message data:', data);
+  // console.log('Sender ID:', senderId);
+  console.log('Audio URL:', data.audioUrl);
+  try {
+    const senderId = client.user?._id?.toString();
+    if (!senderId) {
+      throw new Error('User not authenticated');
     }
+
+    const savedMessage = await this.privateMessagesService.createVoiceMessage(
+      senderId,
+      {
+        recipientId: data.recipientId,
+        audioUrl: data.audioUrl,
+        duration: data.duration
+      }
+    );
+
+    // Emit to recipient
+    const recipientSocket = this.userSockets.get(data.recipientId);
+    if (recipientSocket) {
+      this.server.to(recipientSocket).emit('newVoiceMessage', savedMessage);
+    }
+
+    // Emit back to sender
+    client.emit('voiceMessageSaved', savedMessage);
+
+  } catch (error) {
+    console.error('Error handling voice message:', error);
+    client.emit('error', { message: 'Failed to send voice message' });
+  }
+}
 
 
 

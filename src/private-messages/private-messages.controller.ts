@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Param, Delete, Put, UseGuards, Patch, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Delete, Put, UseGuards, Patch, UploadedFile, UseInterceptors, BadRequestException } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PrivateMessagesService } from './private-messages.service';
 import { CreatePrivateMessageDto, CreateVoiceMessageDto, EditPrivateMessageDto } from './private-message.dto';
@@ -73,13 +73,27 @@ async createVoiceMessage(
     destination: './uploads',
     filename: (req, file, cb) => {
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-      cb(null, `${uniqueSuffix}-${file.originalname}`);
+      const ext = file.originalname.split('.').pop(); // Get file extension
+      cb(null, `voice-${uniqueSuffix}.${ext}`);
     },
   }),
+  fileFilter: (req, file, cb) => {
+    // Accept only audio files
+    if (file.mimetype.startsWith('audio/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only audio files are allowed'), false);
+    }
+  },
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB max file size
+  },
 }))
 async uploadVoiceMessage(@UploadedFile() file: Express.Multer.File) {
-  // Return the correct URL path
-  return `/uploads/${file.filename}`;
+  if (!file) {
+    throw new BadRequestException('No file uploaded');
+  }
+  return this.privateMessagesService.uploadVoiceMessage(file);
 }
 
 @Delete(':messageId/reactions')

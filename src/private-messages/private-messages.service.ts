@@ -136,50 +136,55 @@ export class PrivateMessagesService {
       
   }
 
-  async createVoiceMessage(senderId: string, createVoiceMessageDto: CreateVoiceMessageDto) {
-    const areFriends = await this.friendRequestService.areFriends(
-      senderId, 
-      createVoiceMessageDto.recipientId
-    );
+ // In private-messages.service.ts
+ async createVoiceMessage(senderId: string, createVoiceMessageDto: CreateVoiceMessageDto) {
+  const areFriends = await this.friendRequestService.areFriends(
+    senderId, 
+    createVoiceMessageDto.recipientId
+  );
+
+  if (!areFriends) {
+    throw new UnauthorizedException('You can only send messages to friends');
+  }
+
+  const newVoiceMessage = new this.privateMessageModel({
+    sender: senderId,
+    recipient: createVoiceMessageDto.recipientId,
+    audioUrl: createVoiceMessageDto.audioUrl,
+    duration: createVoiceMessageDto.duration,
+    isVoiceMessage: true,
+    content: 'Voice Message', // Add a default content for voice messages
+    createdAt: new Date()
+  });
+
+  const savedMessage = await newVoiceMessage.save();
   
-    if (!areFriends) {
-      throw new UnauthorizedException('You can only send messages to friends');
-    }
+  const populatedMessage = await this.privateMessageModel
+    .findById(savedMessage._id)
+    .populate('sender', '_id name')
+    .populate('recipient', '_id name')
+    .exec();
 
-    const newVoiceMessage = new this.privateMessageModel({
-      sender: senderId,
-      recipient: createVoiceMessageDto.recipientId,
-      audioUrl: createVoiceMessageDto.audioUrl,
-      duration: createVoiceMessageDto.duration,
-      isVoiceMessage: true
-    });
+  this.eventEmitter.emit('message.created', populatedMessage);
+  return populatedMessage;
+}
 
-    const savedMessage = await newVoiceMessage.save();
-    
-    const populatedMessage = await this.privateMessageModel
-      .findById(savedMessage._id)
-      .populate('sender', '_id name')
-      .populate('recipient', '_id name')
-      .exec();
-
-    this.eventEmitter.emit('message.created', populatedMessage);
-    return populatedMessage;
+async uploadVoiceMessage(file: Express.Multer.File) {
+  if (!file) {
+    throw new BadRequestException('No file uploaded');
   }
 
-  async uploadVoiceMessage(file: Express.Multer.File) {
-    if (!file) {
-      throw new BadRequestException('No file uploaded');
-    }
+  // Generate a URL for the uploaded file
+  const audioUrl = `/uploads/${file.filename}`;
 
-    // Generate a URL for the uploaded file
-    const fileName = file.filename;
-    const audioUrl = `/uploads/${fileName}`; // Use relative path instead of hardcoded domain
-
-    return { audioUrl };
-  }
-
-
-
+  return { 
+    audioUrl,
+    filename: file.filename,
+    originalname: file.originalname,
+    mimetype: file.mimetype,
+    size: file.size
+  };
+}
 
 
 

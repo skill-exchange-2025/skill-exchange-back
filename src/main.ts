@@ -10,9 +10,9 @@ async function bootstrap() {
     rawBody: true,
     bodyParser: true,
   });
-  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
-    prefix: '/uploads/', // This will be the URL prefix
-  });
+  // app.useStaticAssets(join(__dirname, '..', 'uploads'), {
+  //   prefix: '/uploads/', // This will be the URL prefix
+  // });
   app.enableCors({
     origin: ['http://localhost:5173', 'http://localhost:3000','http://localhost:5174'],
     credentials: true,
@@ -38,9 +38,17 @@ async function bootstrap() {
   app.use('/api/stripe/webhooks', express.raw({ type: 'application/json' }));
 
   app.useStaticAssets(join(__dirname, '..', 'uploads'), {
-    prefix: '/uploads',
+    prefix: '/uploads/',
+    setHeaders: (res, path) => {
+      if (path.endsWith('.webm')) {
+        res.set('Content-Type', 'audio/webm');
+      } else if (path.endsWith('.mp3')) {
+        res.set('Content-Type', 'audio/mpeg');
+      } else if (path.endsWith('.wav')) {
+        res.set('Content-Type', 'audio/wav');
+      }
+    }
   });
-
   // Set global prefix
   app.setGlobalPrefix('api');
 

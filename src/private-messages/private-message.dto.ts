@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsNotEmpty, IsNumber, IsOptional, IsString, Min } from "class-validator";
 
 // create-private-message.dto.ts
 export class CreatePrivateMessageDto {
@@ -19,10 +19,16 @@ export class CreatePrivateMessageDto {
     audioUrl: string;  // URL where the audio file is stored
 
     @IsNotEmpty()
-    duration: number;  // Duration of the voice message in seconds
+    @IsNumber()
+    @Min(0.01)
+    duration: number;  
 
     @IsNotEmpty()
     recipientId: string;
+
+    @IsOptional()
+    @IsString()
+    content?: string = '';
 }
   
   // edit-private-message.dto.ts

@@ -14,8 +14,8 @@ class Reaction {
 // Define the PrivateMessage schema with reactions as an array of Reaction objects
 @Schema({ timestamps: true })
 export class PrivateMessage extends Document {
-  @Prop({ required: true })
-  content: string;
+  @Prop({ required: function() { return !this.isVoiceMessage; } })
+    content: string;
 
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   sender: Types.ObjectId;

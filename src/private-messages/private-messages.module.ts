@@ -23,6 +23,7 @@ import { diskStorage } from 'multer';
         destination: './uploads',
         filename: (req, file, cb) => {
           const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+          const ext = file.originalname.split('.').pop();
           cb(null, `${uniqueSuffix}-${file.originalname}`);
         },
       }),

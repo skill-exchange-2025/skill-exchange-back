@@ -21,6 +21,7 @@ import { FriendRequestsModule } from './friend-requests/friend-requests.module';
 import { EventsModule } from './events/events.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
+import { UploadvocalModule } from './uploadvocal/uploadvocal.module';
 
 
 
@@ -42,17 +43,18 @@ import { diskStorage } from 'multer';
     }),
     MongooseModule.forRoot(process.env.MONGO_URI || 'mongodb://localhost/nest'),
     MailerModule.forRootAsync({
-      imports: [ConfigModule,
-        MulterModule.register({
-          dest: './uploads',
-          storage: diskStorage({
-            destination: './uploads',
-            filename: (req, file, cb) => {
-              const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-              cb(null, `${uniqueSuffix}-${file.originalname}`);
-            },
-          }),
-        }),
+      imports: [ConfigModule
+        // ,
+        // MulterModule.register({
+        //   dest: './uploads',
+        //   storage: diskStorage({
+        //     destination: './uploads',
+        //     filename: (req, file, cb) => {
+        //       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        //       cb(null, `${uniqueSuffix}-${file.originalname}`);
+        //     },
+        //   }),
+        // }),
       ],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
@@ -75,6 +77,7 @@ import { diskStorage } from 'multer';
     PrivateMessagesModule,
     FriendRequestsModule,
     EventsModule,
+    UploadvocalModule,
     
     
   ],
