@@ -30,6 +30,16 @@ export class PrivateMessage extends Document {
   @Prop({ type: [Reaction], default: [] })
   reactions: Reaction[];
 
+  
+  @Prop({ type: String })
+  audioUrl?: string;
+
+  @Prop({ type: Number })
+  duration?: number;
+
+  @Prop({ type: Boolean, default: false })
+  isVoiceMessage: boolean;
+
   @Prop({
     type: {
       content: String,

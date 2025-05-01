@@ -1,8 +1,8 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { PrivateMessage } from './private-message.schema';
-import { CreatePrivateMessageDto, EditPrivateMessageDto } from './private-message.dto';
+import { CreatePrivateMessageDto, CreateVoiceMessageDto, EditPrivateMessageDto } from './private-message.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { FriendRequestService } from 'src/friend-requests/friend-requests.service';
 import { Types } from 'mongoose';
@@ -117,7 +117,7 @@ export class PrivateMessagesService {
 
 
 
-  
+
   
   async getMessagesBetweenUsers(userId: string, otherUserId: string) {
     return this.privateMessageModel
@@ -133,7 +133,57 @@ export class PrivateMessagesService {
     .populate('replyTo.sender', '_id name')
       .sort({ createdAt: 'asc' })
       .exec();
+      
   }
+
+  async createVoiceMessage(senderId: string, createVoiceMessageDto: CreateVoiceMessageDto) {
+    const areFriends = await this.friendRequestService.areFriends(
+      senderId, 
+      createVoiceMessageDto.recipientId
+    );
+  
+    if (!areFriends) {
+      throw new UnauthorizedException('You can only send messages to friends');
+    }
+
+    const newVoiceMessage = new this.privateMessageModel({
+      sender: senderId,
+      recipient: createVoiceMessageDto.recipientId,
+      audioUrl: createVoiceMessageDto.audioUrl,
+      duration: createVoiceMessageDto.duration,
+      isVoiceMessage: true
+    });
+
+    const savedMessage = await newVoiceMessage.save();
+    
+    const populatedMessage = await this.privateMessageModel
+      .findById(savedMessage._id)
+      .populate('sender', '_id name')
+      .populate('recipient', '_id name')
+      .exec();
+
+    this.eventEmitter.emit('message.created', populatedMessage);
+    return populatedMessage;
+  }
+
+  async uploadVoiceMessage(file: Express.Multer.File) {
+    if (!file) {
+      throw new BadRequestException('No file uploaded');
+    }
+
+    // Generate a URL for the uploaded file
+    const fileName = file.filename;
+    const audioUrl = `/uploads/${fileName}`; // Use relative path instead of hardcoded domain
+
+    return { audioUrl };
+  }
+
+
+
+
+
+
+
   
 
   async deleteMessage(userId: string, messageId: string) {

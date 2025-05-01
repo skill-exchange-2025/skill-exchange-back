@@ -19,6 +19,8 @@ import { PrivateMessagesController } from './private-messages/private-messages.c
 import { PrivateMessagesModule } from './private-messages/private-messages.module';
 import { FriendRequestsModule } from './friend-requests/friend-requests.module';
 import { EventsModule } from './events/events.module';
+import { MulterModule } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
 
 
 
@@ -40,7 +42,18 @@ import { EventsModule } from './events/events.module';
     }),
     MongooseModule.forRoot(process.env.MONGO_URI || 'mongodb://localhost/nest'),
     MailerModule.forRootAsync({
-      imports: [ConfigModule],
+      imports: [ConfigModule,
+        MulterModule.register({
+          dest: './uploads',
+          storage: diskStorage({
+            destination: './uploads',
+            filename: (req, file, cb) => {
+              const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+              cb(null, `${uniqueSuffix}-${file.originalname}`);
+            },
+          }),
+        }),
+      ],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         transport: {

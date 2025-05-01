@@ -32,6 +32,7 @@ import { Model } from 'mongoose';
     server: Server;
 
     private userSockets = new Map<string, string>();
+    private onlineUsers = new Set<string>();
     private socket: Socket | null = null;
     private connected: boolean = false;
     private messageListener: ((message: any) => void) | null = null;
@@ -48,7 +49,14 @@ import { Model } from 'mongoose';
       console.log('Client connected:', userId);
       if (userId) {
         this.userSockets.set(userId, client.id);
+        this.onlineUsers.add(userId);
+        this.server.emit('userOnlineStatus', {
+          userId: userId,
+          isOnline: true
+        });
+        // this.server.emit('userOnline', userId);
         client.emit('connected', {});
+        console.log('Client connected:', userId);
       }
     }
 
@@ -57,8 +65,57 @@ import { Model } from 'mongoose';
       console.log('Client disconnected:', userId);
       if (userId) {
         this.userSockets.delete(userId);
+        this.onlineUsers.delete(userId);
+        // this.server.emit('userOffline', userId);
+        
+    console.log('Client disconnected:', userId);
       }
     }
+
+    @SubscribeMessage('voiceMessage')
+    async handleVoiceMessage(
+      @ConnectedSocket() client: AuthenticatedSocket,
+      @MessageBody() data: { 
+        recipientId: string; 
+        audioUrl: string;
+        duration: number;
+      }
+    ) {
+      try {
+        const senderId = client.user?._id?.toString();
+        if (!senderId) {
+          throw new Error('User not authenticated');
+        }
+  
+        const savedMessage = await this.privateMessagesService.createVoiceMessage(
+          senderId,
+          {
+            recipientId: data.recipientId,
+            audioUrl: data.audioUrl,
+            duration: data.duration
+          }
+        );
+  
+        // Emit to recipient
+        const recipientSocket = this.userSockets.get(data.recipientId);
+        if (recipientSocket) {
+          this.server.to(recipientSocket).emit('newVoiceMessage', savedMessage);
+        }
+  
+        // Emit back to sender
+        client.emit('voiceMessageSaved', savedMessage);
+  
+      } catch (error) {
+        console.error('Error handling voice message:', error);
+        client.emit('error', { 
+          message: error instanceof UnauthorizedException 
+            ? error.message 
+            : 'Failed to send voice message' 
+        });
+      }
+    }
+
+
 
     @SubscribeMessage('getFriends')
   async handleGetFriends(@ConnectedSocket() client: AuthenticatedSocket) {

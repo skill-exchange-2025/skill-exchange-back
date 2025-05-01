@@ -10,7 +10,9 @@ async function bootstrap() {
     rawBody: true,
     bodyParser: true,
   });
-
+  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
+    prefix: '/uploads/', // This will be the URL prefix
+  });
   app.enableCors({
     origin: ['http://localhost:5173', 'http://localhost:3000','http://localhost:5174'],
     credentials: true,
