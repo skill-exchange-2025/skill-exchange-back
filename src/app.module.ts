@@ -12,6 +12,7 @@ import { ProfileModule } from './profile/profile.module';
 import { MarketplaceModule } from './marketplace/marketplace.module';
 import { MessagingModule } from './messaging/messaging.module';
 import { FeedbackModule } from './feedback/feedback.module';
+import { WheelModule } from './wheel/wheel.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { FeedbackModule } from './feedback/feedback.module';
     ConfigModule.forRoot({ isGlobal: true }), // Load environment variables globally
     MarketplaceModule,
     FeedbackModule,
+    WheelModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [
