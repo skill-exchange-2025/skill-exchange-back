@@ -7,7 +7,12 @@ export type WalletDocument = Wallet & Document;
 
 @Schema({ timestamps: true })
 export class Wallet {
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true, unique: true })
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+    unique: true,
+  })
   user: User;
 
   @Prop({ required: true, default: 0 })
@@ -21,7 +26,7 @@ export class Wallet {
       description: string;
       timestamp: Date;
       reference: string; // Transaction ID or listing ID
-    }
+    },
   ];
 }
 
