@@ -162,14 +162,10 @@ export class PaymentService {
       // Handle different event types
       switch (event.type) {
         case 'payment_intent.succeeded':
-          await this.handlePaymentIntentSucceeded(
-            event.data.object as Stripe.PaymentIntent
-          );
+          await this.handlePaymentIntentSucceeded(event.data.object);
           break;
         case 'payment_intent.payment_failed':
-          await this.handlePaymentIntentFailed(
-            event.data.object as Stripe.PaymentIntent
-          );
+          await this.handlePaymentIntentFailed(event.data.object);
           break;
         // Add more event handlers as needed
       }
@@ -292,7 +288,7 @@ export class PaymentService {
   async addFundsToWallet(
     userId: string,
     amount: number,
-    type: 'deposit' | 'sale',
+    type: 'deposit' | 'sale' | 'wheel_spin',
     reference: string
   ): Promise<WalletDocument> {
     const wallet = await this.getWallet(userId);
@@ -301,16 +297,29 @@ export class PaymentService {
     wallet.transactions.push({
       amount,
       type,
-      description:
-        type === 'deposit'
-          ? 'Funds added to wallet'
-          : 'Payment received for skill sale',
+      description: this.getTransactionDescription(type), // Use a helper method
       timestamp: new Date(),
       reference,
     });
 
     this.logger.log(`Added ${amount} to wallet for user ${userId}`);
     return wallet.save();
+  }
+
+  // Add this private helper method to handle all transaction descriptions
+  private getTransactionDescription(
+    type: 'deposit' | 'sale' | 'wheel_spin'
+  ): string {
+    switch (type) {
+      case 'deposit':
+        return 'Funds added to wallet';
+      case 'sale':
+        return 'Payment received for skill sale';
+      case 'wheel_spin':
+        return 'Wheel of Fortune reward';
+      default:
+        return 'Wallet transaction';
+    }
   }
 
   // Deduct funds from a user's wallet

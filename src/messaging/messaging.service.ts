@@ -210,7 +210,7 @@ export class MessagingService {
     }
 
     // Return if user is already a member
-    if (channel.members?.some((member) => member.toString() === userId)) {
+    if (channel.members?.some((member) => !(member.toString() !== userId))) {
       return channel;
     }
 
