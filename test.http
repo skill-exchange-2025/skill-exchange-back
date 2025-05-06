@@ -5,6 +5,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2I3Yjk0M
 ### Get all purchases
 GET http://localhost:5000/api/marketplace/my-purchases
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2MzOWU0ZjVhNGNhNWRlZjQ5MDQ2OWUiLCJlbWFpbCI6ImF5bWVlZW4uZ2hAZ21haWwuY29tIiwiaWF0IjoxNzQ0NzMyNjI3LCJleHAiOjE3NDQ3MzM1Mjd9.Bc8_cLECSsdatslQIWQeadk4xYPNxKn1FImiu802anc
+
 ### Get only completed purchases
 GET /marketplace/my-purchases?status=completed
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2MzOWU0ZjVhNGNhNWRlZjQ5MDQ2OWUiLCJlbWFpbCI6ImF5bWVlZW4uZ2hAZ21haWwuY29tIiwiaWF0IjoxNzQ0NzMyNjI3LCJleHAiOjE3NDQ3MzM1Mjd9.Bc8_cLECSsdatslQIWQeadk4xYPNxKn1FImiu802anc
@@ -18,14 +19,14 @@ POST http://localhost:5000/api/auth/register
 Content-Type: application/json
 
 {
-  "email": "jihed0000@gmail.com",
-  "phone": "2345678",
+  "email": "feedbacks@gmail.com",
+  "phone": "2945678",
   "name": "Jihed",
   "password": "jihed123",
   "roles": ["admin"]
 }
 
-###
+
 ### Register a new user with skills
 POST http://localhost:5000/api/auth/register
 Content-Type: application/json
@@ -57,27 +58,37 @@ Content-Type: application/json
   ]
 }
 
-### get feedbacks
-GET http://localhost:5000/api/feedback?page=1&limit=10
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Q0YmNlYjY4MjU5YTYxOWU3ZDlkNTkiLCJlbWFpbCI6ImppaGVkc2FndWVyMTI4QGdtYWlsLmNvbSIsImlhdCI6MTc0NTI1ODYyNSwiZXhwIjoxNzQ1MjU5NTI1fQ.PhFP_mfNzbkjf0aTVCgdRLAwh3ewXRzgwdvgcr2HQAo
+### getall  feedbacks
+GET http://localhost:5000/api/feedback
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Q0YmNlYjY4MjU5YTYxOWU3ZDlkNTkiLCJlbWFpbCI6ImppaGVkc2FndWVyMTI4QGdtYWlsLmNvbSIsImlhdCI6MTc0NjI3NjE1MywiZXhwIjoxNzQ2Mjc3MDUzfQ.8WpwhrKUySMBFybPgs2wpusFwPKuMywzl2HbmTzm4dI
+
 ###
-DELETE http://localhost:5000/api/feedback/68064dca3799e146f7368e37
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Q0YmNlYjY4MjU5YTYxOWU3ZDlkNTkiLCJlbWFpbCI6ImppaGVkc2FndWVyMTI4QGdtYWlsLmNvbSIsImlhdCI6MTc0NTI1ODYyNSwiZXhwIjoxNzQ1MjU5NTI1fQ.PhFP_mfNzbkjf0aTVCgdRLAwh3ewXRzgwdvgcr2HQAo
+DELETE http://localhost:5000/api/feedback/user/68068b90ae53530ddd48f3a1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Q0YmNlYjY4MjU5YTYxOWU3ZDlkNTkiLCJlbWFpbCI6ImppaGVkc2FndWVyMTI4QGdtYWlsLmNvbSIsImlhdCI6MTc0NTM1NDQyOSwiZXhwIjoxNzQ1MzU1MzI5fQ.4sfZZf47xRg3H1DW4yG2g-Zx3py6r35FBptvo_ucPL0
 
 
 
 ### Create new feedback
-POST http://localhost:5000/api/feedback
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Q0YmNlYjY4MjU5YTYxOWU3ZDlkNTkiLCJlbWFpbCI6ImppaGVkc2FndWVyMTI4QGdtYWlsLmNvbSIsImlhdCI6MTc0NTI1ODYyNSwiZXhwIjoxNzQ1MjU5NTI1fQ.PhFP_mfNzbkjf0aTVCgdRLAwh3ewXRzgwdvgcr2HQAo
+POST http://localhost:5000/api/feedback/create
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Q0YmNlYjY4MjU5YTYxOWU3ZDlkNTkiLCJlbWFpbCI6ImppaGVkc2FndWVyMTI4QGdtYWlsLmNvbSIsImlhdCI6MTc0NTM1Nzg5NiwiZXhwIjoxNzQ1MzU4Nzk2fQ.GDL3AyhOAqoMptglYFz3y4ckzAFVg5mbeZuyhyuryQI
 Content-Type: application/json
 
 {
-  "title": "Platform Improvement Suggestion",
-  "description": "It would be great to have a dark mode option",
-  "type": "improvement",
+  "title": "notification nont send ",
+  "description": "Iwhen i purshace a listing i dont get notifs",
+  "type": "bug",
   "priority": "medium",
   "status": "pending"
 
+}
+###
+
+POST http://localhost:5000/api/feedback/68064f1cf3d7aec7f40f0cfd/reply
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2I3Yjk0MjQwNDQ2ZTY5OTBjZjZmOWEiLCJlbWFpbCI6ImppaGVkMDAwMEBnbWFpbC5jb20iLCJpYXQiOjE3NDYzMDQwODMsImV4cCI6MTc0NjMwNDk4M30.PT6QiXAnOFnPPr99RoNw7n82CQ1f3PBNgUWLicQetyg
+Content-Type: application/json
+
+{
+  "content": "Thank you for your feedback. We are investigating this issue and will update you soon."
 }
 
 ###
@@ -85,7 +96,7 @@ POST http://localhost:5000/api/auth/login
 Content-Type: application/json
 
 {
-  "email": "jihedsaguer128@gmail.com",
+  "email": "jihedsaguer127@gmail.com",
   "password": "Jihed12345"
 }
 ###
