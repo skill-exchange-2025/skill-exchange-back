@@ -1,7 +1,6 @@
 ### Variables
 @baseUrl = http://localhost:5000/api
-@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2I3Yjk0MjQwNDQ2ZTY5OTBjZjZmOWEiLCJlbWFpbCI6ImppaGVkMDAwMEBnbWFpbC5jb20iLCJpYXQiOjE3NDAzMjQ3MTEsImV4cCI6MTc0MDMyNTYxMX0.wyP7FjvqlvzpOvqKdf1e0E_wOjIgtdEFPTJQo-2ecTU
-
+@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2I3Yjk0MjQwNDQ2ZTY5OTBjZjZmOWEiLCJlbWFpbCI6ImppaGVkMDAwMEBnbWFpbC5jb20iLCJpYXQiOjE3NDY4MTQwNzQsImV4cCI6MTc0NjgxNDk3NH0.1ihFHqfPolqrbVu4qYn8QyzwBrMJN0JbNN6OvJZ5Rf0
 ### Create new user
 POST {{baseUrl}}/users
 Authorization: Bearer {{authToken}}
@@ -55,6 +54,7 @@ Content-Type: application/json
 ### Get user metrics
 GET {{baseUrl}}/users/metrics
 Authorization: Bearer {{authToken}}
+Accept: application/json
 
 ### Change user role
 POST {{baseUrl}}/users/change-role
@@ -68,4 +68,26 @@ Content-Type: application/json
 
 ### Verify user
 POST {{baseUrl}}/users/user_id_here/verify
+Authorization: Bearer {{authToken}}
+
+
+
+
+
+
+
+
+### Get summary statistics
+GET {{baseUrl}}/users/stats/summary
+Authorization: Bearer {{authToken}}
+
+### Get monthly growth stats
+GET {{baseUrl}}/users/stats/growth?period=month
+Authorization: Bearer {{authToken}}
+
+### Get top skills
+GET {{baseUrl}}/users/stats/skills
+Authorization: Bearer {{authToken}}
+###
+GET {{baseUrl}}/users/stats/verification-trends
 Authorization: Bearer {{authToken}}

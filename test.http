@@ -60,7 +60,7 @@ Content-Type: application/json
 
 ### getall  feedbacks
 GET http://localhost:5000/api/feedback
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Q0YmNlYjY4MjU5YTYxOWU3ZDlkNTkiLCJlbWFpbCI6ImppaGVkc2FndWVyMTI4QGdtYWlsLmNvbSIsImlhdCI6MTc0NjI3NjE1MywiZXhwIjoxNzQ2Mjc3MDUzfQ.8WpwhrKUySMBFybPgs2wpusFwPKuMywzl2HbmTzm4dI
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2I3Yjk0MjQwNDQ2ZTY5OTBjZjZmOWEiLCJlbWFpbCI6ImppaGVkMDAwMEBnbWFpbC5jb20iLCJpYXQiOjE3NDY2MDgyMjgsImV4cCI6MTc0NjYwOTEyOH0.xChFbSm-lyMIprIjOLpqPW_9jltHzCQDlrVQID_oP1o
 
 ###
 DELETE http://localhost:5000/api/feedback/user/68068b90ae53530ddd48f3a1
@@ -100,8 +100,8 @@ Content-Type: application/json
   "password": "Jihed12345"
 }
 ###
-GET http://localhost:5000/api/marketplace/listings/67d4be0c68259a619e7d9dd6
-
+GET http://localhost:5000/api/users/metrics
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2I3Yjk0MjQwNDQ2ZTY5OTBjZjZmOWEiLCJlbWFpbCI6ImppaGVkMDAwMEBnbWFpbC5jb20iLCJpYXQiOjE3NDY4MTE3NTksImV4cCI6MTc0NjgxMjY1OX0.pq8v4KH65ChJlZxShedsjvzz1WIonZzMbx7pbqmE2gs
 ### Then use the token to create a lesson
 POST http://localhost:5000/api/lessons/listing/67d4be0c68259a619e7d9dd6
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Q0YmNlYjY4MjU5YTYxOWU3ZDlkNTkiLCJlbWFpbCI6ImppaGVkc2FndWVyMTI4QGdtYWlsLmNvbSIsImlhdCI6MTc0MjA4MDQyOCwiZXhwIjoxNzQyMDgxMzI4fQ.cX69uyvw7A3TuXHSoMCjHuk6WNObLZIqwSBdg_G29_k
