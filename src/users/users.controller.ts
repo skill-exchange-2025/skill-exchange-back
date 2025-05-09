@@ -157,4 +157,45 @@ export class UsersController {
   async getAllSkills() {
     return await this.usersService.getAllSkills();
   }
+
+  @Get('stats/summary')
+  @Roles(Role.ADMIN)
+  @Permissions(Permission.VIEW_METRICS)
+  async getSummaryStats() {
+    return this.usersService.getSummaryStats();
+  }
+
+  @Get('stats/growth')
+  @Roles(Role.ADMIN)
+  @Permissions(Permission.VIEW_METRICS)
+  @ApiQuery({
+    name: 'period',
+    enum: ['day', 'week', 'month', 'year'],
+    required: false,
+    description: 'Time period for growth metrics',
+  })
+  async getUserGrowth(@Query('period') period: string = 'month') {
+    return this.usersService.getUserGrowthStats(period);
+  }
+
+  @Get('stats/skills')
+  @Roles(Role.ADMIN)
+  @Permissions(Permission.VIEW_METRICS)
+  async getSkillStats() {
+    return this.usersService.getSkillStatistics();
+  }
+
+  @Get('stats/verification-trends')
+  @Roles(Role.ADMIN)
+  @Permissions(Permission.VIEW_METRICS)
+  async getVerificationTrends() {
+    return this.usersService.getVerificationTrends();
+  }
+
+  @Get('stats/activity')
+  @Roles(Role.ADMIN)
+  @Permissions(Permission.VIEW_METRICS)
+  async getUserActivity() {
+    return this.usersService.getUserActivityStats();
+  }
 }
