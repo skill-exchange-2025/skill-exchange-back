@@ -31,7 +31,7 @@ import { Model } from 'mongoose';
     @WebSocketServer()
     server: Server;
 
-    private userSockets = new Map<string, string>();
+    private userSockets: Map<string, string> = new Map();
     private onlineUsers = new Set<string>();
     private socket: Socket | null = null;
     private connected: boolean = false;
@@ -42,8 +42,8 @@ import { Model } from 'mongoose';
       private readonly privateMessagesService: PrivateMessagesService,
       @InjectModel(PrivateMessage.name)
       private readonly privateMessageModel: Model<PrivateMessage>
+      
     ) {}
-
     handleConnection(client: AuthenticatedSocket) {
       const userId = client.user?._id?.toString();
       console.log('Client connected:', userId);
@@ -61,16 +61,13 @@ import { Model } from 'mongoose';
     }
 
     handleDisconnect(client: AuthenticatedSocket) {
-      const userId = client.user?._id?.toString();
-      console.log('Client disconnected:', userId);
-      if (userId) {
-        this.userSockets.delete(userId);
-        this.onlineUsers.delete(userId);
-        // this.server.emit('userOffline', userId);
-        
-    console.log('Client disconnected:', userId);
-      }
-    }
+  const userId = client.user?._id?.toString();
+  if (userId) {
+    this.userSockets.delete(userId);
+    console.log(`User ${userId} disconnected`);
+  }
+}
+
 
 @SubscribeMessage('voiceMessage')
 async handleVoiceMessage(
@@ -146,7 +143,6 @@ async handleVoiceMessage(
           throw new Error('User not authenticated');
         }
     
-        // Create message using service
         const savedMessage = await this.privateMessagesService.createMessage(
           senderId,
           {
@@ -156,44 +152,24 @@ async handleVoiceMessage(
           }
         );
     
-        // Add null check here
-        if (!savedMessage) {
-          throw new Error('Failed to save message');
-        }
-    
-        // Now it's safe to access savedMessage._id
-        const populatedMessage = await this.privateMessageModel
-          .findById(savedMessage._id)
-          .populate('sender', '_id name')
-          .populate('recipient', '_id name')
-          .populate('replyTo.sender', '_id name')
-          .exec();
-    
-        // Add null check for populatedMessage
-        if (!populatedMessage) {
-          throw new Error('Failed to populate message');
-        }
-    
-        // Emit to recipient
+        // Get recipient's socket
         const recipientSocket = this.userSockets.get(data.recipientId);
         if (recipientSocket) {
-
-          console.log('Recipient socket:', recipientSocket);
-          this.server.to(recipientSocket).emit('newPrivateMessage', populatedMessage);
+          // Emit to recipient with proper event name
+          this.server.to(recipientSocket).emit('newPrivateMessage', savedMessage);
         }
     
         // Emit back to sender
-        client.emit('messageSaved', populatedMessage);
+        client.emit('messageSaved', savedMessage);
     
       } catch (error) {
         console.error('Error handling private message:', error);
-        client.emit('error', { 
-          message: error instanceof UnauthorizedException 
-            ? error.message 
-            : 'Failed to send message' 
-        });
+        client.emit('error', { message: 'Failed to send message' });
       }
     }
+    
+
+
   @SubscribeMessage('getMessageHistory')
   async handleGetMessageHistory(
     @ConnectedSocket() client: AuthenticatedSocket,
