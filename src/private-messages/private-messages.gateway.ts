@@ -16,6 +16,7 @@
   import { InjectModel } from '@nestjs/mongoose';
 import { PrivateMessage } from './private-message.schema';
 import { Model } from 'mongoose';
+import { AttachmentDto } from './Attachment.dto';
 
   interface AuthenticatedSocket extends Socket {
     user?: User & { _id: string };
@@ -135,7 +136,7 @@ async handleVoiceMessage(
     @SubscribeMessage('privateMessage')
     async handlePrivateMessage(
       @ConnectedSocket() client: AuthenticatedSocket,
-      @MessageBody() data: { recipientId: string; content: string; replyTo?: string }
+      @MessageBody() data: { recipientId: string; content: string; replyTo?: string; attachment?: AttachmentDto;}
     ) {
       try {
         const senderId = client.user?._id?.toString();
@@ -148,7 +149,8 @@ async handleVoiceMessage(
           {
             recipientId: data.recipientId,
             content: data.content,
-            replyTo: data.replyTo
+            replyTo: data.replyTo,
+            attachment: data.attachment,
           }
         );
     

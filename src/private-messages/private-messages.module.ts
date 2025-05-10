@@ -13,6 +13,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { ProfileService } from 'src/profile/profile.service';
 import { Profile, ProfileSchema } from 'src/profile/schemas/profile.schema';
+import { UploadattachmentModule } from 'src/upload-attachment/upload-attachment.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { Profile, ProfileSchema } from 'src/profile/schemas/profile.schema';
     EventEmitterModule.forRoot(),
     FriendRequestsModule,
     UsersModule,
+    UploadattachmentModule,
     
   ],
   controllers: [PrivateMessagesController],

@@ -1,8 +1,10 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString, Min } from "class-validator";
+import { IsNotEmpty, IsNumber, IsObject, IsOptional, IsString, Min } from "class-validator";
+import { AttachmentDto } from "./Attachment.dto";
 
 // create-private-message.dto.ts
 export class CreatePrivateMessageDto {
-    @IsNotEmpty()
+    // @IsNotEmpty()
+    @IsOptional()
     @IsString()
     content: string;
   
@@ -12,6 +14,10 @@ export class CreatePrivateMessageDto {
     @IsString()
     @IsOptional() // Make it optional since not all messages are replies
     replyTo?: string;
+
+    @IsObject()
+    @IsOptional()
+    attachment?: AttachmentDto;
   }
   export class CreateVoiceMessageDto {
     @IsNotEmpty()

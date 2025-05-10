@@ -7,11 +7,75 @@ import { User } from 'src/users/schemas/user.schema';
 import { CreateReactionDto } from './create-reaction.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
+import { plainToInstance } from 'class-transformer';
+import { validate } from 'class-validator';
 
 @Controller('private-messages')
 @UseGuards(JwtAuthGuard)
 export class PrivateMessagesController {
   constructor(private readonly privateMessagesService: PrivateMessagesService) {}
+
+
+@Post()
+@UseInterceptors(
+  FileInterceptor('file', {
+    storage: diskStorage({
+      destination: './uploads',
+      filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        cb(null, `${uniqueSuffix}-${file.originalname}`);
+      },
+    }),
+    limits: {
+      fileSize: 10 * 1024 * 1024, // 10MB
+    },
+  }),
+)
+async createMessageWithAttachment(
+  @UploadedFile() file: Express.Multer.File,
+  @CurrentUser() user: any,
+  @Body() body: any,
+) {
+  const { recipientId, content, replyTo } = body;
+
+  // If no content, use an empty string (optional)
+  const createMessageDto = plainToInstance(CreatePrivateMessageDto, {
+    recipientId,
+    content: content || '', // If no content, set it to empty string
+    replyTo,
+    attachment: file
+      ? {
+          filename: file.filename,
+          originalname: file.originalname,
+          mimetype: file.mimetype,
+          size: file.size,
+          path: `/uploads/${file.filename}`,
+        }
+      : null, // Attach the file data if present
+  });
+
+  // Manually validate the DTO
+  const errors = await validate(createMessageDto);
+  if (errors.length > 0) {
+    throw new BadRequestException(errors);
+  }
+
+  // Call service to handle the message creation
+  return this.privateMessagesService.createMessage(user.id, createMessageDto);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   @Post()
   async createMessage(

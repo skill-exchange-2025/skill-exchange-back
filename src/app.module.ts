@@ -22,6 +22,7 @@ import { EventsModule } from './events/events.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { UploadvocalModule } from './uploadvocal/uploadvocal.module';
+import { UploadattachmentModule } from './upload-attachment/upload-attachment.module';
 
 
 
@@ -78,6 +79,7 @@ import { UploadvocalModule } from './uploadvocal/uploadvocal.module';
     FriendRequestsModule,
     EventsModule,
     UploadvocalModule,
+    UploadattachmentModule,
     
     
   ],

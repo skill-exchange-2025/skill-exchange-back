@@ -49,7 +49,8 @@ export class PrivateMessagesService {
       content: createMessageDto.content,
       sender: senderId,
       recipient: createMessageDto.recipientId,
-      replyTo: replyToData
+      replyTo: replyToData,
+      attachment: createMessageDto.attachment,
     });
   
     // Save first

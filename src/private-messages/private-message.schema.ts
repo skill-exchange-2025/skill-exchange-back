@@ -52,6 +52,15 @@ export class PrivateMessage extends Document {
     sender: Types.ObjectId;
   };
 
+   @Prop({ type: Object })
+  attachment?: {
+    filename: string;
+    originalname: string;
+    mimetype: string;
+    size: number;
+    path: string;
+  };
+
   @Prop({ default: false })
   isDeleted: boolean;
 }
