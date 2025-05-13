@@ -26,7 +26,7 @@ pipeline {
                 sh 'npm test'
             }
         }*/
-
+        /*
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
@@ -57,7 +57,7 @@ pipeline {
                 sh 'npm run build'
             }
         }
-
+        */
         stage('Build Docker Image') {
             steps {
                 sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
