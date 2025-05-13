@@ -34,6 +34,15 @@ export class Transaction {
   status: string;
 
   @Prop()
+  meetLink: string;
+
+  @Prop()
+  meetingScheduledAt: Date;
+
+  @Prop()
+  meetingEventId: string;
+
+  @Prop()
   completedAt: Date;
 }
 

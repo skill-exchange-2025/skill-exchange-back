@@ -12,6 +12,9 @@ import { ProfileModule } from './profile/profile.module';
 import { MarketplaceModule } from './marketplace/marketplace.module';
 import { MessagingModule } from './messaging/messaging.module';
 import { CodingRoomsModule } from './codingrooms/codingrooms.module';
+import { FeedbackModule } from './feedback/feedback.module';
+import { SummarizationModule } from './summarization/summarization.module';
+import { WheelModule } from './wheel/wheel.module';
 
 @Module({
   imports: [
@@ -21,7 +24,9 @@ import { CodingRoomsModule } from './codingrooms/codingrooms.module';
     MessagingModule,
     ConfigModule.forRoot({ isGlobal: true }), // Load environment variables globally
     MarketplaceModule,
-    CodingRoomsModule,
+    FeedbackModule,
+    SummarizationModule,
+    WheelModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [
