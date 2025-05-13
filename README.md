@@ -26,75 +26,163 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
-## Project setup
+# Skill Exchange Platform 
+
+This is the backend API for the **Skill Exchange Platform**, a web application that enables users to teach, learn, and exchange skills through a secure and dynamic system.
+
+Developed as part of the coursework at **Esprit School of Engineering**, this project showcases a scalable and well-structured backend built using the **NestJS framework** and **PostgreSQL** database.
+
+---
+
+## 🚀 Overview
+
+The backend serves as the core engine for managing authentication, user profiles, skill listings, messaging, session scheduling, and rating systems. It follows RESTful principles and provides a clean API for the frontend to interact with.
+
+---
+
+## 🌟 Features
+
+- 🔐 **Authentication & Authorization** (JWT-based)
+- 👤 **User & Profile Management**
+- 🎓 **Skills & Categories CRUD**
+- 💬 **Messaging System** (Socket.io ready)
+- 📅 **Session Scheduling**
+- ⭐ **Reputation & Ratings**
+- 🧾 **Admin Panel Endpoints**
+- 📦 **Dockerized** for easy deployment
+- 🧪 **Test Coverage** using Jest
+
+---
+
+## 🛠️ Tech Stack
+
+- **Framework**: [NestJS](https://nestjs.com/)
+- **Language**: TypeScript
+- **Database**: PostgreSQL
+- **ORM**: Prisma
+- **Authentication**: JWT + Bcrypt
+- **Validation**: class-validator
+- **Documentation**: Swagger
+- **Environment**: Docker + Docker Compose
+
+---
+
+## 📦 Installation
+
+### 1. Clone the Repository
 
 ```bash
-$ npm install
+git clone https://github.com/skill-exchange-2025/skill-exchange-api.git
+cd skill-exchange-api
 ```
 
-## Compile and run the project
+### 2. Set Environment Variables
+
+Create a `.env` file:
+
+```env
+DATABASE_URL=postgresql://user:password@localhost:5432/skill_exchange
+JWT_SECRET=your_jwt_secret
+PORT=4000
+```
+
+### 3. Install Dependencies
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+yarn
 ```
 
-## Run tests
+### 4. Run Migrations
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npx prisma migrate dev
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### 5. Start the App
 
 ```bash
-$ npm install -g mau
-$ mau deploy
+yarn start:dev
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### 6. Open Swagger Docs
 
-## Resources
+Visit: [http://localhost:4000/api](http://localhost:4000/api)
 
-Check out a few resources that may come in handy when working with NestJS:
+---
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+## 🐳 Docker Support
 
-## Support
+```bash
+docker-compose up --build
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+---
 
-## Stay in touch
+## 🔑 Keywords
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+- `nestjs`
+- `api`
+- `backend`
+- `typescript`
+- `postgresql`
+- `prisma`
+- `authentication`
+- `web-development`
+- `skill-exchange`
+- `Esprit School of Engineering`
 
-## License
+---
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
-# skill-exchange-back
+## 📂 Project Structure
+
+```
+src/
+├── auth/
+├── users/
+├── skills/
+├── sessions/
+├── messages/
+├── common/
+├── config/
+├── prisma/
+└── main.ts
+```
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions!
+
+```bash
+# Fork, clone, and set up your environment
+git checkout -b feature/MyFeature
+# Make your changes and commit
+git commit -m "Add MyFeature"
+# Push and open a pull request
+```
+
+---
+
+## 🧪 Testing
+
+```bash
+yarn test
+```
+
+---
+
+## 📜 License
+
+This project is licensed under the MIT License.
+
+---
+
+## 🎓 Acknowledgments
+
+- **Esprit School of Engineering** for academic guidance
+- The NestJS and open-source communities
+- All contributors involved in the backend system design
+
+> 💡 *This backend was built as part of a full-stack project for the “Full-Stack Web Development” course at Esprit School of Engineering.*
+
