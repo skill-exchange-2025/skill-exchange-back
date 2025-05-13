@@ -30,43 +30,12 @@ pipeline {
             }
         }
 
-        // Removed the "Run Project" stage that was causing the hang
-
-        /*
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('SonarQube') {
-                    sh """
-                        npm install -g sonarqube-scanner
-                        sonar-scanner \
-                        -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
-                        -Dsonar.sources=src \
-                        -Dsonar.tests=test \
-                        -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
-                        -Dsonar.host.url=${SONAR_HOST_URL} \
-                        -Dsonar.login=${SONAR_AUTH_TOKEN}
-                    """
-                }
-            }
-        }
-        */
-
-        /*
-        stage('Quality Gate') {
-            steps {
-                timeout(time: 1, unit: 'HOURS') {
-                    waitForQualityGate abortPipeline: true
-                }
-            }
-        }
-        */
-
         stage('Build') {
             steps {
-                sh 'npm run build'  // Changed back to 'npm run build' instead of 'npm start'
+                sh 'npm run build'  // Create production build
             }
         }
-        /*
+
         stage('Build Docker Image') {
             steps {
                 sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
@@ -80,7 +49,7 @@ pipeline {
             }
             steps {
                 sh 'docker-compose down'
-                sh 'docker-compose up -d'
+                sh 'docker-compose up -d'  // This will start your application in a container
             }
         }
 
@@ -93,7 +62,7 @@ pipeline {
                 sh 'docker-compose -f docker-compose.prod.yml down'
                 sh 'docker-compose -f docker-compose.prod.yml up -d'
             }
-        }*/
+        }
     }
 
     post {
