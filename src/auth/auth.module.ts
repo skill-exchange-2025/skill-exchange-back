@@ -1,7 +1,6 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-import { UsersService } from '../users/users.service'; // ✅ Import UsersService
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersModule } from '../users/users.module';
@@ -28,7 +27,7 @@ import { Wallet, WalletSchema } from '../marketplace/schemas/wallet.schema';
       useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>('jwt.secret') || 'defaultSecret',
         signOptions: {
-          expiresIn: '1h',
+          expiresIn: '12h',
         },
       }),
     }),

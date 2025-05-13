@@ -5,6 +5,7 @@ import { Permission } from '../../auth/enums/permission.enum';
 import { PermissionGroup } from '../../auth/schemas/permission-group.schema';
 import { UserSkill, UserSkillSchema } from './user.skill.schema';
 import { UserDesiredSkill, UserDesiredSkillSchema } from './user.desired.skill';
+import { ObjectId } from 'mongodb';
 
 export type UserDocument = User & Document;
 
@@ -18,6 +19,9 @@ export type UserDocument = User & Document;
   },
 })
 export class User {
+  @Prop({ required: false })
+  _id: ObjectId;
+
   @Prop({ required: true })
   name: string;
 

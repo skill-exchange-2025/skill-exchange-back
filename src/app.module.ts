@@ -11,6 +11,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { ProfileModule } from './profile/profile.module';
 import { MarketplaceModule } from './marketplace/marketplace.module';
 import { MessagingModule } from './messaging/messaging.module';
+import { CodingRoomsModule } from './codingrooms/codingrooms.module';
 import { FeedbackModule } from './feedback/feedback.module';
 import { SummarizationModule } from './summarization/summarization.module';
 import { WheelModule } from './wheel/wheel.module';
