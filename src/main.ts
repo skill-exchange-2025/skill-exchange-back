@@ -11,7 +11,6 @@ async function bootstrap() {
     bodyParser: true,
   });
 
-  // Add these lines to increase payload size limit
   app.use(json({ limit: '25mb' }));
   app.use(urlencoded({ limit: '25mb', extended: true }));
 
