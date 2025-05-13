@@ -66,6 +66,7 @@ export class UsersService {
         permissions,
         skills: [] as UserSkill[],
         desiredSkills: [] as UserDesiredSkill[],
+        isEmailVerified: createUserDto.isEmailVerified || false,
       };
 
       // Add skills if they exist

@@ -19,9 +19,6 @@ export type UserDocument = User & Document;
   },
 })
 export class User {
-  @Prop({ required: false })
-  _id: ObjectId;
-
   @Prop({ required: true })
   name: string;
 

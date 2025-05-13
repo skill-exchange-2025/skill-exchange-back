@@ -210,7 +210,7 @@ export class AuthService {
       access_token: accessToken,
       refresh_token: refreshToken,
       user: {
-        _id: user._id.toString(),
+        _id: (user._id as any).toString(),
         name: user.name,
         phone: user.phone,
         email: user.email,
@@ -238,7 +238,7 @@ export class AuthService {
         access_token: tokens.accessToken,
         refresh_token: tokens.refreshToken,
         user: {
-          _id: user._id.toString(),
+          _id: (user._id as any).toString(),
           name: user.name,
           phone: user.phone,
           email: user.email,

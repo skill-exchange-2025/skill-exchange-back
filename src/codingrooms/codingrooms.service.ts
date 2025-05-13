@@ -257,8 +257,8 @@ export class CodingRoomsService {
       const participantId =
         p.user instanceof ObjectId
           ? p.user.toString()
-          : p.user._id
-            ? p.user._id.toString()
+          : (p.user as any)._id
+            ? (p.user as any)._id.toString()
             : p.user.toString();
       return participantId === normalizedUserId;
     });
