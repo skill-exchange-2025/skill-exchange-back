@@ -3,13 +3,16 @@ import { Document, Types } from 'mongoose';
 
 @Schema({ timestamps: true })
 export class WheelSpin {
-  _id: Types.ObjectId; // Add this line to explicitly define _id
+  _id: Types.ObjectId;
 
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   userId: Types.ObjectId;
 
   @Prop({ required: true })
   credits: number;
+
+  @Prop({ required: true })
+  prizeIndex: number;
 
   @Prop({ required: true })
   spinTime: Date;

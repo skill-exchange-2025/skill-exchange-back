@@ -1,6 +1,6 @@
 import { Controller, Post, Get, UseGuards, Req } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { WheelService } from './wheel.service';
+import { WheelService, WheelSpinResponse } from './wheel.service';
 import { Request } from 'express'; // Import Request from express
 
 interface RequestWithUser extends Request {
@@ -15,7 +15,7 @@ export class WheelController {
   constructor(private readonly wheelService: WheelService) {}
 
   @Post()
-  async spinWheel(@Req() req: RequestWithUser) {
+  async spinWheel(@Req() req: RequestWithUser): Promise<WheelSpinResponse> {
     return this.wheelService.spinWheel(req.user._id);
   }
 
