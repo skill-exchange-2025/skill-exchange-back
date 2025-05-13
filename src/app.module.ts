@@ -27,6 +27,7 @@ import { WheelModule } from './wheel/wheel.module';
     FeedbackModule,
     SummarizationModule,
     WheelModule,
+    CodingRoomsModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [
