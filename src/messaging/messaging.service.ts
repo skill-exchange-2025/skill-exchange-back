@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Channel, ChannelDocument } from './schemas/channel.schema';
 import { Message, MessageDocument } from './schemas/message.schema';
 import { CreateChannelDto } from './dto/create-channel.dto';
@@ -13,6 +13,7 @@ import { CreateMessageDto } from './dto/create-message.dto';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
+import { User, UserDocument } from '../users/schemas/user.schema';
 
 // Define interface for the return type
 interface ChannelWithMemberStatus extends Record<string, any> {
@@ -25,7 +26,8 @@ export class MessagingService {
 
   constructor(
     @InjectModel(Channel.name) private channelModel: Model<ChannelDocument>,
-    @InjectModel(Message.name) private messageModel: Model<MessageDocument>
+    @InjectModel(Message.name) private messageModel: Model<MessageDocument>,
+    @InjectModel(User.name) private userModel: Model<UserDocument>
   ) {
     this.rateLimiter = new RateLimiterMemory({
       points: 120,
@@ -48,14 +50,118 @@ export class MessagingService {
     }
 
     // Extract channelId and properly map it to channel field
-    const { channelId, content = '', ...rest } = createMessageDto;
+    const {
+      channelId,
+      content = '',
+      clientMessageId,
+      parentMessageId,
+      replyPreview,
+      isReply = false,
+      ...rest
+    } = createMessageDto;
 
-    const message = await this.messageModel.create({
+    console.log(
+      `Creating message with clientMessageId: ${clientMessageId}`,
+      rest.attachment
+        ? `Has attachment (isPending: ${rest.attachment.isPending})`
+        : 'No attachment',
+      isReply ? `Is a reply to message: ${parentMessageId}` : 'Not a reply'
+    );
+
+    // Check if there's an existing message with this clientMessageId to avoid duplicates
+    if (clientMessageId) {
+      const existingMessage = await this.messageModel.findOne({
+        clientMessageId: clientMessageId,
+        channel: channelId,
+        sender: userId,
+      });
+
+      if (existingMessage) {
+        console.log(
+          `Found existing message with clientMessageId: ${clientMessageId}`
+        );
+
+        // If the message exists but has a pending attachment, and now we have the real attachment
+        if (
+          existingMessage.attachment?.isPending &&
+          rest.attachment &&
+          !rest.attachment.isPending
+        ) {
+          console.log(
+            `Updating pending attachment with real one for message: ${existingMessage._id}`
+          );
+          // Update the pending attachment with the real one
+          existingMessage.attachment = rest.attachment;
+          await existingMessage.save();
+          return existingMessage;
+        }
+
+        // Return existing message to avoid duplication
+        console.log(
+          `Returning existing message to avoid duplication: ${existingMessage._id}`
+        );
+        return existingMessage;
+      }
+    }
+
+    console.log(
+      `Creating new message for user ${userId} in channel ${channelId}`
+    );
+
+    // Create the message document
+    const messageData: any = {
       sender: userId,
       channel: channelId,
       content,
+      clientMessageId, // Store the clientMessageId for future reference
       ...rest,
-    });
+    };
+
+    // Handle reply-specific fields
+    if (isReply && parentMessageId) {
+      // Verify the parent message exists
+      const parentMessage = await this.messageModel.findById(parentMessageId);
+      if (!parentMessage) {
+        throw new NotFoundException(
+          `Parent message with ID ${parentMessageId} not found`
+        );
+      }
+
+      // Make sure the parent message is in the same channel
+      if (parentMessage.channel.toString() !== channelId) {
+        throw new BadRequestException(
+          'Parent message must be in the same channel'
+        );
+      }
+
+      messageData.isReply = true;
+      messageData.parentMessage = parentMessageId;
+
+      // Add reply preview if provided, or generate one from the parent message
+      if (replyPreview) {
+        messageData.replyPreview = replyPreview;
+      } else {
+        // Get parent message sender info
+        const senderInfo = await this.getUserInfo(
+          parentMessage.sender.toString()
+        );
+
+        // Create a preview of the parent message
+        messageData.replyPreview = {
+          content:
+            parentMessage.content.substring(0, 100) +
+            (parentMessage.content.length > 100 ? '...' : ''),
+          sender: parentMessage.sender.toString(),
+          senderName: senderInfo?.name || 'Unknown User',
+        };
+      }
+
+      // Increment the reply count on the parent message
+      parentMessage.replyCount = (parentMessage.replyCount || 0) + 1;
+      await parentMessage.save();
+    }
+
+    const message = await this.messageModel.create(messageData);
 
     // Format message content if not empty
     if (content && content.trim() !== '') {
@@ -236,16 +342,36 @@ export class MessagingService {
   }
 
   async deleteMessage(messageId: string, userId: string): Promise<void> {
-    const message = await this.messageModel.findById(messageId);
-    if (!message) {
-      throw new NotFoundException('Message not found');
-    }
+    try {
+      // Validate messageId
+      if (!messageId || !Types.ObjectId.isValid(messageId)) {
+        throw new BadRequestException(
+          `Invalid message ID format: ${messageId}`
+        );
+      }
 
-    if (message.sender.toString() !== userId) {
-      throw new BadRequestException('You can only delete your own messages');
-    }
+      // Attempt to find the message
+      const message = await this.messageModel.findById(messageId);
+      if (!message) {
+        throw new NotFoundException(`Message not found with ID: ${messageId}`);
+      }
 
-    await message.deleteOne();
+      // Validate that the user is the sender
+      const messageSenderId = message.sender.toString();
+      if (messageSenderId !== userId) {
+        throw new BadRequestException(
+          `You can only delete your own messages. Message sender: ${messageSenderId}, User: ${userId}`
+        );
+      }
+
+      // Delete the message
+      console.log(`Deleting message: ${messageId} by user: ${userId}`);
+      await message.deleteOne();
+      console.log(`Message successfully deleted: ${messageId}`);
+    } catch (error) {
+      console.error(`Error deleting message ${messageId}:`, error);
+      throw error; // Re-throw to allow proper handling upstream
+    }
   }
 
   async getAllChannels(
@@ -305,5 +431,114 @@ export class MessagingService {
     }
 
     return populatedMessage;
+  }
+
+  // Get basic user information by ID
+  async getUserInfo(
+    userId: string
+  ): Promise<{ name: string; _id: string } | null> {
+    try {
+      // Convert string ID to ObjectId if needed
+      let userObjectId: string | Types.ObjectId = userId;
+      try {
+        if (Types.ObjectId.isValid(userId)) {
+          userObjectId = new Types.ObjectId(userId);
+        }
+      } catch (err) {
+        // If conversion fails, use the original string
+        console.log('Error converting ID to ObjectId:', err);
+      }
+
+      // First try to find the user directly from the user model
+      const user = await this.userModel.findById(userObjectId).exec();
+      if (user) {
+        return {
+          _id: (user as any)._id.toString(),
+          name: (user as any).name || 'Unknown User',
+        };
+      }
+
+      // If user not found (maybe due to permissions), try to get info from messages
+      const userInfo = await this.messageModel
+        .aggregate([
+          // Find a message from this user
+          { $match: { sender: userObjectId } },
+          // Only take one
+          { $limit: 1 },
+          // Lookup the user in the users collection
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'sender',
+              foreignField: '_id',
+              as: 'senderInfo',
+            },
+          },
+          // Unwind the sender array
+          {
+            $unwind: { path: '$senderInfo', preserveNullAndEmptyArrays: true },
+          },
+          // Project only the needed fields
+          {
+            $project: {
+              _id: '$senderInfo._id',
+              name: '$senderInfo.name',
+            },
+          },
+        ])
+        .exec();
+
+      // If we found a user from messages, return it
+      if (userInfo && userInfo.length > 0 && userInfo[0]._id) {
+        return {
+          _id: userInfo[0]._id.toString(),
+          name: userInfo[0].name || 'Unknown User',
+        };
+      }
+
+      // If all else fails, return a default with the user ID
+      return {
+        _id: userId,
+        name: 'Unknown User',
+      };
+    } catch (error) {
+      console.error('Error fetching user info:', error);
+      // Return a default value on error
+      return {
+        _id: userId,
+        name: 'Unknown User',
+      };
+    }
+  }
+
+  async getMessageReplies(
+    messageId: string,
+    page = 1,
+    limit = 50
+  ): Promise<{ replies: Message[]; total: number }> {
+    // Verify the parent message exists
+    const parentMessage = await this.messageModel.findById(messageId);
+    if (!parentMessage) {
+      throw new NotFoundException(`Message with ID ${messageId} not found`);
+    }
+
+    const [replies, total] = await Promise.all([
+      this.messageModel
+        .find({
+          parentMessage: messageId,
+          isReply: true,
+        })
+        .sort({ createdAt: -1 })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .populate('sender', 'name email username profileImage')
+        .exec(),
+      this.messageModel.countDocuments({
+        parentMessage: messageId,
+        isReply: true,
+      }),
+    ]);
+
+    return { replies, total };
   }
 }

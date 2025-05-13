@@ -7,6 +7,7 @@ import {
   IsOptional,
   IsObject,
   ValidateIf,
+  IsMongoId,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -29,6 +30,24 @@ export class AttachmentDto {
   @ApiProperty()
   @IsString()
   path: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  isPending?: boolean;
+}
+
+export class ReplyPreviewDto {
+  @ApiProperty()
+  @IsString()
+  content: string;
+
+  @ApiProperty()
+  @IsString()
+  sender: string;
+
+  @ApiProperty()
+  @IsString()
+  senderName: string;
 }
 
 export class CreateMessageDto {
@@ -48,4 +67,24 @@ export class CreateMessageDto {
   @IsObject()
   @IsOptional()
   attachment?: AttachmentDto;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  clientMessageId?: string;
+
+  // Reply fields
+  @ApiProperty({ required: false })
+  @IsMongoId()
+  @IsOptional()
+  parentMessageId?: string;
+
+  @ApiProperty({ required: false })
+  @IsObject()
+  @IsOptional()
+  replyPreview?: ReplyPreviewDto;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  isReply?: boolean;
 }

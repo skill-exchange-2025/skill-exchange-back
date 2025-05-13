@@ -76,27 +76,93 @@ export class MessagingController {
     @UploadedFile(
       new ParseFilePipe({
         validators: [
-          new MaxFileSizeValidator({ maxSize: 5 * 1024 * 1024 }), // 5MB
-          new FileTypeValidator({ fileType: /(jpg|jpeg|png|gif|pdf)$/i }),
+          new MaxFileSizeValidator({ maxSize: 25 * 1024 * 1024 }), // Increase to 25MB
+          new FileTypeValidator({
+            fileType:
+              /(jpg|jpeg|png|gif|pdf|doc|docx|xls|xlsx|ppt|pptx|txt|zip|rar)$/i,
+          }),
         ],
       })
     )
     file: Express.Multer.File,
     @Body() createMessageDto: CreateMessageDto
   ): Promise<Message> {
+    console.log('File upload received:', {
+      filename: file.filename,
+      originalname: file.originalname,
+      mimetype: file.mimetype,
+      size: file.size,
+      path: file.path,
+    });
+
+    console.log('Request body:', createMessageDto);
+
     // Ensure content exists (even if empty)
     if (!createMessageDto.content) {
       createMessageDto.content = '';
     }
 
+    // Make sure we have a channelId
+    if (!createMessageDto.channelId) {
+      // Try to get channelId from the 'channel' field (which might be used in the FormData)
+      const channelId = createMessageDto['channel'];
+      if (channelId) {
+        createMessageDto.channelId = channelId;
+        console.log(`Found channelId in 'channel' field: ${channelId}`);
+      } else {
+        console.error('ERROR: No channelId provided in the request');
+        throw new Error('Channel ID is required');
+      }
+    }
+
+    // Extract clientMessageId if provided in the request body
+    const clientMessageId =
+      createMessageDto['clientMessageId'] ||
+      `file-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+
+    console.log('Using clientMessageId:', clientMessageId);
+
+    // Create attachment data
     createMessageDto.attachment = {
       filename: file.filename,
       originalname: file.originalname,
       mimetype: file.mimetype,
       size: file.size,
       path: file.path,
+      isPending: false, // Not pending, this is the actual file
     };
-    return this.messagingService.createMessage(req.user.id, createMessageDto);
+
+    // Add clientMessageId to link with any socket message
+    createMessageDto.clientMessageId = clientMessageId;
+
+    console.log('Creating message with attachment:', {
+      clientMessageId,
+      channelId: createMessageDto.channelId,
+      content: createMessageDto.content ? '[has content]' : '[empty]',
+      attachment: {
+        filename: file.filename,
+        originalname: file.originalname,
+        size: file.size,
+      },
+    });
+
+    const message = await this.messagingService.createMessage(
+      req.user.id,
+      createMessageDto
+    );
+
+    console.log('File upload message created:', {
+      messageId: message['_id'],
+      clientMessageId: message['clientMessageId'],
+      channelId: message['channel'],
+      attachment: {
+        filename: message.attachment?.filename,
+        originalname: message.attachment?.originalname,
+        isPending: message.attachment?.isPending || false,
+      },
+    });
+
+    return message;
   }
 
   @Get('channels/:channelId/messages')
@@ -182,7 +248,21 @@ export class MessagingController {
     description: 'Message deleted successfully',
   })
   async deleteMessage(@Request() req, @Param('messageId') messageId: string) {
-    return this.messagingService.deleteMessage(messageId, req.user.id);
+    try {
+      console.log(
+        `REST API: Deleting message ${messageId} by user ${req.user.id}`
+      );
+      await this.messagingService.deleteMessage(messageId, req.user.id);
+      console.log(`REST API: Successfully deleted message ${messageId}`);
+      return { success: true, message: 'Message deleted successfully' };
+    } catch (error) {
+      console.error(
+        `REST API: Error deleting message ${messageId}:`,
+        error.message
+      );
+      // Don't expose full error details to the client
+      throw error;
+    }
   }
 
   @Get('channels')
@@ -208,5 +288,20 @@ export class MessagingController {
   })
   async getChannelMembers(@Param('channelId') channelId: string) {
     return this.messagingService.getChannelMembers(channelId);
+  }
+
+  @Get('messages/:messageId/replies')
+  @ApiOperation({ summary: 'Get replies to a message' })
+  @ApiResponse({
+    status: 200,
+    description: 'Replies retrieved successfully',
+    type: [Message],
+  })
+  async getMessageReplies(
+    @Param('messageId') messageId: string,
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 50
+  ) {
+    return this.messagingService.getMessageReplies(messageId, page, limit);
   }
 }

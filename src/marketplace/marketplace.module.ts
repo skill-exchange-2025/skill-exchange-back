@@ -24,20 +24,6 @@ import { NotificationService } from './services/notification.service';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    MailerModule.forRoot({
-      transport: {
-        host: process.env.SMTP_HOST || 'smtp.gmail.com',
-        port: parseInt(process.env.SMTP_PORT || '587'),
-        secure: true,
-        auth: {
-          user: process.env.SMTP_USER || '',
-          pass: process.env.SMTP_PASS || '',
-        },
-      },
-      defaults: {
-        from: process.env.SMTP_FROM || '',
-      },
-    }),
     MongooseModule.forFeature([
       { name: Listing.name, schema: ListingSchema },
       { name: Transaction.name, schema: TransactionSchema },
@@ -61,7 +47,7 @@ import { NotificationService } from './services/notification.service';
     PaymentService,
     GoogleMeetService,
     NotificationService,
-    LessonService, 
+    LessonService,
   ],
   exports: [
     MarketplaceService,
