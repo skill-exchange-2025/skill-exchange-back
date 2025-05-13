@@ -6,7 +6,6 @@ export class SkillDto {
   @IsString()
   name: string;
 
-
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
@@ -17,7 +16,6 @@ export class DesiredSkillDto {
   @ApiProperty({ example: 'Python Programming' })
   @IsString()
   name: string;
-
 
   @ApiProperty({ required: false })
   @IsOptional()

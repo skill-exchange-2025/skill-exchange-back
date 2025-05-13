@@ -8,7 +8,7 @@ import { ConfigService } from '@nestjs/config';
 export class WsJwtAuthGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
-    private configService: ConfigService,
+    private configService: ConfigService
   ) {}
 
   canActivate(

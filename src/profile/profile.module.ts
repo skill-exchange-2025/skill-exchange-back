@@ -9,9 +9,7 @@ import { FileUploadModule } from '../file-upload/file-upload.module'; // Add thi
 
 @Module({
   imports: [
-    MongooseModule.forFeature([
-      { name: Profile.name, schema: ProfileSchema }
-    ]),
+    MongooseModule.forFeature([{ name: Profile.name, schema: ProfileSchema }]),
     UsersModule,
     FileUploadModule,
   ],

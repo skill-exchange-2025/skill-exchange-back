@@ -42,7 +42,6 @@ export class CreateUserDto {
   @IsEmail()
   email: string;
 
-
   @ApiProperty({ example: 'John Doe' })
   @IsString()
   name: string;
@@ -96,6 +95,4 @@ export class CreateUserDto {
   @IsOptional()
   @IsBoolean()
   isEmailVerified?: boolean;
-
- 
 }

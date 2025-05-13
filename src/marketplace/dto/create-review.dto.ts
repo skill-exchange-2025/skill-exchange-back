@@ -1,6 +1,13 @@
 // src/marketplace/dto/create-review.dto.ts
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNumber, IsMongoId, IsOptional, Min, Max } from 'class-validator';
+import {
+  IsString,
+  IsNumber,
+  IsMongoId,
+  IsOptional,
+  Min,
+  Max,
+} from 'class-validator';
 
 export class CreateReviewDto {
   @ApiProperty()
@@ -13,7 +20,10 @@ export class CreateReviewDto {
   @Max(5)
   rating: number;
 
-  @ApiProperty({ example: 'Great experience working with this developer!', required: false })
+  @ApiProperty({
+    example: 'Great experience working with this developer!',
+    required: false,
+  })
   @IsOptional()
   @IsString()
   comment?: string;

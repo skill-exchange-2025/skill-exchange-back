@@ -1,6 +1,12 @@
 // src/marketplace/dto/create-transaction.dto.ts
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsDate, IsNumber, IsOptional } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsDate,
+  IsNumber,
+  IsOptional,
+} from 'class-validator';
 
 export class CreateTransactionDto {
   @ApiProperty()

@@ -72,7 +72,7 @@ export class WebhookController {
     // Handle the event
     switch (event.type) {
       case 'payment_intent.succeeded':
-        const paymentIntent = event.data.object as Stripe.PaymentIntent;
+        const paymentIntent = event.data.object;
         console.log(`Payment succeeded: ${paymentIntent.id}`);
 
         // If this payment was for adding funds to a wallet, process it
@@ -86,7 +86,7 @@ export class WebhookController {
         break;
 
       case 'payment_intent.payment_failed':
-        const failedPaymentIntent = event.data.object as Stripe.PaymentIntent;
+        const failedPaymentIntent = event.data.object;
         console.log(`Payment failed: ${failedPaymentIntent.id}`);
         break;
 

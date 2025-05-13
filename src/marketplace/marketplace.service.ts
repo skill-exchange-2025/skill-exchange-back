@@ -27,7 +27,7 @@ export class MarketplaceService {
     private usersService: UsersService,
     private paymentService: PaymentService,
     private googleMeetService: GoogleMeetService,
-    private notificationService: NotificationService,
+    private notificationService: NotificationService
   ) {}
 
   // Listing methods
@@ -268,7 +268,9 @@ export class MarketplaceService {
     userId: string,
     createTransactionDto: CreateTransactionDto
   ): Promise<TransactionDocument> {
-    const listing = await this.listingModel.findById(createTransactionDto.listingId);
+    const listing = await this.listingModel.findById(
+      createTransactionDto.listingId
+    );
 
     if (!listing) {
       throw new NotFoundException('Listing not found');
@@ -297,8 +299,13 @@ export class MarketplaceService {
 
     // If it's an interactive course, create a Google Meet
     if (listing.type === 'interactive_course') {
-      if (!createTransactionDto.meetingStartTime || !createTransactionDto.meetingDuration) {
-        throw new BadRequestException('Meeting start time and duration are required for interactive courses');
+      if (
+        !createTransactionDto.meetingStartTime ||
+        !createTransactionDto.meetingDuration
+      ) {
+        throw new BadRequestException(
+          'Meeting start time and duration are required for interactive courses'
+        );
       }
 
       const { meetLink, eventId } = await this.googleMeetService.createMeeting(
@@ -306,9 +313,9 @@ export class MarketplaceService {
         createTransactionDto.meetingStartTime,
         createTransactionDto.meetingDuration,
         seller.email,
-        buyer.email,
+        buyer.email
       );
-      
+
       transaction.meetLink = meetLink;
       transaction.meetingScheduledAt = createTransactionDto.meetingStartTime;
       transaction.meetingEventId = eventId;
@@ -498,7 +505,12 @@ export class MarketplaceService {
     };
   }
 
-  async getTransactionsByBuyer(userId: string, page = 1, limit = 10, status?: string) {
+  async getTransactionsByBuyer(
+    userId: string,
+    page = 1,
+    limit = 10,
+    status?: string
+  ) {
     const skip = (page - 1) * limit;
 
     const query: any = { buyer: userId };
@@ -510,7 +522,8 @@ export class MarketplaceService {
       .find(query)
       .populate({
         path: 'listing',
-        select: 'title price description type skillName proficiencyLevel category status'
+        select:
+          'title price description type skillName proficiencyLevel category status',
       })
       .populate('seller', 'name email')
       .sort({ createdAt: -1 })
@@ -542,17 +555,17 @@ export class MarketplaceService {
       status: transaction.status,
     }));
 
-  return {
-    data: purchasedItems,
-    meta: {
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit),
-    },
-    success: true,
-  };
-} 
+    return {
+      data: purchasedItems,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+      success: true,
+    };
+  }
   // Helper methods
   private isProficiencyHigher(newLevel: string, currentLevel: string): boolean {
     const levels = ['Beginner', 'Intermediate', 'Advanced'];

@@ -34,7 +34,9 @@ export class MarketplaceController {
   @Get('my-purchases')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get current user\'s purchased courses and listings' })
+  @ApiOperation({
+    summary: "Get current user's purchased courses and listings",
+  })
   async getMyPurchases(
     @Request() req,
     @Query('page') page: number = 1,

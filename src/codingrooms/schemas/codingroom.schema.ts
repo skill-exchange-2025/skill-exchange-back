@@ -37,7 +37,14 @@ export class CodingRoom {
   @Prop({ default: 'active', enum: ['active', 'inactive', 'archived'] })
   status: string;
 
-  @Prop({ type: [{ user: { type: MongooseSchema.Types.ObjectId, ref: 'User' }, role: String }] })
+  @Prop({
+    type: [
+      {
+        user: { type: MongooseSchema.Types.ObjectId, ref: 'User' },
+        role: String,
+      },
+    ],
+  })
   participants: Participant[];
 
   @Prop({ default: '' })

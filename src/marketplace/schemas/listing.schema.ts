@@ -84,7 +84,6 @@ export class Listing {
 
   @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Lesson' }] })
   lessons: Lesson[];
-
 }
 
 export const ListingSchema = SchemaFactory.createForClass(Listing);

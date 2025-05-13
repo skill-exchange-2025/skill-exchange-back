@@ -10,7 +10,7 @@ export class GoogleMeetService {
 
   constructor(
     private configService: ConfigService,
-    private notificationService: NotificationService,
+    private notificationService: NotificationService
   ) {
     try {
       const clientEmail = this.configService.get('GOOGLE_CLIENT_EMAIL');
@@ -41,7 +41,7 @@ export class GoogleMeetService {
     startTime: Date,
     duration: number,
     sellerEmail: string,
-    buyerEmail: string,
+    buyerEmail: string
   ): Promise<{ meetLink: string; eventId: string }> {
     try {
       this.logger.log(`Creating meeting: ${title} at ${startTime}`);
@@ -54,7 +54,9 @@ export class GoogleMeetService {
           timeZone: 'UTC',
         },
         end: {
-          dateTime: new Date(startTime.getTime() + duration * 60000).toISOString(),
+          dateTime: new Date(
+            startTime.getTime() + duration * 60000
+          ).toISOString(),
           timeZone: 'UTC',
         },
         conferenceData: {
@@ -65,10 +67,7 @@ export class GoogleMeetService {
             },
           },
         },
-        attendees: [
-          { email: sellerEmail },
-          { email: buyerEmail },
-        ],
+        attendees: [{ email: sellerEmail }, { email: buyerEmail }],
       };
 
       this.logger.debug('Event object:', JSON.stringify(event, null, 2));
@@ -90,7 +89,7 @@ export class GoogleMeetService {
         buyerEmail,
         title,
         startTime,
-        meetLink,
+        meetLink
       );
 
       return { meetLink, eventId };
@@ -104,4 +103,4 @@ export class GoogleMeetService {
       throw new Error(`Failed to create Google Meet: ${error.message}`);
     }
   }
-} 
+}

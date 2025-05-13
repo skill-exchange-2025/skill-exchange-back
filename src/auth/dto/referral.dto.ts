@@ -15,5 +15,4 @@ export class ReferralDto {
     description: 'Discovery method',
   })
   discoveryMethod: string;
-  
 }

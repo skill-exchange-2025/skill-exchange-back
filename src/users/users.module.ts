@@ -9,7 +9,7 @@ import {
 } from '../auth/schemas/permission-group.schema';
 import {
   UserDesiredSkill,
-  UserDesiredSkillSchema
+  UserDesiredSkillSchema,
 } from './schemas/user.desired.skill';
 import { AuthModule } from '../auth/auth.module';
 import { UserSkill, UserSkillSchema } from './schemas/user.skill.schema'; // Import AuthModule

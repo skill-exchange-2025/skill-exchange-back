@@ -14,5 +14,4 @@ export class ChangePasswordDto {
       'Password must contain uppercase, lowercase, number/special character',
   })
   newPassword: string;
-
 }

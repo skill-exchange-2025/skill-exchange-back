@@ -1,5 +1,16 @@
 // src/marketplace/controllers/lesson.controller.ts
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { LessonService } from '../services/lessons.service';
@@ -19,7 +30,11 @@ export class LessonController {
     @Param('listingId') listingId: string,
     @Body() createLessonDto: CreateLessonDto
   ) {
-    return this.lessonService.createLesson(req.user._id, listingId, createLessonDto);
+    return this.lessonService.createLesson(
+      req.user._id,
+      listingId,
+      createLessonDto
+    );
   }
 
   @Get('listing/:listingId')
@@ -54,10 +69,7 @@ export class LessonController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete a lesson' })
-  async deleteLesson(
-    @Request() req,
-    @Param('id') id: string
-  ) {
+  async deleteLesson(@Request() req, @Param('id') id: string) {
     return this.lessonService.deleteLesson(req.user._id, id);
   }
 

@@ -9,7 +9,7 @@ export type LessonDocument = Lesson & Document;
 export enum LessonType {
   LIVE = 'live',
   RECORDED = 'recorded',
-  INTERACTIVE = 'interactive'
+  INTERACTIVE = 'interactive',
 }
 
 @Schema({ timestamps: true })
@@ -65,6 +65,3 @@ export class Lesson {
 }
 
 export const LessonSchema = SchemaFactory.createForClass(Lesson);
-
-
-

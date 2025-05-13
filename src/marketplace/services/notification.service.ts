@@ -6,7 +6,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 export class NotificationService {
   constructor(
     private configService: ConfigService,
-    private mailerService: MailerService,
+    private mailerService: MailerService
   ) {}
 
   async sendMeetingNotification(
@@ -14,10 +14,10 @@ export class NotificationService {
     buyerEmail: string,
     title: string,
     startTime: Date,
-    meetLink: string,
+    meetLink: string
   ): Promise<void> {
     const formattedTime = startTime.toLocaleString();
-    
+
     // Send notification to seller
     await this.mailerService.sendMail({
       to: sellerEmail,
@@ -43,4 +43,4 @@ export class NotificationService {
       },
     });
   }
-} 
+}

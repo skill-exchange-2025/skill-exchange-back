@@ -19,7 +19,7 @@ export class LessonService {
 
   constructor(
     @InjectModel(Lesson.name) private lessonModel: Model<LessonDocument>,
-    @InjectModel(Listing.name) private listingModel: Model<ListingDocument>,
+    @InjectModel(Listing.name) private listingModel: Model<ListingDocument>
   ) {}
 
   async createLesson(
@@ -42,7 +42,9 @@ export class LessonService {
       const sellerId = listing.seller.toString();
       const currentUserId = userId.toString();
 
-      this.logger.debug(`Comparing seller ID: ${sellerId} with user ID: ${currentUserId}`);
+      this.logger.debug(
+        `Comparing seller ID: ${sellerId} with user ID: ${currentUserId}`
+      );
 
       if (sellerId !== currentUserId) {
         throw new ForbiddenException(
@@ -63,16 +65,15 @@ export class LessonService {
         instructor: userId,
         listing: listingId,
         order: newOrder,
-        status: 'draft'
+        status: 'draft',
       });
 
       const savedLesson = await lesson.save();
 
       // Update listing with new lesson
-      await this.listingModel.findByIdAndUpdate(
-        listingId,
-        { $push: { lessons: savedLesson._id } }
-      );
+      await this.listingModel.findByIdAndUpdate(listingId, {
+        $push: { lessons: savedLesson._id },
+      });
 
       return savedLesson;
     } catch (error) {
@@ -98,7 +99,7 @@ export class LessonService {
         .limit(parsedLimit)
         .populate('instructor', 'name email')
         .exec(),
-      this.lessonModel.countDocuments({ listing: listingId })
+      this.lessonModel.countDocuments({ listing: listingId }),
     ]);
 
     return {
@@ -107,8 +108,8 @@ export class LessonService {
         total,
         page: parsedPage,
         limit: parsedLimit,
-        pages: Math.ceil(total / parsedLimit)
-      }
+        pages: Math.ceil(total / parsedLimit),
+      },
     };
   }
 
@@ -189,10 +190,9 @@ export class LessonService {
     }
 
     // Remove lesson from listing
-    await this.listingModel.findByIdAndUpdate(
-      lesson.listing,
-      { $pull: { lessons: lessonId } }
-    );
+    await this.listingModel.findByIdAndUpdate(lesson.listing, {
+      $pull: { lessons: lessonId },
+    });
 
     // Delete the lesson
     await this.lessonModel.findByIdAndDelete(lessonId);
@@ -201,7 +201,11 @@ export class LessonService {
     await this.reorderLessons(lesson.listing.toString());
   }
 
-  async updateLessonOrder(userId: string, lessonId: string, newOrder: number): Promise<LessonDocument> {
+  async updateLessonOrder(
+    userId: string,
+    lessonId: string,
+    newOrder: number
+  ): Promise<LessonDocument> {
     if (!Types.ObjectId.isValid(lessonId)) {
       throw new NotFoundException('Invalid lesson ID format');
     }
@@ -226,7 +230,7 @@ export class LessonService {
       {
         listing: lesson.listing,
         order: { $gte: newOrder },
-        _id: { $ne: lessonId }
+        _id: { $ne: lessonId },
       },
       { $inc: { order: 1 } }
     );
@@ -241,14 +245,16 @@ export class LessonService {
       .sort({ order: 1 });
 
     for (let i = 0; i < lessons.length; i++) {
-      await this.lessonModel.findByIdAndUpdate(
-        lessons[i]._id,
-        { order: i + 1 }
-      );
+      await this.lessonModel.findByIdAndUpdate(lessons[i]._id, {
+        order: i + 1,
+      });
     }
   }
 
-  async publishLesson(userId: string, lessonId: string): Promise<LessonDocument> {
+  async publishLesson(
+    userId: string,
+    lessonId: string
+  ): Promise<LessonDocument> {
     if (!Types.ObjectId.isValid(lessonId)) {
       throw new NotFoundException('Invalid lesson ID format');
     }
@@ -272,7 +278,10 @@ export class LessonService {
     return lesson.save();
   }
 
-  async archiveLesson(userId: string, lessonId: string): Promise<LessonDocument> {
+  async archiveLesson(
+    userId: string,
+    lessonId: string
+  ): Promise<LessonDocument> {
     if (!Types.ObjectId.isValid(lessonId)) {
       throw new NotFoundException('Invalid lesson ID format');
     }
@@ -324,7 +333,7 @@ export class LessonService {
         .limit(parsedLimit)
         .populate('listing', 'title type')
         .exec(),
-      this.lessonModel.countDocuments(query)
+      this.lessonModel.countDocuments(query),
     ]);
 
     return {
@@ -333,11 +342,10 @@ export class LessonService {
         total,
         page: parsedPage,
         limit: parsedLimit,
-        pages: Math.ceil(total / parsedLimit)
-      }
+        pages: Math.ceil(total / parsedLimit),
+      },
     };
   }
-
 
   async searchLessons(
     searchTerm: string,
@@ -352,8 +360,8 @@ export class LessonService {
     const query: any = {
       $or: [
         { title: { $regex: searchTerm, $options: 'i' } },
-        { description: { $regex: searchTerm, $options: 'i' } }
-      ]
+        { description: { $regex: searchTerm, $options: 'i' } },
+      ],
     };
 
     if (filters.type) {
@@ -373,7 +381,7 @@ export class LessonService {
         .populate('instructor', 'name email')
         .populate('listing', 'title type')
         .exec(),
-      this.lessonModel.countDocuments(query)
+      this.lessonModel.countDocuments(query),
     ]);
 
     return {
@@ -382,8 +390,8 @@ export class LessonService {
         total,
         page: parsedPage,
         limit: parsedLimit,
-        pages: Math.ceil(total / parsedLimit)
-      }
+        pages: Math.ceil(total / parsedLimit),
+      },
     };
   }
 }
