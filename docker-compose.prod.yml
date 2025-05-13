@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  backend:
+    build: .
+    container_name: backend_skilly_prod
+    ports:
+      - "5000:5000"
+    restart: always
+    env_file:
+      - .env
+    networks:
+      - skilly_network
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
