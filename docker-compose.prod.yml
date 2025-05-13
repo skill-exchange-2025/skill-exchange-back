@@ -5,10 +5,12 @@ services:
     build: .
     container_name: backend_skilly_prod
     ports:
-      - "5000:5000"
+      - "0.0.0.0:5000:5000"
     restart: always
     env_file:
       - .env
+    environment:
+      - HOST=0.0.0.0
     deploy:
       resources:
         limits:
