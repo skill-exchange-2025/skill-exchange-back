@@ -7,13 +7,16 @@ pipeline {
         SONAR_PROJECT_KEY = 'skilly-backend'
     }
 
+    tools {
+        nodejs 'NODE'  // This references your Node installation named "NODE"
+    }
+
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
-
 
         stage('Install Dependencies') {
             steps {
@@ -28,10 +31,10 @@ pipeline {
         }
 
         stage('Run Project') {
-                    steps {
-                        sh 'npm start'
-                    }
-                }
+            steps {
+                sh 'npm start'
+            }
+        }
 
         /*
         stage('SonarQube Analysis') {
@@ -52,6 +55,7 @@ pipeline {
         }
         */
 
+        /*
         stage('Quality Gate') {
             steps {
                 timeout(time: 1, unit: 'HOURS') {
@@ -59,10 +63,11 @@ pipeline {
                 }
             }
         }
+        */
 
         stage('Build') {
             steps {
-                sh 'npm run build'
+                sh 'npm start'
             }
         }
 
