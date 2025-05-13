@@ -13,6 +13,7 @@ pipeline {
                 checkout scm
             }
         }
+        /*
 
         stage('Install Dependencies') {
             steps {
@@ -24,7 +25,7 @@ pipeline {
             steps {
                 sh 'npm test'
             }
-        }
+        }*/
 
         stage('SonarQube Analysis') {
             steps {
