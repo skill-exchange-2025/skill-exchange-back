@@ -13,7 +13,7 @@ pipeline {
                 checkout scm
             }
         }
-        /*
+
 
         stage('Install Dependencies') {
             steps {
@@ -25,7 +25,14 @@ pipeline {
             steps {
                 sh 'npm test'
             }
-        }*/
+        }
+
+        stage('Run Project') {
+                    steps {
+                        sh 'npm start'
+                    }
+                }
+
         /*
         stage('SonarQube Analysis') {
             steps {
@@ -43,6 +50,7 @@ pipeline {
                 }
             }
         }
+        */
 
         stage('Quality Gate') {
             steps {
@@ -57,7 +65,7 @@ pipeline {
                 sh 'npm run build'
             }
         }
-        */
+
         stage('Build Docker Image') {
             steps {
                 sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
