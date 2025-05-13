@@ -30,11 +30,7 @@ pipeline {
             }
         }
 
-        stage('Run Project') {
-            steps {
-                sh 'npm start'
-            }
-        }
+        // Removed the "Run Project" stage that was causing the hang
 
         /*
         stage('SonarQube Analysis') {
@@ -67,12 +63,10 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'npm start'
+                sh 'npm run build'  // Changed back to 'npm run build' instead of 'npm start'
             }
         }
-
         /*
-
         stage('Build Docker Image') {
             steps {
                 sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
@@ -99,8 +93,7 @@ pipeline {
                 sh 'docker-compose -f docker-compose.prod.yml down'
                 sh 'docker-compose -f docker-compose.prod.yml up -d'
             }
-        }
-        */
+        }*/
     }
 
     post {
