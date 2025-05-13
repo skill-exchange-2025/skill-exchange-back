@@ -9,8 +9,6 @@ services:
     restart: always
     env_file:
       - .env
-    networks:
-      - skilly_network
     deploy:
       resources:
         limits:
