@@ -71,6 +71,8 @@ pipeline {
             }
         }
 
+        /*
+
         stage('Build Docker Image') {
             steps {
                 sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
@@ -98,6 +100,7 @@ pipeline {
                 sh 'docker-compose -f docker-compose.prod.yml up -d'
             }
         }
+        */
     }
 
     post {
