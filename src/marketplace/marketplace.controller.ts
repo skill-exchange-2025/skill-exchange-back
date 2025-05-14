@@ -1,4 +1,3 @@
-// src/marketplace/marketplace.controller.ts
 import {
   Controller,
   Get,
@@ -32,7 +31,25 @@ import { ListingType } from './schemas/listing.schema';
 @Controller('marketplace')
 export class MarketplaceController {
   constructor(private readonly marketplaceService: MarketplaceService) {}
-
+  @Get('my-purchases')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: "Get current user's purchased courses and listings",
+  })
+  async getMyPurchases(
+    @Request() req,
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+    @Query('status') status?: string
+  ) {
+    return this.marketplaceService.getTransactionsByBuyer(
+      req.user._id,
+      page,
+      limit,
+      status
+    );
+  }
   @Post('listings')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()

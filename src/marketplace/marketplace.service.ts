@@ -14,6 +14,8 @@ import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UsersService } from '../users/users.service';
 import { PaymentService } from './services/payment.service';
+import { GoogleMeetService } from './services/google-meet.service';
+import { NotificationService } from './services/notification.service';
 
 @Injectable()
 export class MarketplaceService {
@@ -23,7 +25,9 @@ export class MarketplaceService {
     private transactionModel: Model<TransactionDocument>,
     @InjectModel(Review.name) private reviewModel: Model<ReviewDocument>,
     private usersService: UsersService,
-    private paymentService: PaymentService
+    private paymentService: PaymentService,
+    private googleMeetService: GoogleMeetService,
+    private notificationService: NotificationService
   ) {}
 
   // Listing methods
@@ -278,6 +282,7 @@ export class MarketplaceService {
 
     // Get the user object to ensure we have a valid ObjectId
     const buyer = await this.usersService.findById(userId);
+    const seller = await this.usersService.findById(listing.seller.toString());
 
     if (listing.seller.toString() === (buyer._id as any).toString()) {
       throw new BadRequestException('You cannot buy your own listing');
@@ -292,7 +297,29 @@ export class MarketplaceService {
       status: 'pending_payment',
     });
 
-    console.log('Transaction object before save:', transaction);
+    // If it's an interactive course, create a Google Meet
+    if (listing.type === 'interactive_course') {
+      if (
+        !createTransactionDto.meetingStartTime ||
+        !createTransactionDto.meetingDuration
+      ) {
+        throw new BadRequestException(
+          'Meeting start time and duration are required for interactive courses'
+        );
+      }
+
+      const { meetLink, eventId } = await this.googleMeetService.createMeeting(
+        listing.title,
+        createTransactionDto.meetingStartTime,
+        createTransactionDto.meetingDuration,
+        seller.email,
+        buyer.email
+      );
+
+      transaction.meetLink = meetLink;
+      transaction.meetingScheduledAt = createTransactionDto.meetingStartTime;
+      transaction.meetingEventId = eventId;
+    }
 
     // Save the transaction to get an ID
     const savedTransaction = await transaction.save();
@@ -304,7 +331,7 @@ export class MarketplaceService {
         (buyer._id as any).toString(),
         listing.seller.toString(),
         listing.price,
-        transactionId // Use transaction ID as reference
+        transactionId
       );
 
       // Update transaction status to completed (service delivery)
@@ -478,6 +505,67 @@ export class MarketplaceService {
     };
   }
 
+  async getTransactionsByBuyer(
+    userId: string,
+    page = 1,
+    limit = 10,
+    status?: string
+  ) {
+    const skip = (page - 1) * limit;
+
+    const query: any = { buyer: userId };
+    if (status) {
+      query.status = status;
+    }
+
+    const transactions = await this.transactionModel
+      .find(query)
+      .populate({
+        path: 'listing',
+        select:
+          'title price description type skillName proficiencyLevel category status',
+      })
+      .populate('seller', 'name email')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .exec();
+
+    const total = await this.transactionModel.countDocuments(query);
+
+    const purchasedItems = transactions.map((transaction) => ({
+      id: (transaction as any)._id?.toString(),
+      purchaseDate: (transaction as any).createdAt,
+      listing: {
+        id: (transaction.listing as any)?._id?.toString(),
+        title: transaction.listing?.title,
+        price: transaction.listing?.price,
+        description: transaction.listing?.description,
+        type: transaction.listing?.type,
+        skillName: transaction.listing?.skillName,
+        proficiencyLevel: transaction.listing?.proficiencyLevel,
+        category: transaction.listing?.category,
+        status: transaction.listing?.status,
+      },
+      seller: {
+        id: (transaction.seller as any)?._id?.toString(),
+        name: transaction.seller?.name,
+        email: transaction.seller?.email,
+      },
+      status: transaction.status,
+    }));
+
+    return {
+      data: purchasedItems,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+      success: true,
+    };
+  }
   // Helper methods
   private isProficiencyHigher(newLevel: string, currentLevel: string): boolean {
     const levels = ['Beginner', 'Intermediate', 'Advanced'];

@@ -19,10 +19,8 @@ import { OTP, OTPDocument } from './schemas/otp.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { MailerService } from '@nestjs-modules/mailer';
 import { JsonWebTokenError } from 'jsonwebtoken';
-import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { CompleteResetPasswordDto } from './dto/reset-password.dto';
 import { ReferralDto } from './dto/referral.dto';
-import * as mongoose from 'mongoose';
 import { Wallet, WalletDocument } from '../marketplace/schemas/wallet.schema';
 import { BlacklistService } from 'src/blacklist/blacklist/blacklist.service';
 import { InfobipService } from 'src/infobip/infobip.service';
@@ -241,7 +239,7 @@ export class AuthService {
       access_token: accessToken,
       refresh_token: refreshToken,
       user: {
-        _id: (user._id as ObjectId).toString(),
+        _id: (user._id as any).toString(),
         name: user.name,
         phone: user.phone,
         email: user.email,
@@ -269,7 +267,7 @@ export class AuthService {
         access_token: tokens.accessToken,
         refresh_token: tokens.refreshToken,
         user: {
-          _id: (user._id as ObjectId).toString(),
+          _id: (user._id as any).toString(),
           name: user.name,
           phone: user.phone,
           email: user.email,

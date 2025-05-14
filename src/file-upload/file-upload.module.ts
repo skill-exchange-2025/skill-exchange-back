@@ -16,7 +16,8 @@ if (!existsSync(uploadDir)) {
       storage: diskStorage({
         destination: uploadDir,
         filename: (req, file, callback) => {
-          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
           const ext = extname(file.originalname);
           const filename = `${uniqueSuffix}${ext}`;
           callback(null, filename);

@@ -11,7 +11,7 @@ export class OTP {
 
   @Prop({ required: true })
   expiresAt: Date;
-  
+
   @Prop({ default: false })
   used: boolean;
 }

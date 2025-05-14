@@ -24,7 +24,10 @@ import { diskStorage } from 'multer';
 import { UploadvocalModule } from './uploadvocal/uploadvocal.module';
 import { UploadattachmentModule } from './upload-attachment/upload-attachment.module';
 
-
+import { CodingRoomsModule } from './codingrooms/codingrooms.module';
+import { FeedbackModule } from './feedback/feedback.module';
+import { SummarizationModule } from './summarization/summarization.module';
+import { WheelModule } from './wheel/wheel.module';
 
 @Module({
   imports: [
@@ -34,6 +37,10 @@ import { UploadattachmentModule } from './upload-attachment/upload-attachment.mo
     MessagingModule,
     ConfigModule.forRoot({ isGlobal: true }), // Load environment variables globally
     MarketplaceModule,
+    FeedbackModule,
+    SummarizationModule,
+    WheelModule,
+    CodingRoomsModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [

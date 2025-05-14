@@ -24,6 +24,7 @@ export class Message {
       mimetype: String,
       size: Number,
       path: String,
+      isPending: Boolean,
     },
   })
   attachment: {
@@ -32,6 +33,7 @@ export class Message {
     mimetype: string;
     size: number;
     path: string;
+    isPending?: boolean;
   };
 
   @Prop({ type: Map, of: [String] })
@@ -47,6 +49,26 @@ export class Message {
     description: string;
     image: string;
   };
+
+  @Prop({ type: String, index: true })
+  clientMessageId: string;
+
+  // Reply functionality fields
+  @Prop({ type: Boolean, default: false })
+  isReply: boolean;
+
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Message' })
+  parentMessage: Message;
+
+  @Prop({ type: Object })
+  replyPreview: {
+    content: string;
+    sender: string;
+    senderName: string;
+  };
+
+  @Prop({ type: Number, default: 0 })
+  replyCount: number;
 }
 
 export const MessageSchema = SchemaFactory.createForClass(Message);

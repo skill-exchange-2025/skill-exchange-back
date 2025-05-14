@@ -39,8 +39,7 @@ export class UsersService {
     private readonly blacklistService: BlacklistService, // Inject BlacklistService
 
   ) {}
- 
-  
+
   async create(createUserDto: CreateUserDto): Promise<UserDocument> {
     try {
       console.log('Creating user with email:', createUserDto.email);
@@ -70,6 +69,7 @@ export class UsersService {
         permissions,
         skills: [] as UserSkill[],
         desiredSkills: [] as UserDesiredSkill[],
+        isEmailVerified: createUserDto.isEmailVerified || false,
       };
 
       // Add skills if they exist
@@ -210,12 +210,14 @@ export class UsersService {
       .select('+password')
       .exec();
   }
+
   async findByNames(name: string): Promise<UserDocument | null> {
     return this.userModel
       .findOne({ name: name.toLowerCase().trim() })
       .select('+password')
       .exec();
   }
+
   async findByPhone(phone: string): Promise<UserDocument | null> {
     return this.userModel
       .findOne({ phone: phone.toLowerCase().trim() })
@@ -481,5 +483,157 @@ export class UsersService {
     }
 
     return user;
+  }
+
+  async getSummaryStats() {
+    const [total, verified, active] = await Promise.all([
+      this.userModel.countDocuments(),
+      this.userModel.countDocuments({ isEmailVerified: true }),
+      this.userModel.countDocuments({ isActive: true }),
+    ]);
+
+    return {
+      totalUsers: total,
+      verifiedUsers: verified,
+      activeUsers: active,
+      verificationRate: total > 0 ? (verified / total) * 100 : 0,
+      activeRate: total > 0 ? (active / total) * 100 : 0,
+    };
+  }
+
+  async getUserGrowthStats(period: string = 'month') {
+    const formatMap = {
+      day: '%Y-%m-%d',
+      week: '%Y-%U',
+      month: '%Y-%m',
+      year: '%Y',
+    };
+
+    return this.userModel.aggregate([
+      {
+        $group: {
+          _id: {
+            $dateToString: {
+              format: formatMap[period] || '%Y-%m',
+              date: '$createdAt',
+            },
+          },
+          count: { $sum: 1 },
+          date: { $first: '$createdAt' },
+        },
+      },
+      { $sort: { date: 1 } },
+      { $project: { _id: 0, period: '$_id', count: 1 } },
+    ]);
+  }
+
+  async getSkillStatistics() {
+    return this.userModel.aggregate([
+      { $unwind: '$skills' },
+      {
+        $group: {
+          _id: '$skills.name',
+          count: { $sum: 1 },
+          avgProficiency: {
+            $avg: {
+              $switch: {
+                branches: [
+                  {
+                    case: { $eq: ['$skills.proficiencyLevel', 'Beginner'] },
+                    then: 1,
+                  },
+                  {
+                    case: { $eq: ['$skills.proficiencyLevel', 'Intermediate'] },
+                    then: 2,
+                  },
+                  {
+                    case: { $eq: ['$skills.proficiencyLevel', 'Advanced'] },
+                    then: 3,
+                  },
+                ],
+                default: 0,
+              },
+            },
+          },
+        },
+      },
+      { $sort: { count: -1 } },
+      { $limit: 10 },
+      {
+        $project: {
+          skill: '$_id',
+          count: 1,
+          avgProficiency: 1,
+          _id: 0,
+        },
+      },
+    ]);
+  }
+
+  async getVerificationTrends() {
+    return this.userModel.aggregate([
+      {
+        $group: {
+          _id: {
+            $dateToString: {
+              format: '%Y-%m',
+              date: '$createdAt',
+            },
+          },
+          total: { $sum: 1 },
+          verified: {
+            $sum: {
+              $cond: [{ $eq: ['$isEmailVerified', true] }, 1, 0],
+            },
+          },
+        },
+      },
+      { $sort: { _id: 1 } },
+      {
+        $project: {
+          month: '$_id',
+          totalUsers: '$total',
+          verifiedUsers: '$verified',
+          verificationRate: {
+            $cond: [
+              { $eq: ['$total', 0] },
+              0,
+              { $multiply: [{ $divide: ['$verified', '$total'] }, 100] },
+            ],
+          },
+          _id: 0,
+        },
+      },
+    ]);
+  }
+
+  async getUserActivityStats() {
+    return this.userModel.aggregate([
+      {
+        $facet: {
+          lastActive: [
+            { $sort: { lastActiveAt: -1 } },
+            { $limit: 5 },
+            { $project: { name: 1, email: 1, lastActiveAt: 1 } },
+          ],
+          activityDistribution: [
+            {
+              $bucket: {
+                groupBy: '$lastActiveAt',
+                boundaries: [
+                  new Date(new Date().setDate(new Date().getDate() - 30)),
+                  new Date(new Date().setDate(new Date().getDate() - 7)),
+                  new Date(),
+                ],
+                default: 'inactive',
+                output: {
+                  count: { $sum: 1 },
+                },
+              },
+            },
+          ],
+        },
+      },
+    ]);
   }
 }
