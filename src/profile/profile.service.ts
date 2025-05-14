@@ -41,7 +41,10 @@ export class ProfileService {
         this.usersService.findById(userId),
         this.calculateProfileCompletion(userId),
       ]);
-
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+      
       if (!profile && user) {
         return {
           user: {
@@ -59,16 +62,24 @@ export class ProfileService {
       if (!user) {
         throw new NotFoundException('User not found');
       }
+      const userData = {
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        skills: user.skills || [],
+        desiredSkills: user.desiredSkills || [],
+      };
+      if (!profile) {
+        return {
+          user: userData,
+          profileExists: false,
+          completionStatus
+        };
+      }
 
       return {
         ...profile?.toJSON(),
-        user: {
-          name: user.name,
-          email: user.email,
-          phone: user.phone,
-          skills: user.skills || [],
-          desiredSkills: user.desiredSkills || [],
-        },
+        user: userData,
         completionStatus,
         profileExists: true,
       };
@@ -229,4 +240,58 @@ export class ProfileService {
       throw new BadRequestException('Error fetching avatar');
     }
   }
+
+  // In profile.service.ts
+
+async getPublicProfile(userId: string): Promise<any> {
+  try {
+    const [profile, user] = await Promise.all([
+      this.profileModel.findOne({ userId }).exec(),
+      this.usersService.findById(userId),
+    ]);
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    // Only include public user information
+    const publicUserData = {
+      name: user.name,
+      skills: user.skills || [],
+      desiredSkills: user.desiredSkills || [],
+    };
+
+    // If no profile exists, return basic user data
+    if (!profile) {
+      return {
+        user: publicUserData,
+        profileExists: false,
+      };
+    }
+
+    // Return public profile information
+    const publicProfileData = {
+      bio: profile.bio,
+      description: profile.description,
+      location: profile.location,
+      profession: profile.profession,
+      interests: profile.interests,
+      avatarUrl: profile.avatarUrl,
+      // Exclude sensitive information like birthDate, socialLinks, etc.
+    };
+
+    return {
+      ...publicProfileData,
+      user: publicUserData,
+      profileExists: true,
+    };
+  } catch (error) {
+    if (error instanceof NotFoundException) {
+      throw error;
+    }
+    throw new BadRequestException('Error fetching profile data');
+  }
+}
+
+
 }

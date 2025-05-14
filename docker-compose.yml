@@ -7,6 +7,25 @@ services:
     ports:
       - "5000:5000"
     restart: always
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - redis
+    networks:
+      - skilly-network
+
+  redis:
+    image: redis:latest
+    container_name: redis_cache
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - skilly-network
 
   sonarqube:
     image: sonarqube:9.9-community
@@ -35,7 +54,12 @@ services:
       - sonarqube_db:/var/lib/postgresql/data
 
 volumes:
+  redis_data:
   sonarqube_data:
   sonarqube_logs:
   sonarqube_extensions:
   sonarqube_db:
+
+networks:
+  skilly-network:
+    driver: bridge

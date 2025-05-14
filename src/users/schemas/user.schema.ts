@@ -50,6 +50,11 @@ export class User {
 
   @Prop({ default: false })
   isEmailVerified: boolean;
+  @Prop({ default: true })
+  isActive: boolean;
+
+  
+
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -9,6 +9,9 @@ import {
   Query,
   UseGuards,
   BadRequestException,
+  Patch,
+  Req,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags, ApiQuery } from '@nestjs/swagger';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -157,6 +160,21 @@ export class UsersController {
   async getAllSkills() {
     return await this.usersService.getAllSkills();
   }
+  @Post(':id/activate')
+  @Roles(Role.ADMIN)
+  async activateUser(@Param('id') id: string) {
+    return await this.usersService.activateUser(id);
+  }
+  
+  @Patch('deactivate/:id')
+  async deactivate(@Param('id') id: string, @Req() req: Request) {
+    const token = req.headers['authorization']?.split(' ')[1];  
+    if (!token) {
+      throw new UnauthorizedException('Token is required');
+    }
+    return await this.usersService.deactivateUser(id, token);
+  }
+
 
   @Get('stats/summary')
   @Roles(Role.ADMIN)

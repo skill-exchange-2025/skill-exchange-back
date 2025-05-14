@@ -24,6 +24,7 @@ import {
   UserDesiredSkill,
   UserDesiredSkillDocument,
 } from './schemas/user.desired.skill';
+import { BlacklistService } from 'src/blacklist/blacklist/blacklist.service';
 
 @Injectable()
 export class UsersService {
@@ -34,7 +35,9 @@ export class UsersService {
     @InjectModel(UserSkill.name)
     private userSkillModel: Model<UserSkillDocument>,
     @InjectModel(UserDesiredSkill.name)
-    private userDesiredSkillModel: Model<UserDesiredSkillDocument>
+    private userDesiredSkillModel: Model<UserDesiredSkillDocument>,
+    private readonly blacklistService: BlacklistService, // Inject BlacklistService
+
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<UserDocument> {
@@ -326,6 +329,31 @@ export class UsersService {
     }
 
     return this.mapUserToDto(user);
+  }
+  async activateUser(id: string): Promise<UserDocument> {
+    const user = await this.userModel.findById(id);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+  
+    user.isActive = true;
+    await user.save();
+  
+    return user;
+  }
+  async deactivateUser(id: string, token: string) {
+    const user = await this.userModel.findById(id);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    user.isActive = false;
+    await user.save();
+
+    // Blacklist the token to immediately log out the user
+    this.blacklistService.addToBlacklist(token,3600);  // Example expiration time of 3600 seconds (3 d9ay9)
+
+    return user;
   }
 
   async markEmailAsVerified(id: string): Promise<UserWithPermissions> {

@@ -8,6 +8,7 @@ import {
   UseInterceptors,
   UploadedFile,
   BadRequestException,
+  Param,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -36,6 +37,7 @@ export class ProfileController {
   async getProfile(@CurrentUser() user: any) {
     return await this.profileService.findByUserId(user.id);
   }
+  
 
   @Post()
   async createProfile(
@@ -83,9 +85,14 @@ export class ProfileController {
     const avatarUrl = `/uploads/${file.filename}`;
     return await this.profileService.uploadAvatar(user.id, avatarUrl);
   }
-
+  
   @Get('avatar')
   async getAvatar(@CurrentUser() user: any) {
     return await this.profileService.getAvatar(user.id);
   }
+
+  @Get(':userId')
+async getProfileByUserId(@Param('userId') userId: string) {
+  return await this.profileService.getPublicProfile(userId);
+}
 }

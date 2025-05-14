@@ -40,6 +40,23 @@ export const Public = () => SetMetadata('isPublic', true);
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+  @Public() // Add this decorator to make the endpoint public
+  @Get('getAllUsers')
+  async getAllUsers() {
+    try {
+      const users = await this.authService.findAllUsers();  // Fetch all users from the service
+      return {
+        success: true,
+        data: users,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Error fetching users',
+      };
+    }
+  }
+
 
   @Public() // Add this decorator to make the endpoint public
   @Post('reset-password')
@@ -54,7 +71,7 @@ export class AuthController {
   @ApiResponse({ status: 409, description: 'Email already exists' })
   @ApiResponse({ status: 408, description: 'Phone number already exists' })
   async register(@Body() registerDto: RegisterDto): Promise<AuthResponseDto> {
-    console.log('registerDto', registerDto);
+    console.log('registerDto', registerDto); 
     return this.authService.register(registerDto);
   }
 

@@ -11,6 +11,19 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { ProfileModule } from './profile/profile.module';
 import { MarketplaceModule } from './marketplace/marketplace.module';
 import { MessagingModule } from './messaging/messaging.module';
+import { InfobipService } from './infobip/infobip.service';
+import { InfobipController } from './infobip/infobip.controller';
+import { InfobipModule } from './infobip/infobip.module';
+import { ChatModule } from './chat/chat.module';
+import { PrivateMessagesController } from './private-messages/private-messages.controller';
+import { PrivateMessagesModule } from './private-messages/private-messages.module';
+import { FriendRequestsModule } from './friend-requests/friend-requests.module';
+import { EventsModule } from './events/events.module';
+import { MulterModule } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { UploadvocalModule } from './uploadvocal/uploadvocal.module';
+import { UploadattachmentModule } from './upload-attachment/upload-attachment.module';
+
 import { CodingRoomsModule } from './codingrooms/codingrooms.module';
 import { FeedbackModule } from './feedback/feedback.module';
 import { SummarizationModule } from './summarization/summarization.module';
@@ -38,7 +51,19 @@ import { WheelModule } from './wheel/wheel.module';
     }),
     MongooseModule.forRoot(process.env.MONGO_URI || 'mongodb://localhost/nest'),
     MailerModule.forRootAsync({
-      imports: [ConfigModule],
+      imports: [ConfigModule
+        // ,
+        // MulterModule.register({
+        //   dest: './uploads',
+        //   storage: diskStorage({
+        //     destination: './uploads',
+        //     filename: (req, file, cb) => {
+        //       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        //       cb(null, `${uniqueSuffix}-${file.originalname}`);
+        //     },
+        //   }),
+        // }),
+      ],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         transport: {
@@ -55,8 +80,17 @@ import { WheelModule } from './wheel/wheel.module';
         },
       }),
     }),
+    InfobipModule,
+    ChatModule,
+    PrivateMessagesModule,
+    FriendRequestsModule,
+    EventsModule,
+    UploadvocalModule,
+    UploadattachmentModule,
+    
+    
   ],
-  controllers: [AppController, AuthController],
-  providers: [AppService, JwtModule],
+  controllers: [AppController, AuthController, InfobipController, PrivateMessagesController],
+  providers: [AppService, JwtModule, InfobipService],
 })
 export class AppModule {}
