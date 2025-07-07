@@ -1,21 +1,26 @@
 FROM node:20-alpine
 
+# Install build dependencies for bcrypt and native modules
+RUN apk add --no-cache python3 make g++
+
 WORKDIR /app
 
-# Copy package.json and package-lock.json
+# Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production
+# Install ALL dependencies first (including dev dependencies for building)
+RUN npm ci
 
-# Copy built application
+# Copy source code
 COPY . .
 
-# Set environment to production
-ENV NODE_ENV production
+# Build the NestJS application
+RUN npm run build
 
-# Expose the port your app runs on
+# Remove dev dependencies after build
+RUN npm prune --production
+
 EXPOSE 5000
 
-# Command to start your application
-CMD ["node", "dist/index.js"]
+# Use npm start (which runs nest start according to your logs)
+CMD ["npm", "start"]

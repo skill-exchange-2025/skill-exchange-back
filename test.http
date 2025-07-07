@@ -1,10 +1,9 @@
 ### GET request to example server
 GET http://localhost:5000/api/users/skills
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2I3Yjk0MjQwNDQ2ZTY5OTBjZjZmOWEiLCJlbWFpbCI6ImppaGVkMDAwMEBnbWFpbC5jb20iLCJpYXQiOjE3NDA3ODc2NTEsImV4cCI6MTc0MDc4ODU1MX0.tx-UVuHrn3teoA_2_o6DNXI0-vzJoCNyIObhLG2ggco
-
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2ODQxOGFkZDZlMThiZTQwYzFhZjY1YzgiLCJlbWFpbCI6InRlc3RhYWFAZ21haWwuY29tIiwiaWF0IjoxNzUxODk0MDk2LCJleHAiOjE3NTE4OTQ5OTZ9.93GOOdchZEx7O-2x-I_S5pZN0V5ziZlEavkqaDUe5LU
 ### Get all purchases
 GET http://localhost:5000/api/marketplace/my-purchases
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2MzOWU0ZjVhNGNhNWRlZjQ5MDQ2OWUiLCJlbWFpbCI6ImF5bWVlZW4uZ2hAZ21haWwuY29tIiwiaWF0IjoxNzQ0NzMyNjI3LCJleHAiOjE3NDQ3MzM1Mjd9.Bc8_cLECSsdatslQIWQeadk4xYPNxKn1FImiu802anc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2ODQxOGFkZDZlMThiZTQwYzFhZjY1YzgiLCJlbWFpbCI6InRlc3RhYWFAZ21haWwuY29tIiwiaWF0IjoxNzUxODk0MDk2LCJleHAiOjE3NTE4OTQ5OTZ9.93GOOdchZEx7O-2x-I_S5pZN0V5ziZlEavkqaDUe5LU
 
 ### Get only completed purchases
 GET /marketplace/my-purchases?status=completed
@@ -19,8 +18,8 @@ POST http://localhost:5000/api/auth/register
 Content-Type: application/json
 
 {
-  "email": "feedbacks@gmail.com",
-  "phone": "2945678",
+  "email": "testaaa@gmail.com",
+  "phone": "98765432",
   "name": "Jihed",
   "password": "jihed123",
   "roles": ["admin"]
@@ -32,9 +31,9 @@ POST http://localhost:5000/api/auth/register
 Content-Type: application/json
 
 {
-  "email": "test@g.com",
+  "email": "test2@gmail.com",
   "password": "Password1234",
-  "phone": "18345679",
+  "phone": "41987650",
   "name": "aaaaaa",
   "roles": ["admin"],
   "skills": [
@@ -66,6 +65,21 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2I3Yjk0M
 DELETE http://localhost:5000/api/feedback/user/68068b90ae53530ddd48f3a1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Q0YmNlYjY4MjU5YTYxOWU3ZDlkNTkiLCJlbWFpbCI6ImppaGVkc2FndWVyMTI4QGdtYWlsLmNvbSIsImlhdCI6MTc0NTM1NDQyOSwiZXhwIjoxNzQ1MzU1MzI5fQ.4sfZZf47xRg3H1DW4yG2g-Zx3py6r35FBptvo_ucPL0
 
+### Créer une nouvelle annonce (listing)
+POST http://localhost:5000/api/marketplace/listings
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2ODZiZDc2ZjNjZTJmOTEyYWQ2M2M2OGMiLCJlbWFpbCI6Im5sc0Bjb250YWN0LmNvbSIsImlhdCI6MTc1MTg5ODA2OCwiZXhwIjoxNzUxODk4OTY4fQ.NiYjz7k5CZgIy3cZkJy67aOqZucHld4bkvMrjuvuNT8
+Content-Type: application/json
+
+{
+  "title": "Chaise de bureau ergonomique",
+  "description": "Chaise confortable, idéale pour le télétravail.",
+  "price": 120,
+  "category": "Mobilier",
+  "location": "Lyon",
+  "images": [
+    "https://exemple.com/images/chaise1.jpg"
+  ]
+}
 
 
 ### Create new feedback
@@ -96,7 +110,7 @@ POST http://localhost:5000/api/auth/login
 Content-Type: application/json
 
 {
-  "email": "jihedsaguer127@gmail.com",
+  "email": "nls@contact.com",
   "password": "Jihed12345"
 }
 ###
@@ -104,7 +118,7 @@ GET http://localhost:5000/api/users/metrics
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2I3Yjk0MjQwNDQ2ZTY5OTBjZjZmOWEiLCJlbWFpbCI6ImppaGVkMDAwMEBnbWFpbC5jb20iLCJpYXQiOjE3NDY4MTE3NTksImV4cCI6MTc0NjgxMjY1OX0.pq8v4KH65ChJlZxShedsjvzz1WIonZzMbx7pbqmE2gs
 ### Then use the token to create a lesson
 POST http://localhost:5000/api/lessons/listing/67d4be0c68259a619e7d9dd6
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Q0YmNlYjY4MjU5YTYxOWU3ZDlkNTkiLCJlbWFpbCI6ImppaGVkc2FndWVyMTI4QGdtYWlsLmNvbSIsImlhdCI6MTc0MjA4MDQyOCwiZXhwIjoxNzQyMDgxMzI4fQ.cX69uyvw7A3TuXHSoMCjHuk6WNObLZIqwSBdg_G29_k
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2ODZiZDc2ZjNjZTJmOTEyYWQ2M2M2OGMiLCJlbWFpbCI6Im5sc0Bjb250YWN0LmNvbSIsImlhdCI6MTc1MTg5ODA2OCwiZXhwIjoxNzUxODk4OTY4fQ.NiYjz7k5CZgIy3cZkJy67aOqZucHld4bkvMrjuvuNT8
 Content-Type: application/json
 
 {
@@ -119,66 +133,6 @@ Content-Type: application/json
 GET http://localhost:5000/api/lessons/67d60c75163fec36531700c9
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Q0YmNlYjY4MjU5YTYxOWU3ZDlkNTkiLCJlbWFpbCI6ImppaGVkc2FndWVyMTI4QGdtYWlsLmNvbSIsImlhdCI6MTc0MjA4MDQyOCwiZXhwIjoxNzQyMDgxMzI4fQ.cX69uyvw7A3TuXHSoMCjHuk6WNObLZIqwSBdg_G29_k
 
-
-
-
-### Create Profile
-POST http://localhost:5000/api/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2I3Yjk0MjQwNDQ2ZTY5OTBjZjZmOWEiLCJlbWFpbCI6ImppaGVkMDAwMEBnbWFpbC5jb20iLCJpYXQiOjE3NDAxMjg4NzksImV4cCI6MTc0MDEyOTc3OX0.qZczMXIu1DCD3IqKhdSl03LE_Yhkei3Iqn3o7rqDBcA
-Content-Type: application/json
-
-{
-  "bio": "Software Developer with 5 years of experience",
-  "description": "Passionate about web development and new technologies",
-  "location": "New York, USA",
-  "socialLinks": [
-    "https://linkedin.com/in/username",
-    "https://github.com/username"
-  ],
-  "profession": "Full Stack Developer",
-  "interests": [
-    "Web Development",
-    "Machine Learning",
-    "Cloud Computing"
-  ],
-  "birthDate": "1990-01-01"
-}
-
-
-### Update Profile
-PUT http://localhost:5000/api/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2I3Yjk0MjQwNDQ2ZTY5OTBjZjZmOWEiLCJlbWFpbCI6ImppaGVkMDAwMEBnbWFpbC5jb20iLCJpYXQiOjE3NDAxMzU5NDUsImV4cCI6MTc0MDEzNjg0NX0.X6JIUstZNcQhrhnnxLDs1VxhROAUCVOtVfivOzgxZHI
-Content-Type: application/json
-
-{
-  "bio": "Updated bio - Senior Software Developer",
-  "description": "Updated description - Specialized in Node.js and React",
-  "location": "San Francisco, USA",
-  "profession": "Senior Full Stack Developer",
-  "interests": ["Programming", "AI", "Blockchain"],
-  "socialLinks": [
-    "https://linkedin.com/in/updated-username",
-    "https://github.com/updated-username"
-  ]
-}
-
-### Delete Profile
-DELETE http://localhost:5000/api/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2IzOTRmZWMxY2M1NWQ5NGQ0YThlNjUiLCJlbWFpbCI6ImppaWlAZ21haWwuY29tIiwiaWF0IjoxNzM5ODkwMzk4LCJleHAiOjE3Mzk4OTEyOTh9.MC-GnsKV0mCh4vehAhsaW-66bKr-DLMmMt29WkRkgWg
-Content-Type: application/json
-
-### Upload Profile Avatar
-POST http://localhost:5000/api/profile/avatar
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2IzOTRmZWMxY2M1NWQ5NGQ0YThlNjUiLCJlbWFpbCI6ImppaWlAZ21haWwuY29tIiwiaWF0IjoxNzM5ODI2ODczLCJleHAiOjE3Mzk4Mjc3NzN9.I-d0paPU8PIEkEvcmzHYcdMsCgo45q4OEh2JdXVUHl8
-Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
-
-------WebKitFormBoundary7MA4YWxkTrZu0gW
-Content-Disposition: form-data; name="avatar"; filename="profile-picture.jpg"
-Content-Type: image/jpeg
-
-</ Users/jihed/Downloads/473021116_1124461089188286_3074189769567510121_n (2).jpg
-
-
-
-
-
+### Créer une nouvelle annonce (listing)
+POST http://localhost:5000/api/marketplace/listings
+Authorization: Bearer {

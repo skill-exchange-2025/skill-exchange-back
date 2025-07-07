@@ -87,8 +87,8 @@ import { WheelModule } from './wheel/wheel.module';
     EventsModule,
     UploadvocalModule,
     UploadattachmentModule,
-    
-    
+
+
   ],
   controllers: [AppController, AuthController, InfobipController, PrivateMessagesController],
   providers: [AppService, JwtModule, InfobipService],
